@@ -1,7 +1,8 @@
+using BoxingApp;
+using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using Microsoft.Data.SqlClient;
 
 public class StorageManager
 {
@@ -30,7 +31,7 @@ public class StorageManager
                         Username = reader["Username"].ToString(),
                         Role = reader["Role"].ToString(),
                         FullName = reader["FullName"].ToString(),
-                        
+                        Email = reader["Email"].ToString()
                     };
                 }
             }
@@ -38,8 +39,30 @@ public class StorageManager
         return null;
     }
 
+    public bool RegisterUser(string username, string password, string email, string fullName)
+    {
+        string sql = "INSERT INTO dbo.tblUser (Username, Password, Role, Email, FullName, DateJoined) VALUES (@Username, @Password, 'User', @Email, @FullName, @DateJoined)";
+        using (SqlCommand cmd = new SqlCommand(sql, conn))
+        {
+            cmd.Parameters.AddWithValue("@Username", username);
+            cmd.Parameters.AddWithValue("@Password", password);
+            cmd.Parameters.AddWithValue("@Email", email);
+            cmd.Parameters.AddWithValue("@FullName", fullName);
+            
 
-    public List<region> GetAllRegions()
+            try
+            {
+                cmd.ExecuteNonQuery();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+    }
+
+    public List<Region> GetAllRegions()
     {
         List<Region> regions = new List<Region>();
         string sqlString = "SELECT * FROM dbo.tblRegion";
@@ -92,7 +115,7 @@ public class StorageManager
             cmd.Parameters.AddWithValue("@RegionName", regionName);
             int rowsAffected = cmd.ExecuteNonQuery();
             if (rowsAffected > 0)
-                Console.WriteLine("Region deleted successfully.");  
+                Console.WriteLine("Region deleted successfully.");
             else
                 Console.WriteLine("Region not found.");
         }
