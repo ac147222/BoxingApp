@@ -26,7 +26,7 @@ public class StorageManager
                 if (reader.Read())
                 {
                     return new User
-                    {
+                    {   
                         UserID = (int)reader["UserID"],
                         Username = reader["Username"].ToString(),
                         Role = reader["Role"].ToString(),
