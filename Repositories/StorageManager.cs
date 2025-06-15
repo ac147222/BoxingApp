@@ -39,7 +39,7 @@ public class StorageManager
     }
 
 
-    public List<Region> GetAllRegions()
+    public List<region> GetAllRegions()
     {
         List<Region> regions = new List<Region>();
         string sqlString = "SELECT * FROM dbo.tblRegion";
