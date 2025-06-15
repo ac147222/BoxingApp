@@ -10,7 +10,7 @@ namespace BoxingDatabase
     public class StorageManager
     {
         private SqlConnection conn;
-        '
+        
         public StorageManager(string connectionString)
         {
             try
