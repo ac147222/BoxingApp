@@ -63,7 +63,7 @@ namespace BoxingDatabase
                 else
                     Console.WriteLine("Region not found.");
             }
-        }
+        } 
 
         public void InsertRegion(string regionName)
         {
