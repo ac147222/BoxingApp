@@ -29,3 +29,21 @@
             }
         }
 
+        if (!hasLetter)
+        {
+            return false;
+        }
+        else if (!hasNumber)
+        {
+            return false;
+        }
+        else if (!hasSymbol)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+}
