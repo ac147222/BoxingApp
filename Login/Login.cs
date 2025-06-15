@@ -1,12 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BoxingApp.Login
+﻿public static class PasswordValidater
 {
-    internal class Login
+    // Checks if the password is at least 8 characters and contains at least one letter, one number, and one symbol.
+    public static bool IsValidPassword(string password)
     {
-    }
-}
+        if (password.Length < 8)
+        {
+            return false;
+        }
+
+        bool hasLetter = false;
+        bool hasNumber = false;
+        bool hasSymbol = false;
+
+        foreach (char c in password)
+        {
+            if (char.IsLetter(c))
+            {
+                hasLetter = true;
+            }
+            else if (char.IsDigit(c))
+            {
+                hasNumber = true;
+            }
+            else
+            {
+                
+                hasSymbol = true;
+            }
+        }
+
