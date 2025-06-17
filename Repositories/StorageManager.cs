@@ -14,24 +14,22 @@ public class StorageManager
         conn.Open();
     }
 
-    public User AuthenticateUser(string username, string password)
+    public User AuthenticateUser(string username, string pin)
     {
         string sql = "SELECT * FROM dbo.tblUser WHERE Username = @Username AND Password = @Password";
         using (SqlCommand cmd = new SqlCommand(sql, conn))
         {
             cmd.Parameters.AddWithValue("@Username", username);
-            cmd.Parameters.AddWithValue("@Password", password);
+            cmd.Parameters.AddWithValue("@Password", pin);
             using (SqlDataReader reader = cmd.ExecuteReader())
             {
                 if (reader.Read())
                 {
                     return new User
-                    {   
+                    {
                         UserID = (int)reader["UserID"],
                         Username = reader["Username"].ToString(),
-                        Role = reader["Role"].ToString(),
-                        FullName = reader["FullName"].ToString(),
-                        Email = reader["Email"].ToString()
+                        Role = reader["Role"].ToString()
                     };
                 }
             }
@@ -46,8 +44,6 @@ public class StorageManager
         {
             cmd.Parameters.AddWithValue("@Username", username);
             cmd.Parameters.AddWithValue("@Password", password);
-            cmd.Parameters.AddWithValue("@Email", email);
-            cmd.Parameters.AddWithValue("@FullName", fullName);
             
 
             try
