@@ -35,12 +35,12 @@ namespace BoxingDatabase
 
         public string GetInput()
         {
-            return Console.ReadLine() ?? string.Empty; // Fixes CS8603 by providing a default value.  
+            return Console.ReadLine() ?? string.Empty; 
         }
 
         public int GetIntInput()
         {
-            return int.Parse(Console.ReadLine() ?? "0"); // Fixes CS8603 by providing a default value.  
+            return int.Parse(Console.ReadLine() ?? "0");  
         }
     }
 }

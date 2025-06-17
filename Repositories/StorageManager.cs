@@ -37,14 +37,14 @@ public class StorageManager
         return null;
     }
 
-    public bool RegisterUser(string username, string password, string email, string fullName)
+    public bool RegisterUser(string username, string pin, string role)
     {
-        string sql = "INSERT INTO dbo.tblUser (Username, Password, Role, Email, FullName, DateJoined) VALUES (@Username, @Password, 'User', @Email, @FullName, @DateJoined)";
+        string sql = "INSERT INTO dbo.tblUser (Username, Password, Role) VALUES (@Username, @Password, @Role)";
         using (SqlCommand cmd = new SqlCommand(sql, conn))
         {
             cmd.Parameters.AddWithValue("@Username", username);
-            cmd.Parameters.AddWithValue("@Password", password);
-            
+            cmd.Parameters.AddWithValue("@Password", pin);
+            cmd.Parameters.AddWithValue("@Role", role);
 
             try
             {

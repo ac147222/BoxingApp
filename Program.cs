@@ -22,10 +22,10 @@ class Program
 
         Console.Write("Username: ");
         string username = Console.ReadLine();
-        Console.Write("Password: ");
-        string password = Console.ReadLine();
+        Console.Write("6-digit PIN: ");
+        string pin = Console.ReadLine();
 
-        loggedInUser = storageManager.AuthenticateUser(username, password);
+        loggedInUser = storageManager.AuthenticateUser(username, pin);
 
         if (loggedInUser == null)
         {
@@ -33,7 +33,7 @@ class Program
             return;
         }
 
-        if (loggedInUser.Role == "Admin")
+        if (loggedInUser.Role == "admin")
         {
             AdminMenu();
         }
@@ -46,28 +46,32 @@ class Program
     static void SignUp()
     {
         Console.WriteLine("=== Sign Up ===");
-        string username, password, email, fullName;
+        string username, pin, role;
 
         Console.Write("Username: ");
         username = Console.ReadLine();
 
         do
         {
-            Console.Write("Password: ");
-            password = Console.ReadLine();
-            if (!PasswordValidater.IsValidPassword(password))
+            Console.Write("6-digit PIN: ");
+            pin = Console.ReadLine();
+            if (!PinValidator.IsValidPin(pin))
             {
-                Console.WriteLine("Password must be at least 8 characters, have a number, a letter, and a symbol.");
+                Console.WriteLine("PIN must be exactly 6 digits.");
             }
-        } while (!PasswordValidater.IsValidPassword(password));
+        } while (!PinValidator.IsValidPin(pin));
 
-        Console.Write("Email: ");
-        email = Console.ReadLine();
+        do
+        {
+            Console.Write("Role (admin/user): ");
+            role = Console.ReadLine();
+            if (role != "admin" && role != "user")
+            {
+                Console.WriteLine("Role must be either 'admin' or 'user'.");
+            }
+        } while (role != "admin" && role != "user");
 
-        Console.Write("Full Name: ");
-        fullName = Console.ReadLine();
-
-        bool success = storageManager.RegisterUser(username, password, email, fullName);
+        bool success = storageManager.RegisterUser(username, pin, role);
         if (success)
             Console.WriteLine("Sign up successful! You can now log in.");
         else
