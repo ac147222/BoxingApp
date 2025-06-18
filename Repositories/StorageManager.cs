@@ -14,49 +14,9 @@ public class StorageManager
         conn.Open();
     }
 
-    public User AuthenticateUser(string username, string pin)
-    {
-        string sql = "SELECT * FROM dbo.tblUser WHERE Username = @Username AND Password = @Password";
-        using (SqlCommand cmd = new SqlCommand(sql, conn))
-        {
-            cmd.Parameters.AddWithValue("@Username", username);
-            cmd.Parameters.AddWithValue("@Password", pin);
-            using (SqlDataReader reader = cmd.ExecuteReader())
-            {
-                if (reader.Read())
-                {
-                    return new User
-                    {
-                        UserID = (int)reader["UserID"],
-                        Username = reader["Username"].ToString(),
-                        Role = reader["Role"].ToString()
-                    };
-                }
-            }
-        }
-        return null;
-    }
+   
 
-    public bool RegisterUser(string username, string pin, string role)
-    {
-        string sql = "INSERT INTO dbo.tblUser (Username, Password, Role) VALUES (@Username, @Password, @Role)";
-        using (SqlCommand cmd = new SqlCommand(sql, conn))
-        {
-            cmd.Parameters.AddWithValue("@Username", username);
-            cmd.Parameters.AddWithValue("@Password", pin);
-            cmd.Parameters.AddWithValue("@Role", role);
-
-            try
-            {
-                cmd.ExecuteNonQuery();
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-    }
+   
 
     public List<Region> GetAllRegions()
     {
