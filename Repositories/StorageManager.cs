@@ -14,10 +14,6 @@ public class StorageManager
         conn.Open();
     }
 
-   
-
-   
-
     public List<Region> GetAllRegions()
     {
         List<Region> regions = new List<Region>();
