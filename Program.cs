@@ -8,74 +8,70 @@ User loggedInUser = null;
 string connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=\"C:\\USERS\\FARJA\\ONEDRIVE - AVONDALE COLLEGE\\FARJADBOXINGDATABASE\\BOXINGAPP\\DB\\BOXINGDATABASE.MDF\";Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False";
 storageManager = new StorageManager(connectionString);
 
- Console.WriteLine("1. Log In\n2. Sign Up");
- string option = Console.ReadLine();
+Console.WriteLine("1. Log In\n2. Sign Up");
+string option = Console.ReadLine();
 
- if (option == "2")
- {
-     SignUp(storageManager);
- }
+if (option == "2")
+{
+    SignUp(storageManager);
+}
 
- Console.Write("Username: ");
- string username = Console.ReadLine();
- Console.Write("6-digit PIN: ");
- string pin = Console.ReadLine();
+Console.Write("Username: ");
+string username = Console.ReadLine();
+Console.Write("6-digit PIN: ");
+string pin = Console.ReadLine();
 
- loggedInUser = storageManager.AuthenticateUser(username, pin);
+loggedInUser = storageManager.AuthenticateUser(username, pin);
 
- if (loggedInUser == null)
- {
-     Console.WriteLine("Invalid login.");
-     return;
- }
-
-
-// Update the calls to AdminMenu and UserMenu to pass the required 'storageManager' parameter.
+if (loggedInUser == null)
+{
+    Console.WriteLine("Invalid login.");
+    return;
+}
 
 if (loggedInUser.Role == "admin")
 {
-    AdminMenu(storageManager); // Pass storageManager as an argument
+    AdminMenu(storageManager);
 }
 else
 {
-    UserMenu(storageManager); // Pass storageManager as an argument
+    UserMenu(storageManager);
 }
 
+static void SignUp(StorageManager storageManager)
+{
+    Console.WriteLine("=== Sign Up ===");
+    string username, pin, role;
 
- static void SignUp(StorageManager storageManager)
- {
-     Console.WriteLine("=== Sign Up ===");
-     string username, pin, role;
+    Console.Write("Username: ");
+    username = Console.ReadLine();
 
-     Console.Write("Username: ");
-     username = Console.ReadLine();
+    do
+    {
+        Console.Write("6-digit PIN: ");
+        pin = Console.ReadLine();
+        if (!PinValidator.IsValidPin(pin))
+        {
+            Console.WriteLine("PIN must be exactly 6 digits.");
+        }
+    } while (!PinValidator.IsValidPin(pin));
 
-     do
-     {
-         Console.Write("6-digit PIN: ");
-         pin = Console.ReadLine();
-         if (!PinValidator.IsValidPin(pin))
-         {
-             Console.WriteLine("PIN must be exactly 6 digits.");
-         }
-     } while (!PinValidator.IsValidPin(pin));
+    do
+    {
+        Console.Write("Role (admin/user): ");
+        role = Console.ReadLine();
+        if (role != "admin" && role != "user")
+        {
+            Console.WriteLine("Role must be either 'admin' or 'user'.");
+        }
+    } while (role != "admin" && role != "user");
 
-     do
-     {
-         Console.Write("Role (admin/user): ");
-         role = Console.ReadLine();
-         if (role != "admin" && role != "user")
-         {
-             Console.WriteLine("Role must be either 'admin' or 'user'.");
-         }
-     } while (role != "admin" && role != "user");
-
-     bool success = storageManager.RegisterUser(username, pin, role);
-     if (success)
-         Console.WriteLine("Sign up successful! You can now log in.");
-     else
-         Console.WriteLine("Sign up failed. Username may already exist.");
- }
+    bool success = storageManager.RegisterUser(username, pin, role);
+    if (success)
+        Console.WriteLine("Sign up successful! You can now log in.");
+    else
+        Console.WriteLine("Sign up failed. Username may already exist.");
+}
 
 static void AdminMenu(StorageManager storageManager)
 {
