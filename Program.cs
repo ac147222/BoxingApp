@@ -5,9 +5,10 @@ using System.Collections.Generic;
 string connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=\"C:\\USERS\\FARJA\\ONEDRIVE - AVONDALE COLLEGE\\FARJADBOXINGDATABASE\\BOXINGAPP\\DB\\BOXINGDATABASE.MDF\";Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False";
 StorageManager storageManager = new StorageManager(connectionString);
 
-// Main menu (no login)
+
 while (true)
 {
+    
     Console.WriteLine("\nRegion Menu:\n1. View Regions\n2. Insert Region\n3. Update Region\n4. Delete Region\n5. Exit");
     string choice = Console.ReadLine();
     switch (choice)
