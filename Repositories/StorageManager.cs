@@ -14,57 +14,6 @@ public class StorageManager
         conn.Open();
     }
 
-    public bool RegisterUser(string username, string pin)
-    {
-        string sql = "INSERT INTO dbo.tblUser (Username, Password) VALUES (@Username, @Password)";
-        using (SqlCommand cmd = new SqlCommand(sql, conn))
-        {
-            cmd.Parameters.AddWithValue("@Username", username);
-            cmd.Parameters.AddWithValue("@Password", pin);
-            try
-            {
-                cmd.ExecuteNonQuery();
-                return true;
-            }
-            catch
-            {
-               
-                return false;
-            }
-        }
-    }
-
-    public User AuthenticateUser(string username, string pin)
-    {
-        string sql = "SELECT * FROM dbo.tblUser WHERE Username = @Username AND Password = @Password";
-        using (SqlCommand cmd = new SqlCommand(sql, conn))
-        {
-            cmd.Parameters.AddWithValue("@Username", username);
-            cmd.Parameters.AddWithValue("@Password", pin);
-            using (SqlDataReader reader = cmd.ExecuteReader())
-            {
-                if (reader.Read())
-                {
-                    return new User
-                    {
-                        UserID = (int)reader["UserID"],
-                        Username = reader["Username"].ToString(),
-                        Password = reader["Password"].ToString()
-                    };
-                }
-            }
-        }
-        return null;
-    }
-
-    public static class PinValidator
-    {
-        public static bool IsValidPin(string pin)
-        {
-            return pin.Length == 6 && pin.All(char.IsDigit);
-        }
-    }
-
     public List<Region> GetAllRegions()
     {
         List<Region> regions = new List<Region>();
