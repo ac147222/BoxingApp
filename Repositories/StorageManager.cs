@@ -14,6 +14,14 @@ public class StorageManager
         conn.Open();
     }
 
+    public static class PinValidator
+    {
+        public static bool IsValidPin(string pin)
+        {
+            return pin.Length == 6 && pin.All(char.IsDigit);
+        }
+    }
+
     public List<Region> GetAllRegions()
     {
         List<Region> regions = new List<Region>();
