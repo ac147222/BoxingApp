@@ -18,4 +18,5 @@ namespace BoxingApp
             Match_Date = matchDate;
         }
     }
+}
    

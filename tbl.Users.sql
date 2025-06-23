@@ -1,0 +1,6 @@
+﻿CREATE TABLE dbo.tblUser (
+    UserID INT IDENTITY(1,1) PRIMARY KEY,
+    Username NVARCHAR(50) NOT NULL UNIQUE,
+    Password NVARCHAR(6) NOT NULL
+);
+
