@@ -14,6 +14,27 @@ public class StorageManager
         conn.Open();
     }
 
+    public bool RegisterUser(string username, string pin)
+    {
+        string sql = "INSERT INTO dbo.tblUser (Username, Password) VALUES (@Username, @Password)";
+        using (SqlCommand cmd = new SqlCommand(sql, conn))
+        {
+            cmd.Parameters.AddWithValue("@Username", username);
+            cmd.Parameters.AddWithValue("@Password", pin);
+            try
+            {
+                cmd.ExecuteNonQuery();
+                return true;
+            }
+            catch
+            {
+               
+                return false;
+            }
+        }
+    }
+
+   
     public static class PinValidator
     {
         public static bool IsValidPin(string pin)
