@@ -43,5 +43,8 @@ namespace BoxingDatabase
         {
             return int.Parse(Console.ReadLine() ?? "0");  
         }
+
+       
+       
     }
 }

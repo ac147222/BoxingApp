@@ -73,23 +73,6 @@ public class StorageManager
         }
     }
 
-    public List<Weightclasses> GetAllWeightclasses()
-    {
-        List<Weightclasses> weightclasses = new List<Weightclasses>();
-        string sqlString = "SELECT * FROM dbo.tblRegion";
-        using (SqlCommand cmd = new SqlCommand(sqlString, conn))
-        {
-            using (SqlDataReader reader = cmd.ExecuteReader())
-            {
-                while (reader.Read())
-                {
-                    int Weightclasses_ID = Convert.ToInt32(reader["WeightclassesID"]);
-                    string Weightclasses_Name = reader["WeightclassesName"].ToString();
-                    weightclasses.Add(new Weightclasses(Weightclasses_ID, Weightclasses_Name));
-                }
-            }
-        }
-        return weightclasses;
-    }
+ 
 
 }
