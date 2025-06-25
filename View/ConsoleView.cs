@@ -8,6 +8,7 @@ namespace BoxingDatabase
 {
     public class ConsoleView
     {
+        
         public string DisplayMenu()
         {
             Console.WriteLine("welcome to the Boxing Database");

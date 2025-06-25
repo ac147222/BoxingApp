@@ -50,7 +50,7 @@ public class StorageManager
         using (SqlCommand cmd = new SqlCommand(sqlString, conn))
         {
             cmd.Parameters.AddWithValue("@RegionID", regionId);
-            cmd.Parameters.AddWithValue("@RegionName", newName);
+            cmd.Parameters.AddWithValue("@RegionName", newName);  
             int rowsAffected = cmd.ExecuteNonQuery();
             if (rowsAffected > 0)
                 Console.WriteLine("Region updated successfully.");
