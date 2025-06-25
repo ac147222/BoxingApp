@@ -8,15 +8,10 @@ StorageManager storageManager = new StorageManager(connectionString);
 
 while (true)
 {
-    Console.Clear();
-    Console.WriteLine("=== Boxing App Main Menu ===");
-    Console.WriteLine("1. View All Records");
-    Console.WriteLine("2. View All Reports");
-    Console.WriteLine("0. Exit");
-    Console.Write("Select an option: ");
-    string choice = Console.ReadLine();
-    Console.WriteLine("\nRegion Menu:\n1. View Regions\n2. Insert Region\n3. Update Region\n4. Delete Region\n5. Exit");
     
+    Console.WriteLine("\nRegion Menu:\n1. View Regions\n2. Insert Region\n3. Update Region\n4. Delete Region\n5. Exit");
+
+    string choice = null;
     switch (choice)
     {
         case "1":
