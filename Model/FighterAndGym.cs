@@ -6,16 +6,23 @@ namespace BoxingApp
 {
     public class FighterAndGym
     {
-        public int Fighter_ID { get; set; }
-        public string Fighter_Name { get; set; }
-        public int Region_ID { get; set; }
-        public string Region_Name { get; set; }
-        public FighterAndGym(int fighterID, string fighterName, int regionID, string regionName)
+        public int FighterAndGymID { get; set; }
+        public int FighterID { get; set; }
+        public int GymID { get; set; }
+        public int TotalWins { get; set; }
+        public int TotalLosses { get; set; }
+        public int TotalDraws { get; set; }
+
+        public FighterAndGym() { }
+
+        public FighterAndGym(int fighterAndGymID, int fighterID, int gymID, int totalWins, int totalLosses, int totalDraws)
         {
-            Fighter_ID = fighterID;
-            Fighter_Name = fighterName;
-            Region_ID = regionID;
-            Region_Name = regionName;
+            FighterAndGymID = fighterAndGymID;
+            FighterID = fighterID;
+            GymID = gymID;
+            TotalWins = totalWins;
+            TotalLosses = totalLosses;
+            TotalDraws = totalDraws;
         }
     }
 }

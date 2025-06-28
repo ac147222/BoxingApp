@@ -6,14 +6,14 @@ namespace BoxingApp
 {
     public class Match
     {
-        public int Match_ID { get; set; }
-        public string Match_Name { get; set; }
-        public DateTime Match_Date { get; set; }
+        public int MatchID { get; set; }
+        public string MatchName { get; set; }
+        public DateTime MatchDate { get; set; }
         public Match(int matchID, string matchName, DateTime matchDate)
         {
-            Match_ID = matchID;
-            Match_Name = matchName;
-            Match_Date = matchDate;
+            MatchID = matchID;
+            MatchName = matchName;
+            MatchDate = matchDate;
         }
     }
 }
