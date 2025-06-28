@@ -25,7 +25,7 @@ namespace BoxingDatabase
         {
             foreach (Region region in regions)
             {
-                Console.WriteLine($"{region.Region_ID},{region.Region_Name}");
+                Console.WriteLine($"{region.RegionID},{region.RegionName}");
             }
         }
 
