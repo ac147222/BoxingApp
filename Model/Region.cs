@@ -9,10 +9,10 @@ namespace BoxingApp
         public int RegionID { get; set; }
         public string RegionName { get; set; }
          
-        public Region(int RegionID, string RegionName)
+        public Region(int regionID, string regionName)
         {
-            RegionID = RegionID;
-            RegionName = RegionName;
+            RegionID = regionID;
+            RegionName = regionName;
         }
     }
 }
