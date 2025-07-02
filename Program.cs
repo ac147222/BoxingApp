@@ -66,7 +66,7 @@ class Program
         {
             Console.Clear();
             Console.WriteLine("\n=== Regions Menu ===");
-            Console.WriteLine("1. View Regions");
+            Console.WriteLine("1. View Regions");   
             Console.WriteLine("2. Insert Region");
             Console.WriteLine("3. Update Region");
             Console.WriteLine("4. Delete Region");
