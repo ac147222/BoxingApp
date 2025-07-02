@@ -14,5 +14,5 @@ namespace BoxingApp
             RegionID = regionID;
             RegionName = regionName;
         }
-    }fds
+    }
 }
