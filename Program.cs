@@ -1,126 +1,235 @@
 using BoxingApp;
+using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 
-class Program
+namespace BoxingApp
 {
-    static string connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=\"C:\\USERS\\FARJA\\ONEDRIVE - AVONDALE COLLEGE\\FARJADBOXINGDATABASE\\BOXINGAPP\\DB\\BOXINGDATABASE.MDF\";Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False";
-    static StorageManager storageManager = new StorageManager(connectionString);
-
-    static void Main(string[] args)
+    class Program
     {
-        while (true)
-        {
-            Console.Clear();
-            Console.WriteLine("=== Boxing App Main Menu ===");
-            Console.WriteLine("1. Login");
-            Console.WriteLine("2. Register");
-            Console.WriteLine("3. Regions Menu");
-            Console.WriteLine("0. Exit");
-            Console.Write("Select an option: ");
-            string choice = Console.ReadLine();
+        static StorageManager storageManager;
+        static User currentUser = null;
 
-            switch (choice)
+        static void Main(string[] args)
+        {
+            
+            string connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=\"C:\\USERS\\FARJA\\ONEDRIVE - AVONDALE COLLEGE\\FARJADBOXINGDATABASE\\BOXINGAPP\\DB\\BOXINGDATABASE.MDF\";Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False";
+            SqlConnection conn = new SqlConnection(connectionString);
+            conn.Open();
+            storageManager = new StorageManager(conn);
+
+            while (true)
             {
-                case "1":
-                    Login();
-                    break;
-                case "2":
-                    Register();
-                    break;
-                case "3":
-                    RegionsMenu();
-                    break;
-                case "0":
-                    Console.WriteLine("Exiting...");
-                    return;
-                default:
-                    Console.WriteLine("Invalid option. Press Enter to try again.");
-                    Console.ReadLine();
-                    break;
+                Console.Clear();
+                if (currentUser == null)
+                {
+                    Console.WriteLine("=== Boxing App ===");
+                    Console.WriteLine("1. Login");
+                    Console.WriteLine("2. Register");
+                    Console.WriteLine("0. Exit");
+                    Console.Write("Select an option: ");
+                    switch (Console.ReadLine())
+                    {
+                        case "1": Login(); break;
+                        case "2": Register(); break;
+                        case "0":
+                            conn.Close();
+                            return;
+                        default:
+                            Console.WriteLine("Invalid choice. Press Enter to continue.");
+                            Console.ReadLine();
+                            break;
+                    }
+                }
+                else
+                {
+                    if (currentUser.IsAdmin)
+                        ShowAdminMenu();
+                    else
+                        ShowUserMenu();
+                }
             }
         }
-    }
 
-    static void Login()
-    {
-        Console.Clear();
-        Console.WriteLine("=== Login ===");
-        Console.WriteLine("[Login functionality coming soon]");
-        Console.WriteLine("Press Enter to return to the main menu.");
-        Console.ReadLine();
-    }
-
-    static void Register()
-    {
-        Console.Clear();
-        Console.WriteLine("=== Register ===");
-        Console.WriteLine("[Register functionality coming soon]");
-        Console.WriteLine("Press Enter to return to the main menu.");
-        Console.ReadLine();
-    }
-
-    static void RegionsMenu()
-    {
-        while (true)
+        static void Login()
         {
             Console.Clear();
-            Console.WriteLine("\n=== Regions Menu ===");
-            Console.WriteLine("1. View Regions");   
-            Console.WriteLine("2. Insert Region");
-            Console.WriteLine("3. Update Region");
-            Console.WriteLine("4. Delete Region");
-            Console.WriteLine("5. Back to Main Menu");
-            Console.Write("Select an option: ");
-            string choice = Console.ReadLine();
+            Console.WriteLine("=== Login ===");
+            Console.Write("Username: ");
+            string username = Console.ReadLine();
+            Console.Write("Password: ");
+            string password = Console.ReadLine();
 
-            switch (choice)
+            var user = storageManager.AuthenticateUser(username, password);
+            if (user != null)
             {
-                case "1":
-                    Console.Clear();
-                    List<Region> regions = storageManager.GetAllRegions();
-                    foreach (var r in regions)
-                        Console.WriteLine($"{r.RegionID}: {r.RegionName}");
-                    Console.WriteLine("\nPress Enter to return to the Regions Menu...");
-                    Console.ReadLine();
-                    break;
-                case "2":
-                    Console.Clear();
-                    Console.Write("Enter new region name: ");
-                    string name = Console.ReadLine();
-                    storageManager.InsertRegion(name);
-                    Console.WriteLine("\nPress Enter to return to the Regions Menu...");
-                    Console.ReadLine();
-                    break;
-                case "3":
-                    Console.Clear();
-                    Console.Write("Enter region ID to update: ");
-                    int rid;
-                    while (!int.TryParse(Console.ReadLine(), out rid))
-                    {
-                        Console.Write("Please enter a valid integer for region ID: ");
-                    }
-                    Console.Write("Enter new name: ");
-                    string newName = Console.ReadLine();
-                    storageManager.UpdateRegionName(rid, newName);
-                    Console.WriteLine("\nPress Enter to return to the Regions Menu...");
-                    Console.ReadLine();
-                    break;
-                case "4":
-                    Console.Clear();
-                    Console.Write("Enter region name to delete: ");
-                    string delName = Console.ReadLine();
-                    storageManager.DeleteRegionByName(delName);
-                    Console.WriteLine("\nPress Enter to return to the Regions Menu...");
-                    Console.ReadLine();
-                    break;
-                case "5":
-                    return;
-                default:
-                    Console.WriteLine("Invalid option. Press Enter to try again.");
-                    Console.ReadLine();
-                    break;
+                currentUser = user;
+                Console.WriteLine("Login successful! Press Enter to continue.");
             }
+            else
+            {
+                Console.WriteLine("Invalid credentials. Press Enter to return to menu.");
+            }
+            Console.ReadLine();
+        }
+
+        static void Register()
+        {
+            Console.Clear();
+            Console.WriteLine("=== Register ===");
+            Console.Write("Choose a username: ");
+            string username = Console.ReadLine();
+            Console.Write("Choose a password: ");
+            string password = Console.ReadLine();
+
+            bool success = storageManager.RegisterUser(username, password);
+            if (success)
+            {
+                Console.WriteLine("Registration successful! You can now log in. Press Enter.");
+            }
+            else
+            {
+                Console.WriteLine("Username already exists. Press Enter and try again.");
+            }
+            Console.ReadLine();
+        }
+
+        static void ShowAdminMenu()
+        {
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine($"Welcome, {currentUser.Username} (ADMIN)");
+                Console.WriteLine("1. View Regions");
+                Console.WriteLine("2. Add Region");
+                Console.WriteLine("3. Update Region");
+                Console.WriteLine("4. Delete Region");
+                Console.WriteLine("5. Logout");
+                Console.Write("Select an option: ");
+                switch (Console.ReadLine())
+                {
+                    case "1": ViewRegions(); break;
+                    case "2": AddRegion(); break;
+                    case "3": UpdateRegion(); break;
+                    case "4": DeleteRegion(); break;
+                    case "5":
+                        currentUser = null;
+                        return;
+                    default:
+                        Console.WriteLine("Invalid choice. Press Enter.");
+                        Console.ReadLine();
+                        break;
+                }
+            }
+        }
+
+        static void ShowUserMenu()
+        {
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine($"Welcome, {currentUser.Username} (VIEW ONLY)");
+                Console.WriteLine("1. View Regions");
+                Console.WriteLine("2. Logout");
+                Console.Write("Select an option: ");
+                switch (Console.ReadLine())
+                {
+                    case "1": ViewRegions(); break;
+                    case "2":
+                        currentUser = null;
+                        return;
+                    default:
+                        Console.WriteLine("Invalid choice. Press Enter.");
+                        Console.ReadLine();
+                        break;
+                }
+            }
+        }
+
+        static void ViewRegions()
+        {
+            Console.Clear();
+            var regions = storageManager.GetAllRegions();
+            Console.WriteLine("Regions:");
+            foreach (var region in regions)
+            {
+                Console.WriteLine($"{region.RegionID}: {region.RegionName}");
+            }
+            Console.WriteLine("Press Enter to return.");
+            Console.ReadLine();
+        }
+
+        static void AddRegion()
+        {
+            if (!currentUser.IsAdmin)
+            {
+                Console.WriteLine("You do not have permission to add regions.");
+                Console.ReadLine();
+                return;
+            }
+            Console.Clear();
+            Console.WriteLine("=== Add Region ===");
+            Console.Write("Enter region name: ");
+            string name = Console.ReadLine();
+            storageManager.AddRegion(name);
+            Console.WriteLine("Region added! Press Enter.");
+            Console.ReadLine();
+        }
+
+        static void UpdateRegion()
+        {
+            if (!currentUser.IsAdmin)
+            {
+                Console.WriteLine("You do not have permission to update regions.");
+                Console.ReadLine();
+                return;
+            }
+            Console.Clear();
+            Console.WriteLine("=== Update Region ===");
+            var regions = storageManager.GetAllRegions();
+            foreach (var region in regions)
+            {
+                Console.WriteLine($"{region.RegionID}: {region.RegionName}");
+            }
+            Console.Write("Enter region ID to update: ");
+            if (!int.TryParse(Console.ReadLine(), out int id))
+            {
+                Console.WriteLine("Invalid input. Press Enter.");
+                Console.ReadLine();
+                return;
+            }
+            Console.Write("Enter new region name: ");
+            string newName = Console.ReadLine();
+            storageManager.UpdateRegion(id, newName);
+            Console.WriteLine("Region updated! Press Enter.");
+            Console.ReadLine();
+        }
+
+        static void DeleteRegion()
+        {
+            if (!currentUser.IsAdmin)
+            {
+                Console.WriteLine("You do not have permission to delete regions.");
+                Console.ReadLine();
+                return;
+            }
+            Console.Clear();
+            Console.WriteLine("=== Delete Region ===");
+            var regions = storageManager.GetAllRegions();
+            foreach (var region in regions)
+            {
+                Console.WriteLine($"{region.RegionID}: {region.RegionName}");
+            }
+            Console.Write("Enter region ID to delete: ");
+            if (!int.TryParse(Console.ReadLine(), out int id))
+            {
+                Console.WriteLine("Invalid input. Press Enter.");
+                Console.ReadLine();
+                return;
+            }
+            storageManager.DeleteRegion(id);
+            Console.WriteLine("Region deleted! Press Enter.");
+            Console.ReadLine();
         }
     }
 }

@@ -14,6 +14,59 @@ public class StorageManager
         conn.Open();
     }
 
+    public StorageManager(SqlConnection conn)
+    {
+        this.conn = conn;
+    }
+
+    public bool RegisterUser(string username, string password)
+    {
+        // Checks if username exists
+        string checkSql = "SELECT COUNT(*) FROM tblUser WHERE Username = @Username";
+        using (SqlCommand checkCmd = new SqlCommand(checkSql, conn))
+        {
+            checkCmd.Parameters.AddWithValue("@Username", username);
+            int count = (int)checkCmd.ExecuteScalar();
+            if (count > 0)
+                return false; // Username taken
+        }
+
+        // Inserts new user with IsAdmin = 0
+        string insertSql = "INSERT INTO tblUser (Username, Password, IsAdmin) VALUES (@Username, @Password, 0)";
+        using (SqlCommand insertCmd = new SqlCommand(insertSql, conn))
+        {
+            insertCmd.Parameters.AddWithValue("@Username", username);
+            insertCmd.Parameters.AddWithValue("@Password", password); // For production, hash your passwords!
+            insertCmd.ExecuteNonQuery();
+        }
+        return true;
+    }
+
+    public User AuthenticateUser(string username, string password)
+    {
+        string sql = "SELECT UserID, Username, Password, IsAdmin FROM tblUser WHERE Username = @Username AND Password = @Password";
+        using (SqlCommand cmd = new SqlCommand(sql, conn))
+        {
+            cmd.Parameters.AddWithValue("@Username", username);
+            cmd.Parameters.AddWithValue("@Password", password);
+            using (SqlDataReader reader = cmd.ExecuteReader())
+            {
+                if (reader.Read())
+                {
+                    return new User
+                    {
+                        UserID = (int)reader["UserID"],
+                        Username = reader["Username"].ToString(),
+                        Password = reader["Password"].ToString(),
+                        IsAdmin = (bool)reader["IsAdmin"]
+                    };
+                }
+            }
+        }
+        return null;
+    }
+
+
     public List<Region> GetAllRegions()
     {
         List<Region> regions = new List<Region>();
@@ -73,6 +126,18 @@ public class StorageManager
         }
     }
 
- 
+    internal void AddRegion(string? name)
+    {
+        throw new NotImplementedException();
+    }
 
+    internal void UpdateRegion(int id, string? newName)
+    {
+        throw new NotImplementedException();
+    }
+
+    internal void DeleteRegion(int id)
+    {
+        throw new NotImplementedException();
+    }
 }
