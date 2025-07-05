@@ -130,12 +130,14 @@ namespace BoxingApp
                 Console.Clear();
                 Console.WriteLine($"Welcome, {currentUser.Username} (VIEW ONLY)");
                 Console.WriteLine("1. View Regions");
-                Console.WriteLine("2. Logout");
+                Console.WriteLine("2. View Weightclasses");
+                Console.WriteLine("3. Logout");
                 Console.Write("Select an option: ");
                 switch (Console.ReadLine())
                 {
                     case "1": ViewRegions(); break;
-                    case "2":
+                    case "2": ViewWeightclasses(); break;
+                    case "3":
                         currentUser = null;
                         return;
                     default:
@@ -144,6 +146,19 @@ namespace BoxingApp
                         break;
                 }
             }
+        }
+
+        private static void ViewWeightclasses()
+        {
+            Console.Clear();
+            var weightclassesList = storageManager.GetAllWeightclasses();
+            Console.WriteLine("Weightclasses:");
+            foreach (var weightclass in weightclassesList)
+            {
+                Console.WriteLine($"{weightclass.WeightclassesID}: {weightclass.WeightclassesName}");
+            }
+            Console.WriteLine("Press Enter to return.");
+            Console.ReadLine();
         }
 
         static void ViewRegions()
@@ -207,12 +222,7 @@ namespace BoxingApp
 
         static void DeleteRegion()
         {
-            if (!currentUser.IsAdmin)
-            {
-                Console.WriteLine("You do not have permission to delete regions.");
-                Console.ReadLine();
-                return;
-            }
+            
             Console.Clear();
             Console.WriteLine("=== Delete Region ===");
             var regions = storageManager.GetAllRegions();

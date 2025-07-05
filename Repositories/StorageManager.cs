@@ -21,22 +21,22 @@ public class StorageManager
 
     public bool RegisterUser(string username, string password)
     {
-        // Checks if username exists
+        
         string checkSql = "SELECT COUNT(*) FROM tblUser WHERE Username = @Username";
         using (SqlCommand checkCmd = new SqlCommand(checkSql, conn))
         {
             checkCmd.Parameters.AddWithValue("@Username", username);
             int count = (int)checkCmd.ExecuteScalar();
             if (count > 0)
-                return false; // Username taken
+                return false; 
         }
 
-        // Inserts new user with IsAdmin = 0
+        
         string insertSql = "INSERT INTO tblUser (Username, Password, IsAdmin) VALUES (@Username, @Password, 0)";
         using (SqlCommand insertCmd = new SqlCommand(insertSql, conn))
         {
             insertCmd.Parameters.AddWithValue("@Username", username);
-            insertCmd.Parameters.AddWithValue("@Password", password); // For production, hash your passwords!
+            insertCmd.Parameters.AddWithValue("@Password", password); 
             insertCmd.ExecuteNonQuery();
         }
         return true;
@@ -86,58 +86,86 @@ public class StorageManager
         return regions;
     }
 
-    public void InsertRegion(string regionName)
+    public void AddRegion(string name)
     {
-        string sqlString = "INSERT INTO dbo.tblRegion (RegionName) VALUES (@RegionName)";
-        using (SqlCommand cmd = new SqlCommand(sqlString, conn))
+        string sql = "INSERT INTO tblRegion (RegionName) VALUES (@RegionName)";
+        using (SqlCommand cmd = new SqlCommand(sql, conn))
         {
-            cmd.Parameters.AddWithValue("@RegionName", regionName);
+            cmd.Parameters.AddWithValue("@RegionName", name);
             cmd.ExecuteNonQuery();
         }
-        Console.WriteLine("Region added successfully.");
     }
 
-    public void UpdateRegionName(int regionId, string newName)
+
+    public void UpdateRegion(int id, string newName)
     {
-        string sqlString = "UPDATE dbo.tblRegion SET RegionName = @RegionName WHERE RegionID = @RegionID";
-        using (SqlCommand cmd = new SqlCommand(sqlString, conn))
+        string sql = "UPDATE tblRegion SET RegionName = @RegionName WHERE RegionID = @RegionID";
+        using (SqlCommand cmd = new SqlCommand(sql, conn))
         {
-            cmd.Parameters.AddWithValue("@RegionID", regionId);
-            cmd.Parameters.AddWithValue("@RegionName", newName);  
-            int rowsAffected = cmd.ExecuteNonQuery();
-            if (rowsAffected > 0)
-                Console.WriteLine("Region updated successfully.");
-            else
-                Console.WriteLine("Region not found.");
+            cmd.Parameters.AddWithValue("@RegionName", newName);
+            cmd.Parameters.AddWithValue("@RegionID", id);
+            cmd.ExecuteNonQuery();
         }
     }
 
-    public void DeleteRegionByName(string regionName)
+    public void DeleteRegion(int id)
     {
-        string sqlString = "DELETE FROM dbo.tblRegion WHERE RegionName = @RegionName";
-        using (SqlCommand cmd = new SqlCommand(sqlString, conn))
+        string sql = "DELETE FROM tblRegion WHERE RegionID = @RegionID";
+        using (SqlCommand cmd = new SqlCommand(sql, conn))
         {
-            cmd.Parameters.AddWithValue("@RegionName", regionName);
-            int rowsAffected = cmd.ExecuteNonQuery();
-            if (rowsAffected > 0)
-                Console.WriteLine("Region deleted successfully.");
-            else
-                Console.WriteLine("Region not found.");
+            cmd.Parameters.AddWithValue("@RegionID", id);
+            cmd.ExecuteNonQuery();
         }
     }
 
-    internal void AddRegion(string? name)
+    public List<Weightclasses> GetAllWeightclasses()
     {
-        throw new NotImplementedException();
+        List<Weightclasses> weightclasses = new List<Weightclasses>();
+        string sqlString = "SELECT * FROM dbo.tblWeightclasses";
+        using (SqlCommand cmd = new SqlCommand(sqlString, conn))
+        {
+            using (SqlDataReader reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    int weightclassID = Convert.ToInt32(reader["WeightclassID"]);
+                    string weightclass = reader["Weightclass"].ToString();
+                    weightclasses.Add(new Weightclasses(weightclassID, weightclass));
+                }
+            }
+        }
+    return weightclasses;
     }
 
-    internal void UpdateRegion(int id, string? newName)
+    public void AddWeightclasses(string name)
     {
-        throw new NotImplementedException();
+        string sql = "INSERT INTO tblWeightclasses (WeightclassesName) VALUES (@WeightclassesName)";
+        using (SqlCommand cmd = new SqlCommand(sql, conn))
+        {
+            cmd.Parameters.AddWithValue("@WeightclassesName", name);
+            cmd.ExecuteNonQuery();
+        }
     }
 
-    internal void DeleteRegion(int id)
+    public void UpdateWeightclasses(int id, string newName)
     {
-        throw new NotImplementedException();
+        string sql = "UPDATE tblWeightclasses SET WeightclassesName = @WeightclassesName WHERE WeightclassesID = @WeightclassesID";
+        using (SqlCommand cmd = new SqlCommand(sql, conn))
+        {
+            cmd.Parameters.AddWithValue("@WeightclassesName", newName);
+            cmd.Parameters.AddWithValue("@WeightclassesID", id);
+            cmd.ExecuteNonQuery();
+        }
     }
+
+    public void DeleteWeightclasses(int id)
+    {
+        string sql = "DELETE FROM tblWeightclasses WHERE WeightclassesID = @WeightclassesID";
+        using (SqlCommand cmd = new SqlCommand(sql, conn))
+        {
+            cmd.Parameters.AddWithValue("@WeightclassesID", id);
+            cmd.ExecuteNonQuery();
+        }
+    }
+
 }
