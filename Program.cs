@@ -128,7 +128,7 @@ namespace BoxingApp
             while (true)
             {
                 Console.Clear();
-                Console.WriteLine($"Welcome, {currentUser.Username} (VIEW ONLY)");
+                Console.WriteLine($"Welcome, {currentUser.Username}");
                 Console.WriteLine("1. View Regions");
                 Console.WriteLine("2. View Weightclasses");
                 Console.WriteLine("3. Logout");
@@ -148,14 +148,23 @@ namespace BoxingApp
             }
         }
 
+
         private static void ViewWeightclasses()
         {
             Console.Clear();
             var weightclassesList = storageManager.GetAllWeightclasses();
             Console.WriteLine("Weightclasses:");
-            foreach (var weightclass in weightclassesList)
+            if (weightclassesList == null || weightclassesList.Count == 0)
             {
-                Console.WriteLine($"{weightclass.WeightclassesID}: {weightclass.WeightclassesName}");
+                Console.WriteLine("No weightclasses found.");
+            }
+            else
+            {
+                Console.WriteLine("ID\tWeightclass");
+                foreach (var weightclass in weightclassesList)
+                {
+                    Console.WriteLine($"{weightclass.WeightclassID}\t{weightclass.WeightclassName}");
+                }
             }
             Console.WriteLine("Press Enter to return.");
             Console.ReadLine();

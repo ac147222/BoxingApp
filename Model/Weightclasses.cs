@@ -1,28 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace BoxingApp
+﻿namespace BoxingApp.Models
 {
-    public class Weightclasses
+    public class Weightclass
     {
-        private int weightclasses_ID;
-        private string? weightclasses_Name;
+        public int WeightclassID { get; set; }
+        public string WeightclassName { get; set; }
 
-        public string WeightclassesID { get; set; }
-        public string WeightclassesName { get; set; }
-        public int WeightclassesID1 { get; }
-
-        public Weightclasses(string WeightclassesID, string WeightclassesName)
+        public Weightclass(int id, string weightclass)
         {
-            WeightclassesID = WeightclassesID;  
-            WeightclassesName = WeightclassesName;
-        }
-
-        public Weightclasses(int weightclasses_ID, string? weightclasses_Name)
-        {
-            this.weightclasses_ID = weightclasses_ID;
-            this.weightclasses_Name = weightclasses_Name;
+            WeightclassID = id;
+            WeightclassName = weightclass;
         }
     }
 }

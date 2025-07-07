@@ -1,4 +1,5 @@
 using BoxingApp;
+using BoxingApp.Models;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
@@ -118,26 +119,28 @@ public class StorageManager
         }
     }
 
-    public List<Weightclasses> GetAllWeightclasses()
+    public List<Weightclass> GetAllWeightclasses()
     {
-        List<Weightclasses> weightclasses = new List<Weightclasses>();
-        string sqlString = "SELECT * FROM dbo.tblWeightclasses";
-        using (SqlCommand cmd = new SqlCommand(sqlString, conn))
+        var weightclasses = new List<Weightclass>();
+        string sql = "SELECT WeightclassID, Weightclass FROM dbo.tblWeightclasses";
+        using (SqlCommand cmd = new SqlCommand(sql, conn))
+        using (SqlDataReader reader = cmd.ExecuteReader())
         {
-            using (SqlDataReader reader = cmd.ExecuteReader())
+            while (reader.Read())
             {
-                while (reader.Read())
-                {
-                    int weightclassID = Convert.ToInt32(reader["WeightclassID"]);
-                    string weightclass = reader["Weightclass"].ToString();
-                    weightclasses.Add(new Weightclasses(weightclassID, weightclass));
-                }
+                int id = Convert.ToInt32(reader["WeightclassID"]);
+                
+                string name = reader["Weightclass"].ToString().Trim();
+                weightclasses.Add(new Weightclass(id, name));
             }
         }
-    return weightclasses;
+        return weightclasses;
     }
 
-    public void AddWeightclasses(string name)
+  
+
+
+public void AddWeightclasses(string name)
     {
         string sql = "INSERT INTO tblWeightclasses (WeightclassesName) VALUES (@WeightclassesName)";
         using (SqlCommand cmd = new SqlCommand(sql, conn))
