@@ -181,9 +181,9 @@ public void AddWeightclasses(string name)
             {
                 while (reader.Read())
                 {
-                    int Gym_ID = Convert.ToInt32(reader["GymID"]);
-                    string Gym_Name = reader["GymName"].ToString();
-                    gyms.Add(new Gym(Gym_ID, Gym_Name));
+                    int GymID = Convert.ToInt32(reader["GymID"]);
+                    string GymName = reader["GymName"].ToString();
+                    gyms.Add(new Gym(GymID, GymName));
                 }
             }
         }
@@ -209,5 +209,98 @@ public void AddWeightclasses(string name)
             }
         }
         return matches;
+    }
+
+    public List<OutcomeType> GetAllOutcomeTypes()
+    {
+        List<OutcomeType> outcomeTypes = new List<OutcomeType>();
+        string sqlString = "SELECT * FROM dbo.tblOutcomeType";
+        using (SqlCommand cmd = new SqlCommand(sqlString, conn))
+        {
+            using (SqlDataReader reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    int OutcomeID = Convert.ToInt32(reader["OutcomeID"]);
+                    string OutcomeDescription = reader["OutcomeDescription"].ToString();
+                    outcomeTypes.Add(new OutcomeType(OutcomeID, OutcomeDescription));
+                }
+            }
+        }
+        return outcomeTypes;
+    }
+
+    public List<Fighter> GetAllFighters()
+    {
+        List<Fighter> fighter = new List<Fighter>();
+        string sqlString = "SELECT * FROM dbo.tblFighter";
+        using (SqlCommand cmd = new SqlCommand(sqlString, conn))
+        {
+            using (SqlDataReader reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    int FighterID = Convert.ToInt32(reader["FighterID"]);
+                    string FirstName = reader["FirstName"].ToString();
+                    string LastName = reader["LastName"].ToString();
+                    int Age = Convert.ToInt32(reader["Age"]);
+                    int RegionID = Convert.ToInt32(reader["RegionID"]);
+                    int GymID = Convert.ToInt32(reader["GymID"]);
+                    int WeightclassID = Convert.ToInt32(reader["WeightclassID"]);
+                    int Wins = Convert.ToInt32(reader["Wins"]);
+                    int Losses = Convert.ToInt32(reader["Losses"]);
+                    int Draws = Convert.ToInt32(reader["Draws"]);   
+                    fighter.Add(new Fighter(FighterID, FirstName, LastName, Age, RegionID, GymID, WeightclassID, Wins, Losses, Draws));
+                    
+                }
+            }
+        }
+        return fighter;
+    }
+
+    public List<FighterAndGym> GetAllFighterAndGyms()
+    {
+        List<FighterAndGym> fighterAndGyms = new List<FighterAndGym>();
+        string sqlString = "SELECT * FROM dbo.tblFighterAndGym";
+        using (SqlCommand cmd = new SqlCommand(sqlString, conn))
+        {
+            using (SqlDataReader reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    int FighterAndGymID = Convert.ToInt32(reader["FighterAndGymID"]);
+                    int FighterID = Convert.ToInt32(reader["FighterID"]);
+                    int GymID = Convert.ToInt32(reader["GymID"]);
+                    int TotalWins = Convert.ToInt32(reader["TotalWins"]);
+                    int TotalLosses = Convert.ToInt32(reader["TotalLosses"]);
+                    int TotalDraws = Convert.ToInt32(reader["TotalDraws"]);
+                    fighterAndGyms.Add(new FighterAndGym(FighterAndGymID, FighterID, GymID, TotalWins, TotalLosses, TotalDraws));
+                    
+                }
+            }
+        }
+        return fighterAndGyms;
+    }
+
+    public List<MatchOutcome> GetAllMatchOutcomes()
+    {
+        List<MatchOutcome> matchOutcome = new List<MatchOutcome>();
+        string sqlString = "SELECT * FROM dbo.tblMatchOutcome";
+        using (SqlCommand cmd = new SqlCommand(sqlString, conn))
+        {
+            using (SqlDataReader reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    int MatchOutcomeID = Convert.ToInt32(reader["MatchOutcomeID"]);
+                    int MatchID = Convert.ToInt32(reader["MatchID"]);
+                    int? WinnerID = reader["WinnerID"] != DBNull.Value ? (int?)Convert.ToInt32(reader["WinnerID"]) : null;
+                    int OutcomeID = Convert.ToInt32(reader["OutcomeID"]);
+                    matchOutcome.Add(new MatchOutcome(MatchOutcomeID, MatchID, WinnerID, OutcomeID));
+                    
+                }
+            }
+        }
+        return matchOutcome;
     }
 }

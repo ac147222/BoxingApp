@@ -133,7 +133,11 @@ namespace BoxingApp
                 Console.WriteLine("2. View Weightclasses");
                 Console.WriteLine("3. View Gyms");
                 Console.WriteLine("4. View Matches");
-                Console.WriteLine("5. Logout");
+                Console.WriteLine("5. View Outcome Types");
+                Console.WriteLine("6. View Fighters");
+                Console.WriteLine("7. View Fighter and Gyms");
+                Console.WriteLine("8. View Matches and their outcomes");
+                Console.WriteLine("9. Logout");
                 Console.Write("Select an option: ");
                 switch (Console.ReadLine())
                 {
@@ -141,7 +145,11 @@ namespace BoxingApp
                     case "2": ViewWeightclasses(); break;
                     case "3": ViewGyms(); break;
                     case "4": ViewMatches(); break;
-                    case "5":
+                    case "5": ViewOutcomeTypes(); break;
+                    case "6": ViewFighters(); break;
+                    case "7": ViewFighterAndGym(); break;
+                    case "8": ViewMatchOutcome(); break;
+                    case "9":
                         currentUser = null;
                         return;
                     default:
@@ -210,6 +218,90 @@ namespace BoxingApp
                 foreach (var gyms in gymList)
                 {
                     Console.WriteLine($"{gyms.GymID}\t{gyms.GymName}");
+                }
+            }
+            Console.WriteLine("Press Enter to return.");
+            Console.ReadLine();
+        }
+
+        private static void ViewOutcomeTypes()
+        {
+            Console.Clear();
+            var outcomeTypesList = storageManager.GetAllOutcomeTypes();
+            Console.WriteLine("Outcome Types:");
+            if (outcomeTypesList == null || outcomeTypesList.Count == 0)
+            {
+                Console.WriteLine("No outcomes found.");
+            }
+            else
+            {
+                Console.WriteLine("ID\tOutcome Type");
+                foreach (var outcomeTypes in outcomeTypesList)
+                {
+                    Console.WriteLine($"{outcomeTypes.OutcomeID}\t{outcomeTypes.OutcomeDescription}");
+                }
+            }
+            Console.WriteLine("Press Enter to return.");
+            Console.ReadLine();
+        }
+
+        private static void ViewFighters()
+        {
+            Console.Clear();
+            var fighterList = storageManager.GetAllFighters();
+            Console.WriteLine("Fighters:");
+            if (fighterList == null || fighterList.Count == 0)
+            {
+                Console.WriteLine("No fighters found.");
+            }
+            else
+            {
+                Console.WriteLine("ID\tFirstname\tLastname\tAge\tRegionID\tGymID\tWeightclassID\tWins\tLosses\tDraws");
+                foreach (var fighter in fighterList)
+                {
+                    Console.WriteLine($"{fighter.FighterID}\t{fighter.FirstName}\t{fighter.LastName}\t{fighter.Age}\t{fighter.RegionID}\t{fighter.GymID}\t{fighter.WeightclassID}\t{fighter.Wins}\t{fighter.Losses}\t{fighter.Draws}");
+                }
+            }
+            Console.WriteLine("Press Enter to return.");
+            Console.ReadLine();
+        }
+
+        private static void ViewFighterAndGym()
+        {
+            Console.Clear();
+            var fighterAndGymList = storageManager.GetAllFighterAndGyms();
+            Console.WriteLine("FighterAndGyms:");
+            if (fighterAndGymList == null || fighterAndGymList.Count == 0)
+            {
+                Console.WriteLine("No fighters and gyms found.");
+            }
+            else
+            {
+                Console.WriteLine("ID\tFighterID\tGymID\tTotalWins\tTotalLosses\tTotalDraws");
+                foreach (var fighterAndGym in fighterAndGymList)
+                {
+                    Console.WriteLine($"{fighterAndGym.FighterAndGymID}\t{fighterAndGym.FighterID}\t{fighterAndGym.GymID}\t{fighterAndGym.TotalWins}\t{fighterAndGym.TotalLosses}\t{fighterAndGym.TotalDraws}");
+                }
+            }
+            Console.WriteLine("Press Enter to return.");
+            Console.ReadLine();
+        }
+
+        private static void ViewMatchOutcome()
+        {
+            Console.Clear();
+            var matchOutcomesList = storageManager.GetAllMatchOutcomes();
+            Console.WriteLine("Match outcomes:");
+            if (matchOutcomesList == null || matchOutcomesList.Count == 0)
+            {
+                Console.WriteLine("No Match outcomes found.");
+            }
+            else
+            {
+                Console.WriteLine("ID\tMatchID\tWinnerID(FighterID)\tOutcomeID");
+                foreach (var matchOutcome in matchOutcomesList)
+                {
+                    Console.WriteLine($"{matchOutcome.MatchOutcomeID}\t{matchOutcome.MatchID}\t{matchOutcome.WinnerID}\t{matchOutcome.OutcomeID}");
                 }
             }
             Console.WriteLine("Press Enter to return.");

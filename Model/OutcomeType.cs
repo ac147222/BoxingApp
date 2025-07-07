@@ -2,16 +2,19 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace BoxingApp
+namespace BoxingApp.Models
 {
     public class OutcomeType
     {
-        public int OutcomeTypeID { get; set; }
-        public string OutcomeTypeName { get; set; }
-        public OutcomeType(int outcomeTypeID, string outcomeTypeName)
+        public int OutcomeID { get; set; }
+        public string OutcomeDescription { get; set; }
+
+        public OutcomeType() { }
+
+        public OutcomeType(int outcomeID, string outcomeDescription)
         {
-            OutcomeTypeID = outcomeTypeID;
-            OutcomeTypeName = outcomeTypeName;
+            OutcomeID = outcomeID;
+            OutcomeDescription = outcomeDescription;
         }
     }
 }
