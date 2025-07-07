@@ -171,4 +171,42 @@ public void AddWeightclasses(string name)
         }
     }
 
+    public List<Gym> GetAllGyms()
+    {
+        List<Gym> gyms = new List<Gym>();
+        string sqlString = "SELECT * FROM dbo.tblGym";
+        using (SqlCommand cmd = new SqlCommand(sqlString, conn))
+        {
+            using (SqlDataReader reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    int Gym_ID = Convert.ToInt32(reader["GymID"]);
+                    string Gym_Name = reader["GymName"].ToString();
+                    gyms.Add(new Gym(Gym_ID, Gym_Name));
+                }
+            }
+        }
+        return gyms;
+    }
+
+    public List<Match> GetAllMatches()
+    {
+        List<Match> matches = new List<Match>();
+        string sqlString = "SELECT * FROM dbo.tblMatch";
+        using (SqlCommand cmd = new SqlCommand(sqlString, conn))
+        {
+            using (SqlDataReader reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    int MatchID = Convert.ToInt32(reader["MatchID"]);
+                    string MatchName = reader["MatchName"].ToString();
+                    DateTime MatchDate = Convert.ToDateTime(reader["MatchDate"]);
+                    matches.Add(new Match(MatchID, MatchName));
+                }
+            }
+        }
+        return matches;
+    }
 }

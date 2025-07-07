@@ -131,13 +131,17 @@ namespace BoxingApp
                 Console.WriteLine($"Welcome, {currentUser.Username}");
                 Console.WriteLine("1. View Regions");
                 Console.WriteLine("2. View Weightclasses");
-                Console.WriteLine("3. Logout");
+                Console.WriteLine("3. View Gyms");
+                Console.WriteLine("4. View Matches");
+                Console.WriteLine("5. Logout");
                 Console.Write("Select an option: ");
                 switch (Console.ReadLine())
                 {
                     case "1": ViewRegions(); break;
                     case "2": ViewWeightclasses(); break;
-                    case "3":
+                    case "3": ViewGyms(); break;
+                    case "4": ViewMatches(); break;
+                    case "5":
                         currentUser = null;
                         return;
                     default:
@@ -164,6 +168,48 @@ namespace BoxingApp
                 foreach (var weightclass in weightclassesList)
                 {
                     Console.WriteLine($"{weightclass.WeightclassID}\t{weightclass.WeightclassName}");
+                }
+            }
+            Console.WriteLine("Press Enter to return.");
+            Console.ReadLine();
+        }
+
+        private static void ViewMatches()
+        {
+            Console.Clear();
+            var MatchList = storageManager.GetAllMatches();
+            Console.WriteLine("Matches:");
+            if (MatchList == null || MatchList.Count == 0)
+            {
+                Console.WriteLine("No Matches found.");
+            }
+            else
+            {
+                Console.WriteLine("ID\tMatches");
+                foreach (var match in MatchList)
+                {
+                    Console.WriteLine($"{match.MatchID}\t{match.MatchName}");
+                }
+            }
+            Console.WriteLine("Press Enter to return.");
+            Console.ReadLine();
+        }
+
+        private static void ViewGyms()
+        {
+            Console.Clear();
+            var gymList = storageManager.GetAllGyms();
+            Console.WriteLine("Gyms:");
+            if (gymList == null || gymList.Count == 0)
+            {
+                Console.WriteLine("No gyms found.");
+            }
+            else
+            {
+                Console.WriteLine("ID\tGyms");
+                foreach (var gyms in gymList)
+                {
+                    Console.WriteLine($"{gyms.GymID}\t{gyms.GymName}");
                 }
             }
             Console.WriteLine("Press Enter to return.");

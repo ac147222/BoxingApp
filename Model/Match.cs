@@ -15,5 +15,11 @@ namespace BoxingApp
             MatchName = matchName;
             MatchDate = matchDate;
         }
+
+        public Match(int matchID, string? matchName)
+        {
+            MatchID = matchID;
+            MatchName = matchName;
+        }
     }
 }

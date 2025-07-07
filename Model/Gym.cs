@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace BoxingApp
+﻿namespace BoxingApp.Models
 {
     public class Gym
     {
-        public string GymID { get; set; }
+        public int GymID { get; set; }
         public string GymName { get; set; }
 
-        public Gym(string GymID, string GymName)
+        public Gym(int id, string weightclass)
         {
-            GymID = GymID;
-            GymName = GymName;
+            GymID = id;
+            GymName = weightclass;
         }
     }
 }
