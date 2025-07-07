@@ -185,10 +185,10 @@ namespace BoxingApp
             }
             else
             {
-                Console.WriteLine("ID\tMatches");
+                Console.WriteLine("ID\tFighter 1\tFighter 2\tDate");
                 foreach (var match in MatchList)
                 {
-                    Console.WriteLine($"{match.MatchID}\t{match.MatchName}");
+                    Console.WriteLine($"{match.MatchID}\t{match.Fighter1ID}\t\t{match.Fighter2ID}\t\t{match.MatchDate:yyyy-MM-dd}");
                 }
             }
             Console.WriteLine("Press Enter to return.");

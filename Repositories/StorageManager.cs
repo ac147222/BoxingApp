@@ -201,9 +201,10 @@ public void AddWeightclasses(string name)
                 while (reader.Read())
                 {
                     int MatchID = Convert.ToInt32(reader["MatchID"]);
-                    string MatchName = reader["MatchName"].ToString();
+                    int Fighter1ID = Convert.ToInt32(reader["Fighter1ID"]);
+                    int Fighter2ID = Convert.ToInt32(reader["Fighter2ID"]);
                     DateTime MatchDate = Convert.ToDateTime(reader["MatchDate"]);
-                    matches.Add(new Match(MatchID, MatchName));
+                    matches.Add(new Match(MatchID, Fighter1ID, Fighter2ID, MatchDate));
                 }
             }
         }
