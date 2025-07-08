@@ -94,12 +94,13 @@ namespace BoxingApp
             Console.ReadLine();
         }
 
-        static void ShowAdminMenu()
+       static void RegionsMenu()
         {
+            
             while (true)
             {
                 Console.Clear();
-                Console.WriteLine($"Welcome, {currentUser.Username} (ADMIN)");
+                Console.WriteLine($"Welcome to the Regions Menu, {currentUser.Username} (ADMIN)");
                 Console.WriteLine("1. View Regions");
                 Console.WriteLine("2. Add Region");
                 Console.WriteLine("3. Update Region");
@@ -110,6 +111,68 @@ namespace BoxingApp
                 {
                     case "1": ViewRegions(); break;
                     case "2": AddRegion(); break;
+                    case "3": UpdateRegion(); break;
+                    case "4": DeleteRegion(); break;
+                    case "5":
+                        currentUser = null;
+                        return;
+                    default:
+                        Console.WriteLine("Invalid choice. Press Enter.");
+                        Console.ReadLine();
+                        break;
+                }
+
+
+            }
+        }
+
+        static void WeightclassesMenu()
+        {
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine($"Welcome to the Weightclasses Menu, {currentUser.Username} (ADMIN)");
+                Console.WriteLine("1. View Weightclasses");
+                Console.WriteLine("2. Add Weightclasses");
+                Console.WriteLine("3. Update Weightclasses");
+                Console.WriteLine("4. Delete Weightclasses");
+                Console.WriteLine("5. Logout");
+                Console.Write("Select an option: ");
+                switch (Console.ReadLine())
+                {
+                    case "1": ViewWeightclasses(); break;
+                    case "2": AddWeightclasses(); break;
+                    case "3": UpdateWeightclass(); break;
+                    case "4": DeleteWeightclass(); break;
+                    case "5":
+                        currentUser = null;
+                        return;
+                    default:
+                        Console.WriteLine("Invalid choice. Press Enter.");
+                        Console.ReadLine();
+                        break;
+                }
+            }
+        }
+
+        static void ShowAdminMenu()
+        {
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine($"Welcome, {currentUser.Username} (ADMIN)");
+                Console.WriteLine("1. Region Menu");
+                Console.WriteLine("2. Weightclasses Menu");
+                Console.WriteLine("3. Gyms Menu");
+                Console.WriteLine("4. Matches Menu");
+                Console.WriteLine("5. Fighters Menu");
+                Console.WriteLine("6. Outcome Type Menu");
+                Console.WriteLine("7. Log Out");
+                Console.Write("Select an option: ");
+                switch (Console.ReadLine())
+                {
+                    case "1": RegionsMenu(); break;
+                    case "2": WeightclassesMenu(); break;
                     case "3": UpdateRegion(); break;
                     case "4": DeleteRegion(); break;
                     case "5":
@@ -179,6 +242,74 @@ namespace BoxingApp
                 }
             }
             Console.WriteLine("Press Enter to return.");
+            Console.ReadLine();
+        }
+
+        static void AddWeightclasses()
+        {
+            if (!currentUser.IsAdmin)
+            {
+                Console.WriteLine("You do not have permission to add regions.");
+                Console.ReadLine();
+                return;
+            }
+            Console.Clear();
+            Console.WriteLine("=== Add Weightclass ===");
+            Console.Write("Enter Weightclass name: ");
+            string name = Console.ReadLine();
+            storageManager.AddWeightclasses(name);
+            Console.WriteLine("Weightclass added! Press Enter.");
+            Console.ReadLine();
+        }
+
+        static void UpdateWeightclass()
+        {
+            if (!currentUser.IsAdmin)
+            {
+                Console.WriteLine("You do not have permission to update weightclasses.");
+                Console.ReadLine();
+                return;
+            }
+            Console.Clear();
+            Console.WriteLine("=== Update Weightclasses ===");
+            var weightclass = storageManager.GetAllWeightclasses();
+            foreach (var weightclasses in weightclass)
+            {
+                Console.WriteLine($"{weightclasses.WeightclassID}: {weightclasses.WeightclassName}");
+            }
+            Console.Write("Enter Weightclass ID to update: ");
+            if (!int.TryParse(Console.ReadLine(), out int id))
+            {
+                Console.WriteLine("Invalid input. Press Enter.");
+                Console.ReadLine();
+                return;
+            }
+            Console.Write("Enter new weightclass name: ");
+            string newName = Console.ReadLine();
+            storageManager.UpdateWeightclasses(id, newName);
+            Console.WriteLine("Weightclass updated! Press Enter.");
+            Console.ReadLine();
+        }
+
+        static void DeleteWeightclass()
+        {
+
+            Console.Clear();
+            Console.WriteLine("=== Delete Weightclass ===");
+            var weightclass = storageManager.GetAllWeightclasses();
+            foreach (var weightclasses in weightclass)
+            {
+                Console.WriteLine($"{weightclasses.WeightclassID}: {weightclasses.WeightclassName}");
+            }
+            Console.Write("Enter Weightclass ID to delete: ");
+            if (!int.TryParse(Console.ReadLine(), out int id))
+            {
+                Console.WriteLine("Invalid input. Press Enter.");
+                Console.ReadLine();
+                return;
+            }
+            storageManager.DeleteWeightclasses(id);
+            Console.WriteLine("Weightclass deleted! Press Enter.");
             Console.ReadLine();
         }
 

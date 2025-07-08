@@ -137,36 +137,35 @@ public class StorageManager
         return weightclasses;
     }
 
-  
+    
 
-
-public void AddWeightclasses(string name)
+    public void AddWeightclasses(string name)
     {
-        string sql = "INSERT INTO tblWeightclasses (WeightclassesName) VALUES (@WeightclassesName)";
+        string sql = "INSERT INTO tblWeightclasses (Weightclass) VALUES (@Weightclass)";
         using (SqlCommand cmd = new SqlCommand(sql, conn))
         {
-            cmd.Parameters.AddWithValue("@WeightclassesName", name);
+            cmd.Parameters.AddWithValue("@Weightclass", name);
             cmd.ExecuteNonQuery();
         }
     }
 
     public void UpdateWeightclasses(int id, string newName)
     {
-        string sql = "UPDATE tblWeightclasses SET WeightclassesName = @WeightclassesName WHERE WeightclassesID = @WeightclassesID";
+        string sql = "UPDATE tblWeightclasses SET Weightclass = @Weightclass WHERE WeightclassID = @WeightclassID";
         using (SqlCommand cmd = new SqlCommand(sql, conn))
         {
-            cmd.Parameters.AddWithValue("@WeightclassesName", newName);
-            cmd.Parameters.AddWithValue("@WeightclassesID", id);
+            cmd.Parameters.AddWithValue("@Weightclass", newName);
+            cmd.Parameters.AddWithValue("@WeightclassID", id);
             cmd.ExecuteNonQuery();
         }
     }
 
     public void DeleteWeightclasses(int id)
     {
-        string sql = "DELETE FROM tblWeightclasses WHERE WeightclassesID = @WeightclassesID";
+        string sql = "DELETE FROM tblWeightclasses WHERE WeightclassID = @WeightclassID";
         using (SqlCommand cmd = new SqlCommand(sql, conn))
         {
-            cmd.Parameters.AddWithValue("@WeightclassesID", id);
+            cmd.Parameters.AddWithValue("@WeightclassID", id);
             cmd.ExecuteNonQuery();
         }
     }
