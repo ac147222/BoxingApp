@@ -259,6 +259,61 @@ namespace BoxingApp
                 }
             }
         }
+
+        static void MatchOutcomeMenu()
+        {
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine($"Welcome to the Match Outcome Menu, {currentUser.Username} (ADMIN)");
+                Console.WriteLine("1. View Match Outcomes");
+                Console.WriteLine("2. Add Match Outcome");
+                Console.WriteLine("3. Update Match Outcome");
+                Console.WriteLine("4. Delete Match Outcome");
+                Console.WriteLine("5. Return to admin menu");
+                Console.Write("Select an option: ");
+                switch (Console.ReadLine())
+                {
+                    case "1": ViewMatchOutcome(); break;
+                    case "2": AddMatchOutcome(); break;
+                    case "3": UpdateMatchOutcome(); break;
+                    case "4": DeleteMatchOutcome(); break;
+                    case "5": ShowAdminMenu(); break;
+                    default:
+                        Console.WriteLine("Invalid choice. Press Enter.");
+                        Console.ReadLine();
+                        break;
+                }
+            }
+        }
+
+        static void FighterAndGymMenu()
+        {
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine($"Welcome to the Fighter and Gym Menu, {currentUser.Username} (ADMIN)");
+                Console.WriteLine("1. View Fighter and Gyms");
+                Console.WriteLine("2. Add Fighter and Gym");
+                Console.WriteLine("3. Update Fighter and Gym");
+                Console.WriteLine("4. Delete Fighter and Gym");
+                Console.WriteLine("5. Return to admin menu");
+                Console.Write("Select an option: ");
+                switch (Console.ReadLine())
+                {
+                    case "1": ViewFighterAndGym(); break;
+                    case "2": AddFighterAndGym(); break;
+                    case "3": UpdateFighterAndGym(); break;
+                    case "4": DeleteFighterAndGym(); break;
+                    case "5": ShowAdminMenu(); break;
+                    default:
+                        Console.WriteLine("Invalid choice. Press Enter.");
+                        Console.ReadLine();
+                        break;
+                }
+            }
+        }
+
         static void ShowAdminMenu()
         {
             while (true)
@@ -271,7 +326,9 @@ namespace BoxingApp
                 Console.WriteLine("4. Matches Menu");
                 Console.WriteLine("5. Match Outcome Types Menu");
                 Console.WriteLine("6. Fighters Menu");
-                Console.WriteLine("7. Log Out");
+                Console.WriteLine("7. Match Outcome Menu");
+                Console.WriteLine("8. Fighter and Gym Meny");
+                Console.WriteLine("8. Log Out");
                 Console.Write("Select an option: ");
                 switch (Console.ReadLine())
                 {
@@ -281,7 +338,9 @@ namespace BoxingApp
                     case "4": MatchesMenu(); break;
                     case "5": OutcomeTypeMenu(); break;
                     case "6": FighterMenu(); break;
-                    case "7":
+                    case "7": MatchOutcomeMenu(); break;
+                    case "8": FighterAndGymMenu(); break;
+                    case "9":
                         currentUser = null;
                         return;
                     default:
@@ -920,6 +979,121 @@ namespace BoxingApp
             Console.WriteLine("Press Enter to return.");
             Console.ReadLine();
         }
+        static void AddFighterAndGym()
+        {
+            Console.Clear();
+            Console.WriteLine("=== Add Fighter and Gym ===");
+            Console.Write("Enter Fighter ID: ");
+            if (!int.TryParse(Console.ReadLine(), out int fighterID) || !storageManager.DoesFighterExist(fighterID))
+            {
+                Console.WriteLine("Fighter ID not found in the system. Press Enter to return.");
+                Console.ReadLine();
+                return;
+            }
+            Console.Write("Enter Gym ID: ");
+            if (!int.TryParse(Console.ReadLine(), out int gymID) || !storageManager.DoesGymExist(gymID))
+            {
+                Console.WriteLine("Gym ID not found in the system. Press Enter to return.");
+                Console.ReadLine();
+                return;
+            }
+            Console.Write("Enter Total Wins (default 0): ");
+            if (!int.TryParse(Console.ReadLine(), out int totalWins) || totalWins < 0)
+            {
+                Console.WriteLine("Invalid input. Setting Total Wins to 0.");
+                totalWins = 0;
+            }
+            Console.Write("Enter Total Losses (default 0): ");
+            if (!int.TryParse(Console.ReadLine(), out int totalLosses) || totalLosses < 0)
+            {
+                Console.WriteLine("Invalid input. Setting Total Losses to 0.");
+                totalLosses = 0;
+            }
+            Console.Write("Enter Total Draws (default 0): ");
+            if (!int.TryParse(Console.ReadLine(), out int totalDraws) || totalDraws < 0)
+            {
+                Console.WriteLine("Invalid input. Setting Total Draws to 0.");
+                totalDraws = 0;
+            }
+
+
+            storageManager.AddFighterAndGym(fighterID, gymID, totalWins, totalLosses, totalDraws);
+            Console.WriteLine("Fighter and Gym added! Press Enter.");
+            Console.ReadLine();
+        }
+        static void UpdateFighterAndGym()
+        {
+            Console.Clear();
+            Console.WriteLine("=== Update Fighter and Gym ===");
+            var fighterAndGyms = storageManager.GetAllFighterAndGyms();
+            foreach (var fighterAndGym in fighterAndGyms)
+            {
+                Console.WriteLine($"{fighterAndGym.FighterAndGymID}: Fighter {fighterAndGym.FighterID}, Gym {fighterAndGym.GymID}");
+            }
+            Console.Write("Enter Fighter and Gym ID to update: ");
+            if (!int.TryParse(Console.ReadLine(), out int id))
+            {
+                Console.WriteLine("Invalid input. Press Enter.");
+                Console.ReadLine();
+                return;
+            }
+            Console.Write("Enter new Fighter ID: ");
+            if (!int.TryParse(Console.ReadLine(), out int newFighterID) || !storageManager.DoesFighterExist(newFighterID))
+            {
+                Console.WriteLine("Fighter ID not found in the system. Press Enter to return.");
+                Console.ReadLine();
+                return;
+            }
+            Console.Write("Enter new Gym ID: ");
+            if (!int.TryParse(Console.ReadLine(), out int newGymID) || !storageManager.DoesGymExist(newGymID))
+            {
+                Console.WriteLine("Gym ID not found in the system. Press Enter to return.");
+                Console.ReadLine();
+                return;
+            }
+            Console.Write("Enter Total Wins (default 0): ");
+            if (!int.TryParse(Console.ReadLine(), out int totalWins) || totalWins < 0)
+            {
+                Console.WriteLine("Invalid input. Setting Total Wins to 0.");
+                totalWins = 0;
+            }
+            Console.Write("Enter Total Losses (default 0): ");
+            if (!int.TryParse(Console.ReadLine(), out int totalLosses) || totalLosses < 0)
+            {
+                Console.WriteLine("Invalid input. Setting Total Losses to 0.");
+                totalLosses = 0;
+            }   
+            Console.Write("Enter Total Draws (default 0): ");
+            if (!int.TryParse(Console.ReadLine(), out int totalDraws) || totalDraws < 0)
+            {
+                Console.WriteLine("Invalid input. Setting Total Draws to 0.");
+                totalDraws = 0;
+            }
+            storageManager.UpdateFighterAndGym(id, newFighterID, newGymID, totalWins, totalLosses, totalDraws);
+            Console.WriteLine("Fighter and Gym updated! Press Enter.");
+            Console.ReadLine();
+        }
+        static void DeleteFighterAndGym()
+        {
+            Console.Clear();
+            Console.WriteLine("=== Delete Fighter and Gym ===");
+            var fighterAndGyms = storageManager.GetAllFighterAndGyms();
+            foreach (var fighterAndGym in fighterAndGyms)
+            {
+                Console.WriteLine($"{fighterAndGym.FighterAndGymID}: Fighter {fighterAndGym.FighterID}, Gym {fighterAndGym.GymID}");
+            }
+            Console.Write("Enter Fighter and Gym ID to delete: ");
+            if (!int.TryParse(Console.ReadLine(), out int id))
+            {
+                Console.WriteLine("Invalid input. Press Enter.");
+                Console.ReadLine();
+                return;
+            }
+            storageManager.DeleteFighterAndGym(id);
+            Console.WriteLine("Fighter and Gym deleted! Press Enter.");
+            Console.ReadLine();
+        }
+
 
         private static void ViewMatchOutcome()
         {
@@ -941,6 +1115,99 @@ namespace BoxingApp
             Console.WriteLine("Press Enter to return.");
             Console.ReadLine();
         }
+        static void AddMatchOutcome()
+        {
+            Console.Clear();
+            Console.WriteLine("=== Add Match Outcome ===");
+            Console.Write("Enter Match ID: ");
+            if (!int.TryParse(Console.ReadLine(), out int matchID) || !storageManager.DoesMatchExist(matchID))
+            {
+                Console.WriteLine("Match ID not found in the system. Press Enter to return.");
+                Console.ReadLine();
+                return;
+            }
+            Console.Write("Enter Winner ID (FighterID): ");
+            if (!int.TryParse(Console.ReadLine(), out int winnerID) || !storageManager.DoesFighterExist(winnerID))
+            {
+                Console.WriteLine("Winner ID not found in the system. Press Enter to return.");
+                Console.ReadLine();
+                return;
+            }
+            Console.Write("Enter Outcome ID: ");
+            if (!int.TryParse(Console.ReadLine(), out int outcomeID) || !storageManager.DoesOutcomeTypeExist(outcomeID))
+            {
+                Console.WriteLine("Outcome ID not found in the system. Press Enter to return.");
+                Console.ReadLine();
+                return;
+            }
+            
+            storageManager.AddMatchOutcome(matchID, winnerID, outcomeID);
+            Console.WriteLine("Match outcome added! Press Enter.");
+            Console.ReadLine();
+        }
+        static void UpdateMatchOutcome()
+        {
+            Console.Clear();
+            Console.WriteLine("=== Update Match Outcome ===");
+            var matchOutcomes = storageManager.GetAllMatchOutcomes();
+            foreach (var matchOutcome in matchOutcomes)
+            {
+                Console.WriteLine($"{matchOutcome.MatchOutcomeID}: Match {matchOutcome.MatchID}, Winner {matchOutcome.WinnerID}, Outcome {matchOutcome.OutcomeID}");
+            }
+            Console.Write("Enter Match Outcome ID to update: ");
+            if (!int.TryParse(Console.ReadLine(), out int id))
+            {
+                Console.WriteLine("Invalid input. Press Enter.");
+                Console.ReadLine();
+                return;
+            }
+            Console.Write("Enter new Match ID: ");
+            if (!int.TryParse(Console.ReadLine(), out int newMatchID) || !storageManager.DoesMatchExist(newMatchID))
+            {
+                Console.WriteLine("Match ID not found in the system. Press Enter to return.");
+                Console.ReadLine();
+                return;
+            }
+            Console.Write("Enter new Winner ID (FighterID): ");
+            if (!int.TryParse(Console.ReadLine(), out int newWinnerID) || !storageManager.DoesFighterExist(newWinnerID))
+            {
+                Console.WriteLine("Winner ID not found in the system. Press Enter to return.");
+                Console.ReadLine();
+                return;
+            }
+            Console.Write("Enter new Outcome ID: ");
+            if (!int.TryParse(Console.ReadLine(), out int newOutcomeID) || !storageManager.DoesOutcomeTypeExist(newOutcomeID))
+            {
+                Console.WriteLine("Outcome ID not found in the system. Press Enter to return.");
+                Console.ReadLine();
+                return;
+            }
+            
+            storageManager.updateMatchOutcome(id, newMatchID, newWinnerID, newOutcomeID);
+            Console.WriteLine("Match outcome updated! Press Enter.");
+            Console.ReadLine();
+        }
+        static void DeleteMatchOutcome()
+        {
+            Console.Clear();
+            Console.WriteLine("=== Delete Match Outcome ===");
+            var matchOutcomes = storageManager.GetAllMatchOutcomes();
+            foreach (var matchOutcome in matchOutcomes)
+            {
+                Console.WriteLine($"{matchOutcome.MatchOutcomeID}: Match {matchOutcome.MatchID}, Winner {matchOutcome.WinnerID}, Outcome {matchOutcome.OutcomeID}");
+            }
+            Console.Write("Enter Match Outcome ID to delete: ");
+            if (!int.TryParse(Console.ReadLine(), out int id))
+            {
+                Console.WriteLine("Invalid input. Press Enter.");
+                Console.ReadLine();
+                return;
+            }
+            storageManager.deleteMatchOutcome(id);
+            Console.WriteLine("Match outcome deleted! Press Enter.");
+            Console.ReadLine();
+        }
+
 
         private static void ViewRegions()
         {

@@ -115,6 +115,7 @@ public class StorageManager
         }
     }
 
+
     public List<Weightclass> GetAllWeightclasses()
     {
         var weightclasses = new List<Weightclass>();
@@ -160,6 +161,7 @@ public class StorageManager
             cmd.ExecuteNonQuery();
         }
     }
+
 
     public List<Gym> GetAllGyms()
     {
@@ -208,6 +210,7 @@ public class StorageManager
             cmd.ExecuteNonQuery();
         }
     }
+
 
     public List<Match> GetAllMatches()
     {
@@ -262,6 +265,7 @@ public class StorageManager
         }
     }
 
+
     public List<OutcomeType> GetAllOutcomeTypes()
     {
         List<OutcomeType> outcomeTypes = new List<OutcomeType>();
@@ -309,6 +313,7 @@ public class StorageManager
         }
     }
 
+
     public List<Fighter> GetAllFighters()
     {
         List<Fighter> fighter = new List<Fighter>();
@@ -353,7 +358,6 @@ public class StorageManager
             cmd.ExecuteNonQuery();
         }
     }
-
     public void UpdateFighter(int fighterID, string firstName, string lastName, int age, int regionID, int gymID, int weightclassID, int wins, int losses, int draws)
     {
         string sql = "UPDATE tblFighter SET FirstName = @FirstName, LastName = @LastName, Age = @Age, RegionID = @RegionID, GymID = @GymID, WeightclassID = @WeightclassID, Wins = @Wins, Losses = @Losses, Draws = @Draws WHERE FighterID = @FighterID";
@@ -372,7 +376,6 @@ public class StorageManager
             cmd.ExecuteNonQuery();
         }
     }
-
     public void deleteFighter(int fighterID)
     {
         string sql = "DELETE FROM tblFighter WHERE FighterID = @FighterID";
@@ -382,6 +385,8 @@ public class StorageManager
             cmd.ExecuteNonQuery();
         }
     }
+
+
     public List<FighterAndGym> GetAllFighterAndGyms()
     {
         List<FighterAndGym> fighterAndGyms = new List<FighterAndGym>();
@@ -405,6 +410,42 @@ public class StorageManager
         }
         return fighterAndGyms;
     }
+    public void AddFighterAndGym(int fighterID, int gymID, int totalWins, int totalLosses, int totalDraws)
+    {
+        string sql = "INSERT INTO tblFighterAndGym (FighterID, GymID, TotalWins, TotalLosses, TotalDraws) VALUES (@FighterID, @GymID, @TotalWins, @TotalLosses, @TotalDraws)";
+        using (SqlCommand cmd = new SqlCommand(sql, conn))
+        {
+            cmd.Parameters.AddWithValue("@FighterID", fighterID);
+            cmd.Parameters.AddWithValue("@GymID", gymID);
+            cmd.Parameters.AddWithValue("@TotalWins", totalWins);
+            cmd.Parameters.AddWithValue("@TotalLosses", totalLosses);
+            cmd.Parameters.AddWithValue("@TotalDraws", totalDraws);
+            cmd.ExecuteNonQuery();
+        }
+    }
+    public void UpdateFighterAndGym(int fighterAndGymID, int fighterID, int gymID, int totalWins, int totalLosses, int totalDraws)
+    {
+        string sql = "UPDATE tblFighterAndGym SET FighterID = @FighterID, GymID = @GymID, TotalWins = @TotalWins, TotalLosses = @TotalLosses, TotalDraws = @TotalDraws WHERE FighterAndGymID = @FighterAndGymID";
+        using (SqlCommand cmd = new SqlCommand(sql, conn))
+        {
+            cmd.Parameters.AddWithValue("@FighterAndGymID", fighterAndGymID);
+            cmd.Parameters.AddWithValue("@FighterID", fighterID);
+            cmd.Parameters.AddWithValue("@GymID", gymID);
+            cmd.Parameters.AddWithValue("@TotalWins", totalWins);
+            cmd.Parameters.AddWithValue("@TotalLosses", totalLosses);
+            cmd.Parameters.AddWithValue("@TotalDraws", totalDraws);
+            cmd.ExecuteNonQuery();
+        }
+    }
+    public void DeleteFighterAndGym(int fighterAndGymID)
+    {
+        string sql = "DELETE FROM tblFighterAndGym WHERE FighterAndGymID = @FighterAndGymID";
+        using (SqlCommand cmd = new SqlCommand(sql, conn))
+        {
+            cmd.Parameters.AddWithValue("@FighterAndGymID", fighterAndGymID);
+            cmd.ExecuteNonQuery();
+        }
+    }
 
     public List<MatchOutcome> GetAllMatchOutcomes()
     {
@@ -426,6 +467,38 @@ public class StorageManager
             }
         }
         return matchOutcome;
+    }
+    public void AddMatchOutcome(int matchID, int winnerID, int outcomeID)
+    {
+        string sql = "INSERT INTO tblMatchOutcome (MatchID, WinnerID, OutcomeID) VALUES (@MatchID, @WinnerID, @OutcomeID)";
+        using (SqlCommand cmd = new SqlCommand(sql, conn))
+        {
+            cmd.Parameters.AddWithValue("@MatchID", matchID);
+            cmd.Parameters.AddWithValue("@WinnerID", winnerID);
+            cmd.Parameters.AddWithValue("@OutcomeID", outcomeID);
+            cmd.ExecuteNonQuery();
+        }
+    }
+    public void updateMatchOutcome(int matchOutcomeID, int matchID, int winnerID, int outcomeID)
+    {
+        string sql = "UPDATE tblMatchOutcome SET MatchID = @MatchID, WinnerID = @WinnerID, OutcomeID = @OutcomeID WHERE MatchOutcomeID = @MatchOutcomeID";
+        using (SqlCommand cmd = new SqlCommand(sql, conn))
+        {
+            cmd.Parameters.AddWithValue("@MatchOutcomeID", matchOutcomeID);
+            cmd.Parameters.AddWithValue("@MatchID", matchID);
+            cmd.Parameters.AddWithValue("@WinnerID", winnerID);
+            cmd.Parameters.AddWithValue("@OutcomeID", outcomeID);
+            cmd.ExecuteNonQuery();
+        }
+    }
+    public void deleteMatchOutcome(int matchOutcomeID)
+    {
+        string sql = "DELETE FROM tblMatchOutcome WHERE MatchOutcomeID = @MatchOutcomeID";
+        using (SqlCommand cmd = new SqlCommand(sql, conn))
+        {
+            cmd.Parameters.AddWithValue("@MatchOutcomeID", matchOutcomeID);
+            cmd.ExecuteNonQuery();
+        }
     }
 
     public bool DoesRegionExist(int regionID)
@@ -468,4 +541,25 @@ public class StorageManager
             return count > 0;
         }
     }
+    public bool DoesOutcomeTypeExist(int outcomeID)
+    {
+        string sql = "SELECT COUNT(*) FROM tblOutcomeType WHERE OutcomeID = @OutcomeID";
+        using (SqlCommand cmd = new SqlCommand(sql, conn))
+        {
+            cmd.Parameters.AddWithValue("@OutcomeID", outcomeID);
+            int count = (int)cmd.ExecuteScalar();
+            return count > 0;
+        }
+    }
+    public bool DoesMatchExist(int matchID)
+    {
+        string sql = "SELECT COUNT(*) FROM tblMatch WHERE MatchID = @MatchID";
+        using (SqlCommand cmd = new SqlCommand(sql, conn))
+        {
+            cmd.Parameters.AddWithValue("@MatchID", matchID);
+            int count = (int)cmd.ExecuteScalar();
+            return count > 0;
+        }
+    }
+
 }
