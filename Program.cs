@@ -179,6 +179,59 @@ namespace BoxingApp
             }
         }
 
+        static void MatchesMenu()
+        {
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine($"Welcome to the Matches Menu, {currentUser.Username} (ADMIN)");
+                Console.WriteLine("1. View Matches");
+                Console.WriteLine("2. Add Match");
+                Console.WriteLine("3. Update Match");
+                Console.WriteLine("4. Delete Match");
+                Console.WriteLine("5. Return to admin menu");
+                Console.Write("Select an option: ");
+                switch (Console.ReadLine())
+                {
+                    case "1": ViewMatches(); break;
+                    case "2": AddMatch(); break;
+                    case "3": UpdateMatch(); break;
+                    case "4": DeleteMatch(); break;
+                    case "5": ShowAdminMenu(); break;
+                    default:
+                        Console.WriteLine("Invalid choice. Press Enter.");
+                        Console.ReadLine();
+                        break;
+                }
+            }
+        }
+
+        static void OutcomeTypeMenu()
+        {
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine($"Welcome to the Outcome Type Menu, {currentUser.Username} (ADMIN)");
+                Console.WriteLine("1. View Outcome Types");
+                Console.WriteLine("2. Add Outcome Type");
+                Console.WriteLine("3. Update Outcome Type");
+                Console.WriteLine("4. Delete Outcome Type");
+                Console.WriteLine("5. Return to admin menu");
+                Console.Write("Select an option: ");
+                switch (Console.ReadLine())
+                {
+                    case "1": ViewOutcomeTypes(); break;
+                    case "2": AddOutcomeType(); break;
+                    case "3": UpdateOutcomeType(); break;
+                    case "4": DeleteOutcomeType(); break;
+                    case "5": ShowAdminMenu(); break;
+                    default:
+                        Console.WriteLine("Invalid choice. Press Enter.");
+                        Console.ReadLine();
+                        break;
+                }
+            }
+        }
         static void ShowAdminMenu()
         {
             while (true)
@@ -198,8 +251,9 @@ namespace BoxingApp
                     case "1": RegionsMenu(); break;
                     case "2": WeightclassesMenu(); break;
                     case "3": GymsMenu(); break;
-                    case "4": DeleteRegion(); break;
-                    case "5":
+                    case "4": MatchesMenu(); break;
+                    case "5": OutcomeTypeMenu(); break;
+                    case "6":
                         currentUser = null;
                         return;
                     default:
@@ -268,7 +322,6 @@ namespace BoxingApp
             Console.WriteLine("Press Enter to return.");
             Console.ReadLine();
         }
-
         static void AddWeightclasses()
         {
             if (!currentUser.IsAdmin)
@@ -285,7 +338,6 @@ namespace BoxingApp
             Console.WriteLine("Weightclass added! Press Enter.");
             Console.ReadLine();
         }
-
         static void UpdateWeightclass()
         {
             if (!currentUser.IsAdmin)
@@ -314,7 +366,6 @@ namespace BoxingApp
             Console.WriteLine("Weightclass updated! Press Enter.");
             Console.ReadLine();
         }
-
         static void DeleteWeightclass()
         {
 
@@ -357,6 +408,106 @@ namespace BoxingApp
             Console.WriteLine("Press Enter to return.");
             Console.ReadLine();
         }
+        static void AddMatch()
+        {
+            Console.Clear();
+            Console.WriteLine("=== Add Match ===");
+            Console.Write("Enter Fighter 1 ID: ");
+            Console.Write("Enter new Fighter 1 ID: ");
+            if (!int.TryParse(Console.ReadLine(), out int fighter1ID) || !storageManager.DoesFighterExist(fighter1ID))
+            {
+                Console.WriteLine("Fighter 1 ID is invalid or does not exist. Press Enter.");
+                Console.ReadLine();
+                return;
+            }
+
+            Console.Write("Enter new Fighter 2 ID: ");
+            if (!int.TryParse(Console.ReadLine(), out int fighter2ID) || !storageManager.DoesFighterExist(fighter2ID))
+            {
+                Console.WriteLine("Fighter 2 ID is invalid or does not exist. Press Enter.");
+                Console.ReadLine();
+                return;
+            }
+            Console.Write("Enter Match Date (yyyy-MM-dd): ");
+            if (!DateTime.TryParse(Console.ReadLine(), out DateTime matchDate))
+            {
+                Console.WriteLine("Invalid date format. Press Enter.");
+                Console.ReadLine();
+                return;
+            }
+            
+            storageManager.AddMatch(fighter1ID, fighter2ID, matchDate);
+            Console.WriteLine("Match added! Press Enter.");
+            Console.ReadLine();
+        }
+        static void UpdateMatch()
+        {
+            Console.Clear();
+            Console.WriteLine("=== Update Match ===");
+
+            var matches = storageManager.GetAllMatches();
+            foreach (var match in matches)
+            {
+                Console.WriteLine($"{match.MatchID}: {match.Fighter1ID} vs {match.Fighter2ID} on {match.MatchDate:yyyy-MM-dd}");
+            }
+
+            Console.Write("Enter Match ID to update: ");
+            if (!int.TryParse(Console.ReadLine(), out int matchID))
+            {
+                Console.WriteLine("Invalid Match ID. Press Enter.");
+                Console.ReadLine();
+                return;
+            }
+
+            Console.Write("Enter new Fighter 1 ID: ");
+            if (!int.TryParse(Console.ReadLine(), out int fighter1ID) || !storageManager.DoesFighterExist(fighter1ID))
+            {
+                Console.WriteLine("Fighter 1 ID is invalid or does not exist. Press Enter.");
+                Console.ReadLine();
+                return;
+            }
+
+            Console.Write("Enter new Fighter 2 ID: ");
+            if (!int.TryParse(Console.ReadLine(), out int fighter2ID) || !storageManager.DoesFighterExist(fighter2ID))
+            {
+                Console.WriteLine("Fighter 2 ID is invalid or does not exist. Press Enter.");
+                Console.ReadLine();
+                return;
+            }
+
+            Console.Write("Enter new Match Date (yyyy-MM-dd): ");
+            if (!DateTime.TryParse(Console.ReadLine(), out DateTime newMatchDate))
+            {
+                Console.WriteLine("Invalid date format. Press Enter.");
+                Console.ReadLine();
+                return;
+            }
+
+            storageManager.UpdateMatch(matchID, fighter1ID, fighter2ID, newMatchDate);
+            Console.WriteLine("Match updated! Press Enter.");
+            Console.ReadLine();
+        }
+        static void DeleteMatch()
+        {
+            Console.Clear();
+            Console.WriteLine("=== Delete Match ===");
+            var matches = storageManager.GetAllMatches();
+            foreach (var match in matches)
+            {
+                Console.WriteLine($"{match.MatchID}: {match.Fighter1ID} vs {match.Fighter2ID} on {match.MatchDate:yyyy-MM-dd}");
+            }
+            Console.Write("Enter Match ID to delete: ");
+            if (!int.TryParse(Console.ReadLine(), out int matchID))
+            {
+                Console.WriteLine("Invalid Match ID. Press Enter.");
+                Console.ReadLine();
+                return;
+            }
+            storageManager.DeleteMatch(matchID);
+            Console.WriteLine("Match deleted! Press Enter.");
+            Console.ReadLine();
+        }
+
 
         private static void ViewGyms()
         {
@@ -378,7 +529,6 @@ namespace BoxingApp
             Console.WriteLine("Press Enter to return.");
             Console.ReadLine();
         }
-
         static void AddGym()
         {
             Console.Clear();
@@ -388,7 +538,7 @@ namespace BoxingApp
             Console.Write("Enter Region ID: ");
             if (!int.TryParse(Console.ReadLine(), out int regionID))
             {
-                Console.WriteLine("Invalid Region ID format. Press Enter to return.");
+                Console.WriteLine("Invalid input. Press Enter.");
                 Console.ReadLine();
                 return;
             }
@@ -403,10 +553,6 @@ namespace BoxingApp
             Console.WriteLine("Gym added! Press Enter.");
             Console.ReadLine();
         }
-
-
-
-
         static void UpdateGym()
         {
             if (!currentUser.IsAdmin)
@@ -437,7 +583,6 @@ namespace BoxingApp
             Console.WriteLine("Gym updated! Press Enter.");
             Console.ReadLine();
         }
-
         public static void DeleteGym()
         {
             Console.Clear();
@@ -458,6 +603,8 @@ namespace BoxingApp
             Console.WriteLine("Gym deleted! Press Enter.");
             Console.ReadLine();
         }   
+
+
         private static void ViewOutcomeTypes()
         {
             Console.Clear();
@@ -478,6 +625,77 @@ namespace BoxingApp
             Console.WriteLine("Press Enter to return.");
             Console.ReadLine();
         }
+        static void AddOutcomeType()
+        {
+            if (!currentUser.IsAdmin)
+            {
+                Console.WriteLine("You do not have permission to add outcome types.");
+                Console.ReadLine();
+                return;
+            }
+            Console.Clear();
+            Console.WriteLine("=== Add Outcome Type ===");
+            Console.Write("Enter Outcome Type description: ");
+            string description = Console.ReadLine();
+            storageManager.AddOutcomeType(description);
+            Console.WriteLine("Outcome Type added! Press Enter.");
+            Console.ReadLine();
+        }
+        static void UpdateOutcomeType()
+        {
+            if (!currentUser.IsAdmin)
+            {
+                Console.WriteLine("You do not have permission to update outcome types.");
+                Console.ReadLine();
+                return;
+            }
+            Console.Clear();
+            Console.WriteLine("=== Update Outcome Type ===");
+            var outcomeTypes = storageManager.GetAllOutcomeTypes();
+            foreach (var outcomeType in outcomeTypes)
+            {
+                Console.WriteLine($"{outcomeType.OutcomeID}: {outcomeType.OutcomeDescription}");
+            }
+            Console.Write("Enter Outcome Type ID to update: ");
+            if (!int.TryParse(Console.ReadLine(), out int id))
+            {
+                Console.WriteLine("Invalid input. Press Enter.");
+                Console.ReadLine();
+                return;
+            }
+            Console.Write("Enter new Outcome Type description: ");
+            string newDescription = Console.ReadLine();
+            storageManager.UpdateOutcomeType(id, newDescription);
+            Console.WriteLine("Outcome Type updated! Press Enter.");
+            Console.ReadLine();
+        }
+        static void DeleteOutcomeType()
+        {
+            if (!currentUser.IsAdmin)
+            {
+                Console.WriteLine("You do not have permission to delete outcome types.");
+                Console.ReadLine();
+                return;
+            }
+            Console.Clear();
+            Console.WriteLine("=== Delete Outcome Type ===");
+            var outcomeTypes = storageManager.GetAllOutcomeTypes();
+            foreach (var outcomeType in outcomeTypes)
+            {
+                Console.WriteLine($"{outcomeType.OutcomeID}: {outcomeType.OutcomeDescription}");
+            }
+            Console.Write("Enter Outcome Type ID to delete: ");
+            if (!int.TryParse(Console.ReadLine(), out int id))
+            {
+                Console.WriteLine("Invalid input. Press Enter.");
+                Console.ReadLine();
+                return;
+            }
+            storageManager.DeleteOutcomeType(id);
+            Console.WriteLine("Outcome Type deleted! Press Enter.");
+            Console.ReadLine();
+        }
+
 
         private static void ViewFighters()
         {
@@ -499,7 +717,68 @@ namespace BoxingApp
             Console.WriteLine("Press Enter to return.");
             Console.ReadLine();
         }
-
+        static void AddFighter()
+        {
+            Console.Clear();
+            Console.WriteLine("=== Add Fighter ===");
+            Console.Write("Enter Firstname: ");
+            string firstName = Console.ReadLine();
+            Console.Write("Enter Lastname: ");
+            string lastName = Console.ReadLine();
+            Console.Write("Enter Age: ");
+            if (!int.TryParse(Console.ReadLine(), out int age))
+            {
+                Console.WriteLine("Invalid input. Press Enter.");
+                Console.ReadLine();
+                return;
+            }
+            Console.Write("Enter Region ID: ");
+            if (!int.TryParse(Console.ReadLine(), out int regionID) || !storageManager.DoesRegionExist(regionID))
+            {
+                Console.WriteLine("Region ID not found in the system. Press Enter to return.");
+                Console.ReadLine();
+                return;
+            }
+            Console.Write("Enter Gym ID: ");
+            if (!int.TryParse(Console.ReadLine(), out int gymID) || !storageManager.DoesGymExist(gymID))
+            {
+                Console.WriteLine("Gym ID not found in the system. Press Enter to return.");
+                Console.ReadLine();
+                return;
+            }
+            Console.Write("Enter Weightclass ID: ");
+            if (!int.TryParse(Console.ReadLine(), out int weightclassID) || !storageManager.DoesWeightclassExist(weightclassID))
+            {
+                Console.WriteLine("Weightclass ID not found in the system. Press Enter to return.");
+                Console.ReadLine();
+                return;
+            }
+            
+            Console.Write("Enter Wins (default 0): ");
+            int wins = 0;
+            if (!int.TryParse(Console.ReadLine(), out wins) || wins < 0)
+            {
+                Console.WriteLine("Invalid input. Setting Wins to 0.");
+                wins = 0;
+            }
+            Console.Write("Enter Losses (default 0): ");
+            int losses = 0;
+            if (!int.TryParse(Console.ReadLine(), out losses) || losses < 0)
+            {
+                Console.WriteLine("Invalid input. Setting Losses to 0.");
+                losses = 0;
+            }
+            Console.Write("Enter Draws (default 0): ");
+            int draws = 0;
+            if (!int.TryParse(Console.ReadLine(), out draws) || draws < 0)
+            {
+                Console.WriteLine("Invalid input. Setting Draws to 0.");
+                draws = 0;
+            }
+            storageManager.AddFighter(firstName, lastName, age, regionID, gymID, weightclassID, wins, losses, draws);
+            Console.WriteLine("Fighter added! Press Enter.");
+            Console.ReadLine();
+        }
         private static void ViewFighterAndGym()
         {
             Console.Clear();
@@ -542,7 +821,7 @@ namespace BoxingApp
             Console.ReadLine();
         }
 
-        static void ViewRegions()
+        private static void ViewRegions()
         {
             Console.Clear();
             var regions = storageManager.GetAllRegions();
@@ -554,7 +833,6 @@ namespace BoxingApp
             Console.WriteLine("Press Enter to return.");
             Console.ReadLine();
         }
-
         static void AddRegion()
         {
             if (!currentUser.IsAdmin)
@@ -571,7 +849,6 @@ namespace BoxingApp
             Console.WriteLine("Region added! Press Enter.");
             Console.ReadLine();
         }
-
         static void UpdateRegion()
         {
             if (!currentUser.IsAdmin)
@@ -587,6 +864,7 @@ namespace BoxingApp
             {
                 Console.WriteLine($"{region.RegionID}: {region.RegionName}");
             }
+
             Console.Write("Enter region ID to update: ");
             if (!int.TryParse(Console.ReadLine(), out int id))
             {
@@ -600,7 +878,6 @@ namespace BoxingApp
             Console.WriteLine("Region updated! Press Enter.");
             Console.ReadLine();
         }
-
         static void DeleteRegion()
         {
             
