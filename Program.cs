@@ -105,7 +105,7 @@ namespace BoxingApp
                 Console.WriteLine("2. Add Region");
                 Console.WriteLine("3. Update Region");
                 Console.WriteLine("4. Delete Region");
-                Console.WriteLine("5. Logout");
+                Console.WriteLine("5. Return to admin Menu");
                 Console.Write("Select an option: ");
                 switch (Console.ReadLine())
                 {
@@ -113,9 +113,7 @@ namespace BoxingApp
                     case "2": AddRegion(); break;
                     case "3": UpdateRegion(); break;
                     case "4": DeleteRegion(); break;
-                    case "5":
-                        currentUser = null;
-                        return;
+                    case "5": ShowAdminMenu(); break;
                     default:
                         Console.WriteLine("Invalid choice. Press Enter.");
                         Console.ReadLine();
@@ -146,9 +144,6 @@ namespace BoxingApp
                     case "3": UpdateWeightclass(); break;
                     case "4": DeleteWeightclass(); break;
                     case "5": ShowAdminMenu(); break;
-                    case "6":
-                        currentUser = null; break;
-                        
                     default:
                         Console.WriteLine("Invalid choice. Press Enter.");
                         Console.ReadLine();
@@ -167,7 +162,7 @@ namespace BoxingApp
                 Console.WriteLine("2. Add Gyms");
                 Console.WriteLine("3. Update Gyms");
                 Console.WriteLine("4. Delete Gyms");
-                Console.WriteLine("5. Logout");
+                Console.WriteLine("5. Return to admin menu");
                 Console.Write("Select an option: ");
                 switch (Console.ReadLine())
                 {
@@ -175,9 +170,7 @@ namespace BoxingApp
                     case "2": AddGym(); break;
                     case "3": UpdateGym(); break;
                     case "4": DeleteGym(); break;
-                    case "5":
-                        currentUser = null;
-                        return;
+                    case "5": ShowAdminMenu(); break;
                     default:
                         Console.WriteLine("Invalid choice. Press Enter.");
                         Console.ReadLine();
