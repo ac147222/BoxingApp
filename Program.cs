@@ -136,7 +136,8 @@ namespace BoxingApp
                 Console.WriteLine("2. Add Weightclasses");
                 Console.WriteLine("3. Update Weightclasses");
                 Console.WriteLine("4. Delete Weightclasses");
-                Console.WriteLine("5. Logout");
+                Console.WriteLine("5 Return to Admin Menu");
+                Console.WriteLine("6. Logout");
                 Console.Write("Select an option: ");
                 switch (Console.ReadLine())
                 {
@@ -144,6 +145,36 @@ namespace BoxingApp
                     case "2": AddWeightclasses(); break;
                     case "3": UpdateWeightclass(); break;
                     case "4": DeleteWeightclass(); break;
+                    case "5": ShowAdminMenu(); break;
+                    case "6":
+                        currentUser = null; break;
+                        
+                    default:
+                        Console.WriteLine("Invalid choice. Press Enter.");
+                        Console.ReadLine();
+                        break;
+                }
+            }
+        }
+
+        static void GymsMenu()
+        {
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine($"Welcome to the Gyms Menu, {currentUser.Username} (ADMIN)");
+                Console.WriteLine("1. View Gyms");
+                Console.WriteLine("2. Add Gyms");
+                Console.WriteLine("3. Update Gyms");
+                Console.WriteLine("4. Delete Gyms");
+                Console.WriteLine("5. Logout");
+                Console.Write("Select an option: ");
+                switch (Console.ReadLine())
+                {
+                    case "1": ViewGyms(); break;
+                    case "2": AddGym(); break;
+                    case "3": UpdateGym(); break;
+                    case "4": DeleteGym(); break;
                     case "5":
                         currentUser = null;
                         return;
@@ -173,7 +204,7 @@ namespace BoxingApp
                 {
                     case "1": RegionsMenu(); break;
                     case "2": WeightclassesMenu(); break;
-                    case "3": UpdateRegion(); break;
+                    case "3": GymsMenu(); break;
                     case "4": DeleteRegion(); break;
                     case "5":
                         currentUser = null;
@@ -355,6 +386,85 @@ namespace BoxingApp
             Console.ReadLine();
         }
 
+        static void AddGym()
+        {
+            Console.Clear();
+            Console.WriteLine("=== Add Gym ===");
+            Console.Write("Enter Gym name: ");
+            string name = Console.ReadLine();
+            Console.Write("Enter Region ID: ");
+            if (!int.TryParse(Console.ReadLine(), out int regionID))
+            {
+                Console.WriteLine("Invalid Region ID format. Press Enter to return.");
+                Console.ReadLine();
+                return;
+            }
+
+            if (!storageManager.DoesRegionExist(regionID))
+            {
+                Console.WriteLine("Region ID not found in the system. Press Enter to return.");
+                Console.ReadLine();
+                return;
+            }
+            storageManager.AddGym(name, regionID);
+            Console.WriteLine("Gym added! Press Enter.");
+            Console.ReadLine();
+        }
+
+
+
+
+        static void UpdateGym()
+        {
+            if (!currentUser.IsAdmin)
+            {
+                Console.WriteLine("You do not have permission to update Gyms.");
+                Console.ReadLine();
+
+
+                return;
+            }
+            Console.Clear();
+            Console.WriteLine("=== Update Gym ===");
+            var gyms = storageManager.GetAllGyms();
+            foreach (var gym in gyms)
+            {
+                Console.WriteLine($"{gym.GymID}: {gym.GymName}");
+            }
+            Console.Write("Enter Gym ID to update: ");
+            if (!int.TryParse(Console.ReadLine(), out int id))
+            {
+                Console.WriteLine("Invalid input. Press Enter.");
+                Console.ReadLine();
+                return;
+            }
+            Console.Write("Enter new Gym name: ");
+            string newName = Console.ReadLine();
+            storageManager.UpdateGym(id, newName);
+            Console.WriteLine("Gym updated! Press Enter.");
+            Console.ReadLine();
+        }
+
+        public static void DeleteGym()
+        {
+            Console.Clear();
+            Console.WriteLine("=== Delete Gym ===");
+            var gyms = storageManager.GetAllGyms();
+            foreach (var gym in gyms)
+            {
+                Console.WriteLine($"{gym.GymID}: {gym.GymName}");
+            }
+            Console.Write("Enter Gym ID to delete: ");
+            if (!int.TryParse(Console.ReadLine(), out int id))
+            {
+                Console.WriteLine("Invalid input. Press Enter.");
+                Console.ReadLine();
+                return;
+            }
+            storageManager.DeleteGym(id);
+            Console.WriteLine("Gym deleted! Press Enter.");
+            Console.ReadLine();
+        }   
         private static void ViewOutcomeTypes()
         {
             Console.Clear();

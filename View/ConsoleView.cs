@@ -11,13 +11,11 @@ namespace BoxingDatabase
         
         public string DisplayMenu()
         {
-            Console.WriteLine("welcome to the Boxing Database");
-            Console.WriteLine("menu: ");
-            Console.WriteLine("1. view all the records in Region table");
-            Console.WriteLine("2. Update a region's name by region_ID");
-            Console.WriteLine("3. Insert a new region");
-            Console.WriteLine("4. Delete a region by region_name");
-            Console.WriteLine("Select an option: ");
+            Console.WriteLine("=== Boxing App ===");
+            Console.WriteLine("1. Login");
+            Console.WriteLine("2. Register");
+            Console.WriteLine("0. Exit");
+            Console.Write("Select an option: ");
             return Console.ReadLine(); 
         }
 
@@ -32,7 +30,7 @@ namespace BoxingDatabase
 
         public void DisplayMessage(string message)
         {
-            Console.WriteLine(message);
+            Console.WriteLine(message); 
         }
 
         public string GetInput()

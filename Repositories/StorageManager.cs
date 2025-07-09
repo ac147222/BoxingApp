@@ -189,6 +189,38 @@ public class StorageManager
         return gyms;
     }
 
+    public void AddGym(string name, int ID)
+    {
+        string sql = "INSERT INTO tblGym (GymName, RegionID) VALUES (@GymName, @RegionID)";
+        using (SqlCommand cmd = new SqlCommand(sql, conn))
+        {
+            cmd.Parameters.AddWithValue("@GymName", name);
+            cmd.Parameters.AddWithValue("@RegionID", ID);
+            cmd.ExecuteNonQuery();
+        }
+    }
+
+
+    public void UpdateGym(int id, string newName)
+    {
+        string sql = "UPDATE tblGym SET GymName = @GymName WHERE GymID = @ID";
+        using (SqlCommand cmd = new SqlCommand(sql, conn))
+        {
+            cmd.Parameters.AddWithValue("@GymName", newName);
+            cmd.Parameters.AddWithValue("@GymID", id);
+            cmd.ExecuteNonQuery();
+        }
+    }
+
+    public void DeleteGym(int id)
+    {
+        string sql = "DELETE FROM tblGym WHERE GymID = @GymID";
+        using (SqlCommand cmd = new SqlCommand(sql, conn))
+        {
+            cmd.Parameters.AddWithValue("@GymID", id);
+            cmd.ExecuteNonQuery();
+        }
+    }
     public List<Match> GetAllMatches()
     {
         List<Match> matches = new List<Match>();
@@ -302,4 +334,16 @@ public class StorageManager
         }
         return matchOutcome;
     }
+
+    public bool DoesRegionExist(int regionID)
+    {
+        string sql = "SELECT COUNT(*) FROM tblRegion WHERE RegionID = @RegionID";
+        using (SqlCommand cmd = new SqlCommand(sql, conn))
+        {
+            cmd.Parameters.AddWithValue("@RegionID", regionID);
+            int count = (int)cmd.ExecuteScalar();
+            return count > 0;
+        }
+    }
+
 }
