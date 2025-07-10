@@ -501,6 +501,29 @@ public class StorageManager
         }
     }
 
+    public List<Fighter> GetFightersSortedByFirstName()
+    {
+        List<Fighter> fighterList = new List<Fighter>();
+        string sql = "SELECT FirstName, LastName FROM tblFighter ORDER BY FirstName ASC";
+
+        using (SqlCommand cmd = new SqlCommand(sql, conn))
+        using (SqlDataReader reader = cmd.ExecuteReader())
+        {
+            while (reader.Read())
+            {
+                Fighter fighter = new Fighter
+                {
+                    FirstName = reader["FirstName"].ToString(),
+                    LastName = reader["LastName"].ToString()
+                };
+                fighterList.Add(fighter);
+            }
+        }
+
+        return fighterList;
+    }
+
+
     public bool DoesRegionExist(int regionID)
     {
         string sql = "SELECT COUNT(*) FROM tblRegion WHERE RegionID = @RegionID";

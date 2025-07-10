@@ -1,4 +1,5 @@
 using BoxingApp;
+using BoxingDatabase;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
@@ -23,11 +24,7 @@ namespace BoxingApp
                 Console.Clear();
                 if (currentUser == null)
                 {
-                    Console.WriteLine("=== Boxing App ===");
-                    Console.WriteLine("1. Login");
-                    Console.WriteLine("2. Register");
-                    Console.WriteLine("0. Exit");
-                    Console.Write("Select an option: ");
+                    ConsoleView.DisplayWelcomeMenu();
                     switch (Console.ReadLine())
                     {
                         case "1": Login(); break;
@@ -36,8 +33,7 @@ namespace BoxingApp
                             conn.Close();
                             return;
                         default:
-                            Console.WriteLine("Invalid choice. Press Enter to continue.");
-                            Console.ReadLine();
+                            ConsoleView.ShowInvalidChoice();
                             break;
                     }
                 }
@@ -99,14 +95,7 @@ namespace BoxingApp
             
             while (true)
             {
-                Console.Clear();
-                Console.WriteLine($"Welcome to the Regions Menu, {currentUser.Username} (ADMIN)");
-                Console.WriteLine("1. View Regions");
-                Console.WriteLine("2. Add Region");
-                Console.WriteLine("3. Update Region");
-                Console.WriteLine("4. Delete Region");
-                Console.WriteLine("5. Return to admin Menu");
-                Console.Write("Select an option: ");
+                ConsoleView.DisplayRegionMenu();
                 switch (Console.ReadLine())
                 {
                     case "1": ViewRegions(); break;
@@ -115,8 +104,7 @@ namespace BoxingApp
                     case "4": DeleteRegion(); break;
                     case "5": ShowAdminMenu(); break;
                     default:
-                        Console.WriteLine("Invalid choice. Press Enter.");
-                        Console.ReadLine();
+                        ConsoleView.ShowInvalidChoice();
                         break;
                 }
 
@@ -128,15 +116,7 @@ namespace BoxingApp
         {
             while (true)
             {
-                Console.Clear();
-                Console.WriteLine($"Welcome to the Weightclasses Menu, {currentUser.Username} (ADMIN)");
-                Console.WriteLine("1. View Weightclasses");
-                Console.WriteLine("2. Add Weightclasses");
-                Console.WriteLine("3. Update Weightclasses");
-                Console.WriteLine("4. Delete Weightclasses");
-                Console.WriteLine("5 Return to Admin Menu");
-                Console.WriteLine("6. Logout");
-                Console.Write("Select an option: ");
+               ConsoleView.DisplayWeightclassMenu();
                 switch (Console.ReadLine())
                 {
                     case "1": ViewWeightclasses(); break;
@@ -145,8 +125,7 @@ namespace BoxingApp
                     case "4": DeleteWeightclass(); break;
                     case "5": ShowAdminMenu(); break;
                     default:
-                        Console.WriteLine("Invalid choice. Press Enter.");
-                        Console.ReadLine();
+                        ConsoleView.ShowInvalidChoice();
                         break;
                 }
             }
@@ -156,14 +135,7 @@ namespace BoxingApp
         {
             while (true)
             {
-                Console.Clear();
-                Console.WriteLine($"Welcome to the Gyms Menu, {currentUser.Username} (ADMIN)");
-                Console.WriteLine("1. View Gyms");
-                Console.WriteLine("2. Add Gyms");
-                Console.WriteLine("3. Update Gyms");
-                Console.WriteLine("4. Delete Gyms");
-                Console.WriteLine("5. Return to admin menu");
-                Console.Write("Select an option: ");
+                ConsoleView.DisplayGymMenu();
                 switch (Console.ReadLine())
                 {
                     case "1": ViewGyms(); break;
@@ -172,8 +144,7 @@ namespace BoxingApp
                     case "4": DeleteGym(); break;
                     case "5": ShowAdminMenu(); break;
                     default:
-                        Console.WriteLine("Invalid choice. Press Enter.");
-                        Console.ReadLine();
+                        ConsoleView.ShowInvalidChoice();
                         break;
                 }
             }
@@ -183,14 +154,7 @@ namespace BoxingApp
         {
             while (true)
             {
-                Console.Clear();
-                Console.WriteLine($"Welcome to the Matches Menu, {currentUser.Username} (ADMIN)");
-                Console.WriteLine("1. View Matches");
-                Console.WriteLine("2. Add Match");
-                Console.WriteLine("3. Update Match");
-                Console.WriteLine("4. Delete Match");
-                Console.WriteLine("5. Return to admin menu");
-                Console.Write("Select an option: ");
+                ConsoleView.DisplayMatchMenu();
                 switch (Console.ReadLine())
                 {
                     case "1": ViewMatches(); break;
@@ -199,8 +163,7 @@ namespace BoxingApp
                     case "4": DeleteMatch(); break;
                     case "5": ShowAdminMenu(); break;
                     default:
-                        Console.WriteLine("Invalid choice. Press Enter.");
-                        Console.ReadLine();
+                        ConsoleView.ShowInvalidChoice();
                         break;
                 }
             }
@@ -210,14 +173,7 @@ namespace BoxingApp
         {
             while (true)
             {
-                Console.Clear();
-                Console.WriteLine($"Welcome to the Outcome Type Menu, {currentUser.Username} (ADMIN)");
-                Console.WriteLine("1. View Outcome Types");
-                Console.WriteLine("2. Add Outcome Type");
-                Console.WriteLine("3. Update Outcome Type");
-                Console.WriteLine("4. Delete Outcome Type");
-                Console.WriteLine("5. Return to admin menu");
-                Console.Write("Select an option: ");
+               ConsoleView.DisplayOutcomeTypeMenu();
                 switch (Console.ReadLine())
                 {
                     case "1": ViewOutcomeTypes(); break;
@@ -226,8 +182,7 @@ namespace BoxingApp
                     case "4": DeleteOutcomeType(); break;
                     case "5": ShowAdminMenu(); break;
                     default:
-                        Console.WriteLine("Invalid choice. Press Enter.");
-                        Console.ReadLine();
+                        ConsoleView.ShowInvalidChoice();
                         break;
                 }
             }
@@ -237,14 +192,7 @@ namespace BoxingApp
         {
             while (true)
             {
-                Console.Clear();
-                Console.WriteLine($"Welcome to the Fighters Menu, {currentUser.Username} (ADMIN)");
-                Console.WriteLine("1. View Fighters");
-                Console.WriteLine("2. Add Fighter");
-                Console.WriteLine("3. Update Fighter");
-                Console.WriteLine("4. Delete Fighter");
-                Console.WriteLine("5. Return to admin menu");
-                Console.Write("Select an option: ");
+                ConsoleView.DisplayFighterMenu();
                 switch (Console.ReadLine())
                 {
                     case "1": ViewFighters(); break;
@@ -253,8 +201,7 @@ namespace BoxingApp
                     case "4": DeleteFighter(); break;
                     case "5": ShowAdminMenu(); break;
                     default:
-                        Console.WriteLine("Invalid choice. Press Enter.");
-                        Console.ReadLine();
+                        ConsoleView.ShowInvalidChoice();
                         break;
                 }
             }
@@ -264,14 +211,7 @@ namespace BoxingApp
         {
             while (true)
             {
-                Console.Clear();
-                Console.WriteLine($"Welcome to the Match Outcome Menu, {currentUser.Username} (ADMIN)");
-                Console.WriteLine("1. View Match Outcomes");
-                Console.WriteLine("2. Add Match Outcome");
-                Console.WriteLine("3. Update Match Outcome");
-                Console.WriteLine("4. Delete Match Outcome");
-                Console.WriteLine("5. Return to admin menu");
-                Console.Write("Select an option: ");
+                ConsoleView.DisplayMatchOutcomeMenu();
                 switch (Console.ReadLine())
                 {
                     case "1": ViewMatchOutcome(); break;
@@ -280,8 +220,7 @@ namespace BoxingApp
                     case "4": DeleteMatchOutcome(); break;
                     case "5": ShowAdminMenu(); break;
                     default:
-                        Console.WriteLine("Invalid choice. Press Enter.");
-                        Console.ReadLine();
+                        ConsoleView.ShowInvalidChoice();
                         break;
                 }
             }
@@ -291,14 +230,7 @@ namespace BoxingApp
         {
             while (true)
             {
-                Console.Clear();
-                Console.WriteLine($"Welcome to the Fighter and Gym Menu, {currentUser.Username} (ADMIN)");
-                Console.WriteLine("1. View Fighter and Gyms");
-                Console.WriteLine("2. Add Fighter and Gym");
-                Console.WriteLine("3. Update Fighter and Gym");
-                Console.WriteLine("4. Delete Fighter and Gym");
-                Console.WriteLine("5. Return to admin menu");
-                Console.Write("Select an option: ");
+                ConsoleView.DisplayFighterGymMenu();
                 switch (Console.ReadLine())
                 {
                     case "1": ViewFighterAndGym(); break;
@@ -307,8 +239,7 @@ namespace BoxingApp
                     case "4": DeleteFighterAndGym(); break;
                     case "5": ShowAdminMenu(); break;
                     default:
-                        Console.WriteLine("Invalid choice. Press Enter.");
-                        Console.ReadLine();
+                        ConsoleView.ShowInvalidChoice();
                         break;
                 }
             }
@@ -318,18 +249,7 @@ namespace BoxingApp
         {
             while (true)
             {
-                Console.Clear();
-                Console.WriteLine($"Welcome, {currentUser.Username} (ADMIN)");
-                Console.WriteLine("1. Region Menu");
-                Console.WriteLine("2. Weightclasses Menu");
-                Console.WriteLine("3. Gyms Menu");
-                Console.WriteLine("4. Matches Menu");
-                Console.WriteLine("5. Match Outcome Types Menu");
-                Console.WriteLine("6. Fighters Menu");
-                Console.WriteLine("7. Match Outcome Menu");
-                Console.WriteLine("8. Fighter and Gym Meny");
-                Console.WriteLine("8. Log Out");
-                Console.Write("Select an option: ");
+                ConsoleView.DisplayAdminMenu();   
                 switch (Console.ReadLine())
                 {
                     case "1": RegionsMenu(); break;
@@ -344,8 +264,7 @@ namespace BoxingApp
                         currentUser = null;
                         return;
                     default:
-                        Console.WriteLine("Invalid choice. Press Enter.");
-                        Console.ReadLine();
+                        ConsoleView.ShowInvalidChoice();
                         break;
                 }
             }
@@ -355,18 +274,8 @@ namespace BoxingApp
         {
             while (true)
             {
-                Console.Clear();
-                Console.WriteLine($"Welcome, {currentUser.Username}");
-                Console.WriteLine("1. View Regions");
-                Console.WriteLine("2. View Weightclasses");
-                Console.WriteLine("3. View Gyms");
-                Console.WriteLine("4. View Matches");
-                Console.WriteLine("5. View Outcome Types");
-                Console.WriteLine("6. View Fighters");
-                Console.WriteLine("7. View Fighter and Gyms");
-                Console.WriteLine("8. View Matches and their outcomes");
-                Console.WriteLine("9. Logout");
-                Console.Write("Select an option: ");
+                ConsoleView.DisplayUserMenu();
+                
                 switch (Console.ReadLine())
                 {
                     case "1": ViewRegions(); break;
@@ -377,16 +286,60 @@ namespace BoxingApp
                     case "6": ViewFighters(); break;
                     case "7": ViewFighterAndGym(); break;
                     case "8": ViewMatchOutcome(); break;
-                    case "9":
+                    case "9": ShowFighterReport(); break;
+                    case "10":
                         currentUser = null;
-                        return;
+                        return;  
                     default:
-                        Console.WriteLine("Invalid choice. Press Enter.");
-                        Console.ReadLine();
+                        ConsoleView.ShowInvalidChoice();
                         break;
                 }
             }
         }
+
+        static void ReportsMenu()
+        {
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine("=== Reports Menu ===");
+                Console.WriteLine("1. Show Fighter Report (Sorted by First Name)");
+                Console.WriteLine("2. Back to User Menu");
+                Console.Write("Select an option: ");
+                switch (Console.ReadLine())
+                {
+                    case "1": ShowFighterReport(); break;
+                    case "2": return;
+                    default:
+                        ConsoleView.ShowInvalidChoice();
+                        break;
+                }
+            }
+        }
+
+        static void ShowFighterReport()
+        {
+            Console.Clear();
+            Console.WriteLine("=== Fighter Report (Sorted by First Name) ===");
+            List<Fighter> fighters = storageManager.GetFightersSortedByFirstName();
+
+            if (fighters == null || fighters.Count == 0)
+            {
+                Console.WriteLine("No fighters found.");
+            }
+            else
+            {
+                Console.WriteLine("First Name\tLast Name");
+                foreach (var fighter in fighters)
+                {
+                    Console.WriteLine($"{fighter.FirstName}\t\t{fighter.LastName}");
+                }
+            }
+
+            Console.WriteLine("\nPress Enter to return.");
+            Console.ReadLine();
+        }
+
 
 
         private static void ViewWeightclasses()
@@ -1223,12 +1176,6 @@ namespace BoxingApp
         }
         static void AddRegion()
         {
-            if (!currentUser.IsAdmin)
-            {
-                Console.WriteLine("You do not have permission to add regions.");
-                Console.ReadLine();
-                return;
-            }
             Console.Clear();
             Console.WriteLine("=== Add Region ===");
             Console.Write("Enter region name: ");
@@ -1287,5 +1234,8 @@ namespace BoxingApp
             Console.WriteLine("Region deleted! Press Enter.");
             Console.ReadLine();
         }
+
+       
+
     }
 }
