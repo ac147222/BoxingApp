@@ -501,6 +501,7 @@ public class StorageManager
         }
     }
 
+
     public List<Fighter> GetFightersSortedByFirstName()
     {
         List<Fighter> fighterList = new List<Fighter>();
@@ -522,6 +523,311 @@ public class StorageManager
 
         return fighterList;
     }
+    public List<Fighter> GetFightersSortedByWins()
+    {
+        List<Fighter> fighterList = new List<Fighter>();
+        string sql = "SELECT FirstName, LastName, Wins FROM tblFighter ORDER BY Wins DESC";
+
+        using (SqlCommand cmd = new SqlCommand(sql, conn))
+        using (SqlDataReader reader = cmd.ExecuteReader())
+        {
+            while (reader.Read())
+            {
+                Fighter fighter = new Fighter
+                {
+                    FirstName = reader["FirstName"].ToString(),
+                    LastName = reader["LastName"].ToString(),
+                    Wins = Convert.ToInt32(reader["Wins"])
+                };
+                fighterList.Add(fighter);
+            }
+        }
+
+        return fighterList;
+    }
+    public List<(string FirstName, string LastName, string GymName)> GetFightersWithGyms()
+    {
+        var fighterGymList = new List<(string FirstName, string LastName, string GymName)>();
+        string sql = @"
+        SELECT tblFighter.FirstName, tblFighter.LastName, tblGym.GymName
+        FROM tblFighter
+        INNER JOIN tblGym ON tblFighter.GymID = tblGym.GymID";
+
+        using (SqlCommand cmd = new SqlCommand(sql, conn))
+        using (SqlDataReader reader = cmd.ExecuteReader())
+        {
+            while (reader.Read())
+            {
+                string firstName = reader["FirstName"].ToString();
+                string lastName = reader["LastName"].ToString();
+                string gymName = reader["GymName"].ToString();
+                fighterGymList.Add((firstName, lastName, gymName));
+            }
+        }
+
+        return fighterGymList;
+    }
+    public List<(string FirstName, string LastName, string Weightclass)> GetFightersWithWeightclasses()
+    {
+        var result = new List<(string FirstName, string LastName, string Weightclass)>();
+        string sql = @"
+        SELECT tblFighter.FirstName, tblFighter.LastName, tblWeightclasses.Weightclass
+        FROM tblFighter
+        INNER JOIN tblWeightclasses ON tblFighter.WeightclassID = tblWeightclasses.WeightclassID";
+
+        using (SqlCommand cmd = new SqlCommand(sql, conn))
+        using (SqlDataReader reader = cmd.ExecuteReader())
+        {
+            while (reader.Read())
+            {
+                string firstName = reader["FirstName"].ToString();
+                string lastName = reader["LastName"].ToString();
+                string weightclass = reader["Weightclass"].ToString();
+                result.Add((firstName, lastName, weightclass));
+            }
+        }
+
+        return result;
+    }
+    public List<(string RegionName, string GymName)> GetGymsByRegion()
+    {
+        var result = new List<(string RegionName, string GymName)>();
+        string sql = @"
+        SELECT RegionName, GymName  
+        FROM tblRegion, tblGym 
+        WHERE tblRegion.RegionID = tblGym.GymID";
+
+        using (SqlCommand cmd = new SqlCommand(sql, conn))
+        using (SqlDataReader reader = cmd.ExecuteReader())
+        {
+            while (reader.Read())
+            {
+                string regionName = reader["RegionName"].ToString();
+                string gymName = reader["GymName"].ToString();
+                result.Add((regionName, gymName));
+            }
+        }
+
+        return result;
+    }
+    public List<(string FirstName, string LastName, int MatchID, string OutcomeDescription)> GetMatchOutcomeDetails()
+    {
+        var results = new List<(string FirstName, string LastName, int MatchID, string OutcomeDescription)>();
+
+        string sql = @"
+        SELECT DISTINCT tblFighter.FirstName, tblFighter.LastName, tblMatch.MatchID, tblOutcomeType.OutcomeDescription
+        FROM tblFighter, tblMatch, tblMatchOutcome, tblOutcomeType
+        WHERE tblMatch.MatchID = tblMatchOutcome.MatchID
+          AND tblMatchOutcome.OutcomeID = tblOutcomeType.OutcomeID
+          AND (tblFighter.FighterID = tblMatch.Fighter1ID OR tblFighter.FighterID = tblMatch.Fighter2ID)";
+
+        using (SqlCommand cmd = new SqlCommand(sql, conn))
+        using (SqlDataReader reader = cmd.ExecuteReader())
+        {
+            while (reader.Read())
+            {
+                string firstName = reader["FirstName"].ToString();
+                string lastName = reader["LastName"].ToString();
+                int matchID = Convert.ToInt32(reader["MatchID"]);
+                string outcome = reader["OutcomeDescription"].ToString();
+
+                results.Add((firstName, lastName, matchID, outcome));
+            }
+        }
+
+        return results;
+    }
+    public List<(string FirstName, string LastName, string Weightclass, string GymName)> GetFighterProfile()
+    {
+        var result = new List<(string FirstName, string LastName, string Weightclass, string GymName)>();
+
+        string sql = @"
+        SELECT tblFighter.FirstName, tblFighter.LastName, 
+               tblWeightclasses.Weightclass, tblGym.GymName
+        FROM tblFighter, tblWeightclasses, tblGym
+        WHERE tblFighter.WeightclassID = tblWeightclasses.WeightclassID
+          AND tblFighter.GymID = tblGym.GymID";
+
+        using (SqlCommand cmd = new SqlCommand(sql, conn))
+        using (SqlDataReader reader = cmd.ExecuteReader())
+        {
+            while (reader.Read())
+            {
+                string firstName = reader["FirstName"].ToString();
+                string lastName = reader["LastName"].ToString();
+                string weightclass = reader["Weightclass"].ToString();
+                string gymName = reader["GymName"].ToString();
+
+                result.Add((firstName, lastName, weightclass, gymName));
+            }
+        }
+
+        return result;
+    }
+    public List<(string GymName, int TotalFighters)> GetGymFighterCounts()
+    {
+        var result = new List<(string GymName, int TotalFighters)>();
+
+        string sql = @"
+        SELECT tblGym.GymName, COUNT(tblFighter.FighterID) AS TotalFighters
+        FROM tblFighter, tblGym
+        WHERE tblFighter.GymID = tblGym.GymID
+        GROUP BY tblGym.GymName
+        ORDER BY TotalFighters DESC";
+
+        using (SqlCommand cmd = new SqlCommand(sql, conn))
+        using (SqlDataReader reader = cmd.ExecuteReader())
+        {
+            while (reader.Read())
+            {
+                string gymName = reader["GymName"].ToString();
+                int totalFighters = Convert.ToInt32(reader["TotalFighters"]);
+                result.Add((gymName, totalFighters));
+            }
+        }
+
+        return result;
+    }
+    public List<(string GymName, int TotalWins, int TotalLosses, int TotalDraws)> GetGymFightStats()
+    {
+        var result = new List<(string GymName, int TotalWins, int TotalLosses, int TotalDraws)>();
+
+        string sql = @"
+        SELECT GymName, 
+               SUM(Wins) AS TotalWins, 
+               SUM(Losses) AS TotalLosses, 
+               SUM(Draws) AS TotalDraws
+        FROM tblFighter, tblGym
+        WHERE tblFighter.GymID = tblGym.GymID
+        GROUP BY GymName
+        HAVING SUM(Wins) + SUM(Losses) + SUM(Draws) > 10
+        ORDER BY TotalWins DESC";
+
+        using (SqlCommand cmd = new SqlCommand(sql, conn))
+        using (SqlDataReader reader = cmd.ExecuteReader())
+        {
+            while (reader.Read())
+            {
+                string gymName = reader["GymName"].ToString();
+                int wins = Convert.ToInt32(reader["TotalWins"]);
+                int losses = Convert.ToInt32(reader["TotalLosses"]);
+                int draws = Convert.ToInt32(reader["TotalDraws"]);
+
+                result.Add((gymName, wins, losses, draws));
+            }
+        }
+
+        return result;
+    }
+    public List<(int MatchYear, int TotalMatches)> GetMatchCountByYear()
+    {
+        var result = new List<(int MatchYear, int TotalMatches)>();
+
+        string sql = @"
+        SELECT YEAR(MatchDate) AS MatchYear, 
+               COUNT(MatchID) AS TotalMatches
+        FROM tblMatch
+        WHERE YEAR(MatchDate) = 2025
+        GROUP BY YEAR(MatchDate)
+        ORDER BY MatchYear ASC";
+
+        using (SqlCommand cmd = new SqlCommand(sql, conn))
+        using (SqlDataReader reader = cmd.ExecuteReader())
+        {
+            while (reader.Read())
+            {
+                int year = Convert.ToInt32(reader["MatchYear"]);
+                int count = Convert.ToInt32(reader["TotalMatches"]);
+                result.Add((year, count));
+            }
+        }
+
+        return result;
+    }
+    public List<(string WeightClassName, double AverageAge)> GetAverageAgeByWeightclass()
+    {
+        var result = new List<(string WeightClassName, double AverageAge)>();
+
+        string sql = @"
+        SELECT Weightclass AS WeightClassName, 
+               AVG(Age) AS AverageAge
+        FROM tblFighter, tblWeightclasses
+        WHERE tblFighter.WeightclassID = tblWeightclasses.WeightclassID
+        GROUP BY Weightclass
+        ORDER BY AverageAge ASC";
+
+        using (SqlCommand cmd = new SqlCommand(sql, conn))
+        using (SqlDataReader reader = cmd.ExecuteReader())
+        {
+            while (reader.Read())
+            {
+                string weightClassName = reader["WeightClassName"].ToString();
+                double averageAge = Convert.ToDouble(reader["AverageAge"]);
+                result.Add((weightClassName, averageAge));
+            }
+        }
+
+        return result;
+    }
+    public List<(string FighterFirstName, string FighterLastName, int TotalMatches)> GetFighterMatchCountsFor2025()
+    {
+        var result = new List<(string FighterFirstName, string FighterLastName, int TotalMatches)>();
+
+        string sql = @"
+        SELECT FirstName AS FighterFirstName, LastName AS FighterLastName, 
+               COUNT(MatchID) AS TotalMatches
+        FROM tblFighter, tblMatch
+        WHERE (tblMatch.Fighter1ID = tblFighter.FighterID OR tblMatch.Fighter2ID = tblFighter.FighterID)
+          AND YEAR(tblMatch.MatchDate) = 2025
+        GROUP BY FirstName, LastName
+        ORDER BY TotalMatches DESC";
+
+        using (SqlCommand cmd = new SqlCommand(sql, conn))
+        using (SqlDataReader reader = cmd.ExecuteReader())
+        {
+            while (reader.Read())
+            {
+                string firstName = reader["FighterFirstName"].ToString();
+                string lastName = reader["FighterLastName"].ToString();
+                int totalMatches = Convert.ToInt32(reader["TotalMatches"]);
+
+                result.Add((firstName, lastName, totalMatches));
+            }
+        }
+
+        return result;
+    }
+    public List<(string FirstName, string LastName, int MatchID, string OutcomeDescription)> GetFighterMatchOutcomes()
+    {
+        var result = new List<(string FirstName, string LastName, int MatchID, string OutcomeDescription)>();
+
+        string sql = @"
+        SELECT Firstname, Lastname, tblMatch.MatchID, tblOutcomeType.OutcomeDescription 
+        FROM tblFighter, tblMatch, tblMatchOutcome, tblOutcomeType 
+        WHERE tblMatch.MatchID = tblMatchOutcome.MatchID 
+          AND tblMatchOutcome.OutcomeID = tblOutcomeType.OutcomeID 
+          AND FighterID = Fighter1ID 
+          OR FighterID = Fighter2ID";
+
+        using (SqlCommand cmd = new SqlCommand(sql, conn))
+        using (SqlDataReader reader = cmd.ExecuteReader())
+        {
+            while (reader.Read())
+            {
+                string firstName = reader["Firstname"].ToString();
+                string lastName = reader["Lastname"].ToString();
+                int matchID = Convert.ToInt32(reader["MatchID"]);
+                string outcome = reader["OutcomeDescription"].ToString();
+
+                result.Add((firstName, lastName, matchID, outcome));
+            }
+        }
+
+        return result;
+    }
+
+
+
 
 
     public bool DoesRegionExist(int regionID)

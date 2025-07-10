@@ -37,7 +37,8 @@ namespace BoxingDatabase
             Console.WriteLine("6. Manage Fighters");
             Console.WriteLine("7. Manage Match Outcomes");
             Console.WriteLine("8. Manage Fighter and Gym records");
-            Console.WriteLine("9. Log Out");
+            Console.WriteLine("9. Reports Menu");
+            Console.WriteLine("10. Log Out");
             Console.Write("Select an option: ");
         }
 
@@ -53,10 +54,31 @@ namespace BoxingDatabase
             Console.WriteLine("5. View Match Outcome Types");
             Console.WriteLine("6. View Fighters");
             Console.WriteLine("7. View Match Outcomes");
-            Console.WriteLine("8. Log Out");
+            Console.WriteLine("8 View Fighters and Gym records");
+            Console.WriteLine("9 Reports Menu");
+            Console.WriteLine("10. Log Out");
             Console.Write("Select an option: ");
         }
-
+        public static void DisplayReportsMenu()
+        {
+            Console.Clear();
+            Console.WriteLine("=== Reports Menu ===");
+            Console.WriteLine("1. Fighter Report (Sorted by First Name)");
+            Console.WriteLine("2. Fighter Report (Sorted by Wins");
+            Console.WriteLine("3. Fighter and Gym Report");
+            Console.WriteLine("4. Fighter and Weightclass Report ");
+            Console.WriteLine("5. Gyms By Region Report");
+            Console.WriteLine("6. Match Outcome and Details Report");
+            Console.WriteLine("7. Fighter Records Report");
+            Console.WriteLine("8. Number of Fighter per Gym Report (Descending)");
+            Console.WriteLine("9. Gym Fight Stats Report (Sorted by Gyms with over 10 Fights Descending");
+            Console.WriteLine("10. Match Count Per Year Report (Ascending)");
+            Console.WriteLine("11. Average Age by Weightclass Report (Sorted in Ascending order");
+            Console.WriteLine("12. Number of Matches per Fighter in 2025 (Descending");
+            Console.WriteLine("13. Fighters and their Match Outcomes Report");
+            Console.WriteLine("14. Back to User Menu");
+            Console.Write("Select an option: ");
+        }
         public static void DisplayRegionMenu()
         {
 

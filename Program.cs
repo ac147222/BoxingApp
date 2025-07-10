@@ -13,7 +13,7 @@ namespace BoxingApp
 
         static void Main(string[] args)
         {
-            
+
             string connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=\"C:\\USERS\\FARJA\\ONEDRIVE - AVONDALE COLLEGE\\FARJADBOXINGDATABASE\\BOXINGAPP\\DB\\BOXINGDATABASE.MDF\";Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False";
             SqlConnection conn = new SqlConnection(connectionString);
             conn.Open();
@@ -39,307 +39,589 @@ namespace BoxingApp
                 }
                 else
                 {
-                    if (currentUser.IsAdmin)
+                    if (currentUser != null && currentUser.IsAdmin)
+                    {
                         ShowAdminMenu();
-                    else
+                    }
+                    else if (currentUser != null)
+                    {
                         ShowUserMenu();
+                    }
                 }
             }
-        }
 
-        static void Login()
-        {
-            Console.Clear();
-            Console.WriteLine("=== Login ===");
-            Console.Write("Username: ");
-            string username = Console.ReadLine();
-            Console.Write("Password: ");
-            string password = Console.ReadLine();
-
-            var user = storageManager.AuthenticateUser(username, password);
-            if (user != null)
-            {
-                currentUser = user;
-                Console.WriteLine("Login successful! Press Enter to continue.");
-            }
-            else
-            {
-                Console.WriteLine("Invalid credentials. Press Enter to return to menu.");
-            }
-            Console.ReadLine();
-        }
-
-        static void Register()
-        {
-            Console.Clear();
-            Console.WriteLine("=== Register ===");
-            Console.Write("Choose a username: ");
-            string username = Console.ReadLine();
-            Console.Write("Choose a password: ");
-            string password = Console.ReadLine();
-
-            bool success = storageManager.RegisterUser(username, password);
-            if (success)
-            {
-                Console.WriteLine("Registration successful! You can now log in. Press Enter.");
-            }
-            else
-            {
-                Console.WriteLine("Username already exists. Press Enter and try again.");
-            }
-            Console.ReadLine();
-        }
-
-       static void RegionsMenu()
-        {
             
-            while (true)
-            {
-                ConsoleView.DisplayRegionMenu();
-                switch (Console.ReadLine())
-                {
-                    case "1": ViewRegions(); break;
-                    case "2": AddRegion(); break;
-                    case "3": UpdateRegion(); break;
-                    case "4": DeleteRegion(); break;
-                    case "5": ShowAdminMenu(); break;
-                    default:
-                        ConsoleView.ShowInvalidChoice();
-                        break;
-                }
-
-
-            }
-        }
-
-        static void WeightclassesMenu()
-        {
-            while (true)
-            {
-               ConsoleView.DisplayWeightclassMenu();
-                switch (Console.ReadLine())
-                {
-                    case "1": ViewWeightclasses(); break;
-                    case "2": AddWeightclasses(); break;
-                    case "3": UpdateWeightclass(); break;
-                    case "4": DeleteWeightclass(); break;
-                    case "5": ShowAdminMenu(); break;
-                    default:
-                        ConsoleView.ShowInvalidChoice();
-                        break;
-                }
-            }
-        }
-
-        static void GymsMenu()
-        {
-            while (true)
-            {
-                ConsoleView.DisplayGymMenu();
-                switch (Console.ReadLine())
-                {
-                    case "1": ViewGyms(); break;
-                    case "2": AddGym(); break;
-                    case "3": UpdateGym(); break;
-                    case "4": DeleteGym(); break;
-                    case "5": ShowAdminMenu(); break;
-                    default:
-                        ConsoleView.ShowInvalidChoice();
-                        break;
-                }
-            }
-        }
-
-        static void MatchesMenu()
-        {
-            while (true)
-            {
-                ConsoleView.DisplayMatchMenu();
-                switch (Console.ReadLine())
-                {
-                    case "1": ViewMatches(); break;
-                    case "2": AddMatch(); break;
-                    case "3": UpdateMatch(); break;
-                    case "4": DeleteMatch(); break;
-                    case "5": ShowAdminMenu(); break;
-                    default:
-                        ConsoleView.ShowInvalidChoice();
-                        break;
-                }
-            }
-        }
-
-        static void OutcomeTypeMenu()
-        {
-            while (true)
-            {
-               ConsoleView.DisplayOutcomeTypeMenu();
-                switch (Console.ReadLine())
-                {
-                    case "1": ViewOutcomeTypes(); break;
-                    case "2": AddOutcomeType(); break;
-                    case "3": UpdateOutcomeType(); break;
-                    case "4": DeleteOutcomeType(); break;
-                    case "5": ShowAdminMenu(); break;
-                    default:
-                        ConsoleView.ShowInvalidChoice();
-                        break;
-                }
-            }
-        }
-
-        static void FighterMenu()
-        {
-            while (true)
-            {
-                ConsoleView.DisplayFighterMenu();
-                switch (Console.ReadLine())
-                {
-                    case "1": ViewFighters(); break;
-                    case "2": AddFighter(); break;
-                    case "3": UpdateFighter(); break;
-                    case "4": DeleteFighter(); break;
-                    case "5": ShowAdminMenu(); break;
-                    default:
-                        ConsoleView.ShowInvalidChoice();
-                        break;
-                }
-            }
-        }
-
-        static void MatchOutcomeMenu()
-        {
-            while (true)
-            {
-                ConsoleView.DisplayMatchOutcomeMenu();
-                switch (Console.ReadLine())
-                {
-                    case "1": ViewMatchOutcome(); break;
-                    case "2": AddMatchOutcome(); break;
-                    case "3": UpdateMatchOutcome(); break;
-                    case "4": DeleteMatchOutcome(); break;
-                    case "5": ShowAdminMenu(); break;
-                    default:
-                        ConsoleView.ShowInvalidChoice();
-                        break;
-                }
-            }
-        }
-
-        static void FighterAndGymMenu()
-        {
-            while (true)
-            {
-                ConsoleView.DisplayFighterGymMenu();
-                switch (Console.ReadLine())
-                {
-                    case "1": ViewFighterAndGym(); break;
-                    case "2": AddFighterAndGym(); break;
-                    case "3": UpdateFighterAndGym(); break;
-                    case "4": DeleteFighterAndGym(); break;
-                    case "5": ShowAdminMenu(); break;
-                    default:
-                        ConsoleView.ShowInvalidChoice();
-                        break;
-                }
-            }
-        }
-
-        static void ShowAdminMenu()
-        {
-            while (true)
-            {
-                ConsoleView.DisplayAdminMenu();   
-                switch (Console.ReadLine())
-                {
-                    case "1": RegionsMenu(); break;
-                    case "2": WeightclassesMenu(); break;
-                    case "3": GymsMenu(); break;
-                    case "4": MatchesMenu(); break;
-                    case "5": OutcomeTypeMenu(); break;
-                    case "6": FighterMenu(); break;
-                    case "7": MatchOutcomeMenu(); break;
-                    case "8": FighterAndGymMenu(); break;
-                    case "9":
-                        currentUser = null;
-                        return;
-                    default:
-                        ConsoleView.ShowInvalidChoice();
-                        break;
-                }
-            }
-        }
-
-        static void ShowUserMenu()
-        {
-            while (true)
-            {
-                ConsoleView.DisplayUserMenu();
-                
-                switch (Console.ReadLine())
-                {
-                    case "1": ViewRegions(); break;
-                    case "2": ViewWeightclasses(); break;
-                    case "3": ViewGyms(); break;
-                    case "4": ViewMatches(); break;
-                    case "5": ViewOutcomeTypes(); break;
-                    case "6": ViewFighters(); break;
-                    case "7": ViewFighterAndGym(); break;
-                    case "8": ViewMatchOutcome(); break;
-                    case "9": ShowFighterReport(); break;
-                    case "10":
-                        currentUser = null;
-                        return;  
-                    default:
-                        ConsoleView.ShowInvalidChoice();
-                        break;
-                }
-            }
-        }
-
-        static void ReportsMenu()
-        {
-            while (true)
+            static void Login()
             {
                 Console.Clear();
-                Console.WriteLine("=== Reports Menu ===");
-                Console.WriteLine("1. Show Fighter Report (Sorted by First Name)");
-                Console.WriteLine("2. Back to User Menu");
-                Console.Write("Select an option: ");
-                switch (Console.ReadLine())
+                Console.WriteLine("=== Login ===");
+                Console.Write("Username: ");
+                string username = Console.ReadLine();
+                Console.Write("Password: ");
+                string password = Console.ReadLine();
+
+                var user = storageManager.AuthenticateUser(username, password);
+                if (user != null)
                 {
-                    case "1": ShowFighterReport(); break;
-                    case "2": return;
-                    default:
-                        ConsoleView.ShowInvalidChoice();
-                        break;
+                    currentUser = user;
+                    Console.WriteLine("Login successful! Press Enter to continue.");
+                }
+                else
+                {
+                    Console.WriteLine("Invalid credentials. Press Enter to return to menu.");
+                }
+                Console.ReadLine();
+            }
+
+            static void Register()
+            {
+                Console.Clear();
+                Console.WriteLine("=== Register ===");
+                Console.Write("Choose a username: ");
+                string username = Console.ReadLine();
+                Console.Write("Choose a password: ");
+                string password = Console.ReadLine();
+
+                bool success = storageManager.RegisterUser(username, password);
+                if (success)
+                {
+                    Console.WriteLine("Registration successful! You can now log in. Press Enter.");
+                }
+                else
+                {
+                    Console.WriteLine("Username already exists. Press Enter and try again.");
+                }
+                Console.ReadLine();
+            }
+
+            static void RegionsMenu()
+            {
+
+                while (true)
+                {
+                    ConsoleView.DisplayRegionMenu();
+                    switch (Console.ReadLine())
+                    {
+                        case "1": ViewRegions(); break;
+                        case "2": AddRegion(); break;
+                        case "3": UpdateRegion(); break;
+                        case "4": DeleteRegion(); break;
+                        case "5": return;
+                        default:
+                            ConsoleView.ShowInvalidChoice();
+                            break;
+                    }
+
+
                 }
             }
-        }
 
-        static void ShowFighterReport()
-        {
-            Console.Clear();
-            Console.WriteLine("=== Fighter Report (Sorted by First Name) ===");
-            List<Fighter> fighters = storageManager.GetFightersSortedByFirstName();
-
-            if (fighters == null || fighters.Count == 0)
+            static void WeightclassesMenu()
             {
-                Console.WriteLine("No fighters found.");
-            }
-            else
-            {
-                Console.WriteLine("First Name\tLast Name");
-                foreach (var fighter in fighters)
+                while (true)
                 {
-                    Console.WriteLine($"{fighter.FirstName}\t\t{fighter.LastName}");
+                    ConsoleView.DisplayWeightclassMenu();
+                    switch (Console.ReadLine())
+                    {
+                        case "1": ViewWeightclasses(); break;
+                        case "2": AddWeightclasses(); break;
+                        case "3": UpdateWeightclass(); break;
+                        case "4": DeleteWeightclass(); break;
+                        case "5": return;
+                        default:
+                            ConsoleView.ShowInvalidChoice();
+                            break;
+                    }
                 }
             }
 
-            Console.WriteLine("\nPress Enter to return.");
-            Console.ReadLine();
-        }
+            static void GymsMenu()
+            {
+                while (true)
+                {
+                    ConsoleView.DisplayGymMenu();
+                    switch (Console.ReadLine())
+                    {
+                        case "1": ViewGyms(); break;
+                        case "2": AddGym(); break;
+                        case "3": UpdateGym(); break;
+                        case "4": DeleteGym(); break;
+                        case "5": return;
+                        default:
+                            ConsoleView.ShowInvalidChoice();
+                            break;
+                    }
+                }
+            }
 
+            static void MatchesMenu()
+            {
+                while (true)
+                {
+                    ConsoleView.DisplayMatchMenu();
+                    switch (Console.ReadLine())
+                    {
+                        case "1": ViewMatches(); break;
+                        case "2": AddMatch(); break;
+                        case "3": UpdateMatch(); break;
+                        case "4": DeleteMatch(); break;
+                        case "5": return;
+                        default:
+                            ConsoleView.ShowInvalidChoice();
+                            break;
+                    }
+                }
+            }
+
+            static void OutcomeTypeMenu()
+            {
+                while (true)
+                {
+                    ConsoleView.DisplayOutcomeTypeMenu();
+                    switch (Console.ReadLine())
+                    {
+                        case "1": ViewOutcomeTypes(); break;
+                        case "2": AddOutcomeType(); break;
+                        case "3": UpdateOutcomeType(); break;
+                        case "4": DeleteOutcomeType(); break;
+                        case "5": return;
+                        default:
+                            ConsoleView.ShowInvalidChoice();
+                            break;
+                    }
+                }
+            }
+
+            static void FighterMenu()
+            {
+                while (true)
+                {
+                    ConsoleView.DisplayFighterMenu();
+                    switch (Console.ReadLine())
+                    {
+                        case "1": ViewFighters(); break;
+                        case "2": AddFighter(); break;
+                        case "3": UpdateFighter(); break;
+                        case "4": DeleteFighter(); break;
+                        case "5": return;
+                        default:
+                            ConsoleView.ShowInvalidChoice();
+                            break;
+                    }
+                }
+            }
+
+            static void MatchOutcomeMenu()
+            {
+                while (true)
+                {
+                    ConsoleView.DisplayMatchOutcomeMenu();
+                    switch (Console.ReadLine())
+                    {
+                        case "1": ViewMatchOutcome(); break;
+                        case "2": AddMatchOutcome(); break;
+                        case "3": UpdateMatchOutcome(); break;
+                        case "4": DeleteMatchOutcome(); break;
+                        case "5": return;
+                        default:
+                            ConsoleView.ShowInvalidChoice();
+                            break;
+                    }
+                }
+            }
+
+            static void FighterAndGymMenu()
+            {
+                while (true)
+                {
+                    ConsoleView.DisplayFighterGymMenu();
+                    switch (Console.ReadLine())
+                    {
+                        case "1": ViewFighterAndGym(); break;
+                        case "2": AddFighterAndGym(); break;
+                        case "3": UpdateFighterAndGym(); break;
+                        case "4": DeleteFighterAndGym(); break;
+                        case "5": return;
+                        default:
+                            ConsoleView.ShowInvalidChoice();
+                            break;
+                    }
+                }
+            }
+
+            static void ShowAdminMenu()
+            {
+                while (true)
+                {
+                    ConsoleView.DisplayAdminMenu();
+                    switch (Console.ReadLine())
+                    {
+                        case "1": RegionsMenu(); break;
+                        case "2": WeightclassesMenu(); break;
+                        case "3": GymsMenu(); break;
+                        case "4": MatchesMenu(); break;
+                        case "5": OutcomeTypeMenu(); break;
+                        case "6": FighterMenu(); break;
+                        case "7": MatchOutcomeMenu(); break;
+                        case "8": FighterAndGymMenu(); break;
+                        case "9": ReportsMenu(); break;
+                        case "10":
+                            currentUser = null;
+                            return;
+                        default:
+                            ConsoleView.ShowInvalidChoice();
+                            break;
+                    }
+                }
+            }
+
+            static void ShowUserMenu()
+            {
+                while (true)
+                {
+                    ConsoleView.DisplayUserMenu();
+
+                    switch (Console.ReadLine())
+                    {
+                        case "1": ViewRegions(); break;
+                        case "2": ViewWeightclasses(); break;
+                        case "3": ViewGyms(); break;
+                        case "4": ViewMatches(); break;
+                        case "5": ViewOutcomeTypes(); break;
+                        case "6": ViewFighters(); break;
+                        case "7": ViewFighterAndGym(); break;
+                        case "8": ViewMatchOutcome(); break;
+                        case "9": ReportsMenu(); break;
+                        case "10":
+                            currentUser = null;
+                            return;
+                        default:
+                            ConsoleView.ShowInvalidChoice();
+                            break;
+                    }
+                }
+            }
+
+            static void ReportsMenu()
+            {
+                while (true)
+                {
+                    ConsoleView.DisplayReportsMenu();
+                    switch (Console.ReadLine())
+                    {
+                        case "1": ShowFighterFirstNameReport(); break;
+                        case "2": ShowFighterWinsReport(); break;
+                        case "3": ShowFighterAndGymReport(); break;
+                        case "4": ShowFighterWeightclassReport(); break;
+                        case "5": ShowGymsByRegionReport(); break;
+                        case "6": ShowMatchOutcomeDetailsReport(); break;
+                        case "7": ShowFighterProfilesReport(); break;
+                        case "8": ShowGymFighterCountsReport(); break;
+                        case "9": ShowGymFightStatsReport(); break;
+                        case "10": ShowMatchCountByYearReport(); break;
+                        case "11": ShowAverageAgeByWeightclassReport(); break;
+                        case "12": ShowFighterMatchCountsFor2025(); break;
+                        case "13": ShowFighterMatchOutcomesReport(); break;
+                        case "14": return;
+                        default:
+                            ConsoleView.ShowInvalidChoice();
+                            break;
+                    }
+                }
+            }
+
+            static void ShowFighterFirstNameReport()
+            {
+                Console.Clear();
+                Console.WriteLine("=== Fighter Report (Sorted by First Name) ===");
+                List<Fighter> fighters = storageManager.GetFightersSortedByFirstName();
+
+                if (fighters == null || fighters.Count == 0)
+                {
+                    Console.WriteLine("No fighters found.");
+                }
+                else
+                {
+                    Console.WriteLine("First Name\tLast Name");
+                    foreach (var fighter in fighters)
+                    {
+                        Console.WriteLine($"{fighter.FirstName,-20}\t\t{fighter.LastName,-20}");
+                    }
+                }
+
+                Console.WriteLine("\nPress Enter to return.");
+                Console.ReadLine();
+            }
+            static void ShowFighterWinsReport()
+            {
+                Console.Clear();
+                Console.WriteLine("=== Fighter Wins Report ===");
+
+                List<Fighter> fighters = storageManager.GetFightersSortedByWins();
+
+                if (fighters == null || fighters.Count == 0)
+                {
+                    Console.WriteLine("No fighters found.");
+                }
+                else
+                {
+                    Console.WriteLine("First Name\tLast Name\tWins");
+                    foreach (var fighter in fighters)
+                    {
+                        Console.WriteLine($"{fighter.FirstName}\t\t{fighter.LastName}\t\t{fighter.Wins}");
+                    }
+                }
+
+                Console.WriteLine("\nPress Enter to return.");
+                Console.ReadLine();
+            }
+            static void ShowFighterAndGymReport()
+            {
+                Console.Clear();
+                Console.WriteLine("=== Fighter and Gym Report ===");
+
+                var fighterGyms = storageManager.GetFightersWithGyms();
+
+                if (fighterGyms == null || fighterGyms.Count == 0)
+                {
+                    Console.WriteLine("No fighters or gym info found.");
+                }
+                else
+                {
+                    Console.WriteLine("First Name\tLast Name\tGym Name");
+                    foreach (var item in fighterGyms)
+                    {
+                        Console.WriteLine($"{item.FirstName}\t\t{item.LastName}\t\t{item.GymName}");
+                    }
+                }
+
+                Console.WriteLine("\nPress Enter to return.");
+                Console.ReadLine();
+            }
+            static void ShowFighterWeightclassReport()
+            {
+                Console.Clear();
+                Console.WriteLine("=== Fighter Weightclass Report ===");
+
+                var fighterList = storageManager.GetFightersWithWeightclasses();
+
+                if (fighterList == null || fighterList.Count == 0)
+                {
+                    Console.WriteLine("No fighter or weightclass data found.");
+                }
+                else
+                {
+                    Console.WriteLine("First Name\tLast Name\tWeightclass");
+                    foreach (var fighter in fighterList)
+                    {
+                        Console.WriteLine($"{fighter.FirstName}\t\t{fighter.LastName}\t\t{fighter.Weightclass}");
+                    }
+                }
+
+                Console.WriteLine("\nPress Enter to return.");
+                Console.ReadLine();
+            }
+            static void ShowGymsByRegionReport()
+            {
+                Console.Clear();
+                Console.WriteLine("=== Gyms by Region Report ===");
+
+                var regionGymPairs = storageManager.GetGymsByRegion();
+
+                if (regionGymPairs == null || regionGymPairs.Count == 0)
+                {
+                    Console.WriteLine("No region-gym data found.");
+                }
+                else
+                {
+                    Console.WriteLine("Region\t\tGym");
+                    foreach (var item in regionGymPairs)
+                    {
+                        Console.WriteLine($"{item.RegionName}\t\t{item.GymName}");
+                    }
+                }
+
+                Console.WriteLine("\nPress Enter to return.");
+                Console.ReadLine();
+            }
+            static void ShowMatchOutcomeDetailsReport()
+            {
+                Console.Clear();
+                Console.WriteLine("=== Match Outcome Details Report ===");
+
+                var matchDetails = storageManager.GetMatchOutcomeDetails();
+
+                if (matchDetails == null || matchDetails.Count == 0)
+                {
+                    Console.WriteLine("No match outcome details found.");
+                }
+                else
+                {
+                    Console.WriteLine("First Name\tLast Name\tMatch ID\tOutcome");
+                    foreach (var item in matchDetails)
+                    {
+                        Console.WriteLine($"{item.FirstName}\t\t{item.LastName}\t\t{item.MatchID}\t\t{item.OutcomeDescription}");
+                    }
+                }
+
+                Console.WriteLine("\nPress Enter to return.");
+                Console.ReadLine();
+            }
+            static void ShowFighterProfilesReport()
+            {
+                Console.Clear();
+                Console.WriteLine("=== Fighter Profiles ===");
+
+                var profiles = storageManager.GetFighterProfile();
+
+                if (profiles == null || profiles.Count == 0)
+                {
+                    Console.WriteLine("No fighter profiles found.");
+                }
+                else
+                {
+                    foreach (var item in profiles)
+                    {
+                        Console.WriteLine($"{item.FirstName} {item.LastName} - {item.Weightclass} - {item.GymName}");
+                    }
+                }
+
+                Console.WriteLine("\nPress Enter to return.");
+                Console.ReadLine();
+            }
+            static void ShowGymFighterCountsReport()
+            {
+                Console.Clear();
+                Console.WriteLine("=== Gym Fighter Counts Report ===");
+
+                var gymCounts = storageManager.GetGymFighterCounts();
+
+                if (gymCounts == null || gymCounts.Count == 0)
+                {
+                    Console.WriteLine("No gym fighter data found.");
+                }
+                else
+                {
+                    foreach (var item in gymCounts)
+                    {
+                        Console.WriteLine($"{item.GymName} - Fighters: {item.TotalFighters}");
+                    }
+                }
+
+                Console.WriteLine("\nPress Enter to return.");
+                Console.ReadLine();
+            }
+            static void ShowGymFightStatsReport()
+            {
+                Console.Clear();
+                Console.WriteLine("=== Gym Fight Stats Report ===");
+
+                var stats = storageManager.GetGymFightStats();
+
+                if (stats == null || stats.Count == 0)
+                {
+                    Console.WriteLine("No gym stats found.");
+                }
+                else
+                {
+                    foreach (var item in stats)
+                    {
+                        Console.WriteLine($"{item.GymName} - Wins: {item.TotalWins}, Losses: {item.TotalLosses}, Draws: {item.TotalDraws}");
+                    }
+                }
+
+                Console.WriteLine("\nPress Enter to return.");
+                Console.ReadLine();
+            }
+            static void ShowMatchCountByYearReport()
+            {
+                Console.Clear();
+                Console.WriteLine("=== Match Count by Year Report ===");
+
+                var matchStats = storageManager.GetMatchCountByYear();
+
+                if (matchStats == null || matchStats.Count == 0)
+                {
+                    Console.WriteLine("No match data found for 2025.");
+                }
+                else
+                {
+                    foreach (var item in matchStats)
+                    {
+                        Console.WriteLine($"Year: {item.MatchYear} - Total Matches: {item.TotalMatches}");
+                    }
+                }
+
+                Console.WriteLine("\nPress Enter to return.");
+                Console.ReadLine();
+            }
+            static void ShowAverageAgeByWeightclassReport()
+            {
+                Console.Clear();
+                Console.WriteLine("=== Average Age by Weightclass Report ===");
+
+                var ageStats = storageManager.GetAverageAgeByWeightclass();
+
+                if (ageStats == null || ageStats.Count == 0)
+                {
+                    Console.WriteLine("No age data found.");
+                }
+                else
+                {
+                    foreach (var item in ageStats)
+                    {
+                        Console.WriteLine($"{item.WeightClassName} - Average Age: {Math.Round(item.AverageAge, 1)}");
+                    }
+                }
+
+                Console.WriteLine("\nPress Enter to return.");
+                Console.ReadLine();
+            }
+            static void ShowFighterMatchCountsFor2025()
+            {
+                Console.Clear();
+                Console.WriteLine("=== Fighter Match Counts for 2025 ===");
+
+                var matchCounts = storageManager.GetFighterMatchCountsFor2025();
+
+                if (matchCounts == null || matchCounts.Count == 0)
+                {
+                    Console.WriteLine("No match data found for 2025.");
+                }
+                else
+                {
+                    foreach (var item in matchCounts)
+                    {
+                        Console.WriteLine($"{item.FighterFirstName} {item.FighterLastName} - Matches: {item.TotalMatches}");
+                    }
+                }
+
+                Console.WriteLine("\nPress Enter to return.");
+                Console.ReadLine();
+            }
+            static void ShowFighterMatchOutcomesReport()
+            {
+                Console.Clear();
+                Console.WriteLine("=== Fighter Match Outcomes Report ===");
+
+                var outcomes = storageManager.GetFighterMatchOutcomes();
+
+                if (outcomes == null || outcomes.Count == 0)
+                {
+                    Console.WriteLine("No match outcome data found.");
+                }
+                else
+                {
+                    foreach (var item in outcomes)
+                    {
+                        Console.WriteLine($"{item.FirstName} {item.LastName} - Match ID: {item.MatchID} - Outcome: {item.OutcomeDescription}");
+                    }
+                }
+
+                Console.WriteLine("\nPress Enter to return.");
+                Console.ReadLine();
+            }
+        }
 
 
         private static void ViewWeightclasses()
