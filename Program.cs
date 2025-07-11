@@ -721,53 +721,83 @@ namespace BoxingApp
         }
         static void UpdateWeightclass()
         {
-            if (!currentUser.IsAdmin)
+            while (true)
             {
-                Console.WriteLine("You do not have permission to update weightclasses.");
+                Console.Clear();
+                Console.WriteLine("Update Weightclasses");
+
+                var weightclasses = storageManager.GetAllWeightclasses();
+                foreach (var wc in weightclasses)
+                {
+                    Console.WriteLine($"{wc.WeightclassID}: {wc.WeightclassName}");
+                }
+
+                Console.Write("Enter Weightclass ID to update: ");
+                string input = Console.ReadLine();
+                if (!int.TryParse(input, out int id) || !weightclasses.Any(w => w.WeightclassID == id))
+                {
+                    Console.Clear();
+                    Console.WriteLine("Invalid or non-existent Weightclass ID. Press Enter to try again.");
+                    Console.ReadLine();
+                    continue;
+                }
+                string newName;
+                do
+                {
+                    Console.Write("Enter new weightclass name: ");
+                    newName = Console.ReadLine();
+                    if (string.IsNullOrWhiteSpace(newName))
+                    {
+                        Console.Clear();
+                        Console.WriteLine("Weightclass name cannot be blank.");
+                    }
+                    else if (!newName.All(c => char.IsLetter(c) || char.IsWhiteSpace(c)))
+                    {
+                        Console.Clear();
+                        Console.WriteLine("Weightclass name must contain only letters and spaces.");
+                        newName = string.Empty;
+                    }
+                } while (string.IsNullOrWhiteSpace(newName));
+
+                storageManager.UpdateWeightclasses(id, newName);
+                Console.WriteLine("Weightclass updated. Press Enter.");
                 Console.ReadLine();
-                return;
+                break;
             }
-            Console.Clear();
-            Console.WriteLine("=== Update Weightclasses ===");
-            var weightclass = storageManager.GetAllWeightclasses();
-            foreach (var weightclasses in weightclass)
-            {
-                Console.WriteLine($"{weightclasses.WeightclassID}: {weightclasses.WeightclassName}");
-            }
-            Console.Write("Enter Weightclass ID to update: ");
-            if (!int.TryParse(Console.ReadLine(), out int id))
-            {
-                Console.WriteLine("Invalid input. Press Enter.");
-                Console.ReadLine();
-                return;
-            }
-            Console.Write("Enter new weightclass name: ");
-            string newName = Console.ReadLine();
-            storageManager.UpdateWeightclasses(id, newName);
-            Console.WriteLine("Weightclass updated! Press Enter.");
-            Console.ReadLine();
         }
         static void DeleteWeightclass()
         {
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine("Delete Weightclass");
 
-            Console.Clear();
-            Console.WriteLine("=== Delete Weightclass ===");
-            var weightclass = storageManager.GetAllWeightclasses();
-            foreach (var weightclasses in weightclass)
-            {
-                Console.WriteLine($"{weightclasses.WeightclassID}: {weightclasses.WeightclassName}");
-            }
-            Console.Write("Enter Weightclass ID to delete: ");
-            if (!int.TryParse(Console.ReadLine(), out int id))
-            {
-                Console.WriteLine("Invalid input. Press Enter.");
+                var weightclasses = storageManager.GetAllWeightclasses();
+                foreach (var wc in weightclasses)
+                {
+                    Console.WriteLine($"{wc.WeightclassID}: {wc.WeightclassName}");
+                }
+
+                int id;
+                while (true)
+                {
+                    Console.Write("Enter Weightclass ID to delete: ");
+                    string input = Console.ReadLine();
+                    if (int.TryParse(input, out id) && weightclasses.Any(w => w.WeightclassID == id))
+                        break;
+
+                    Console.Clear();
+                    Console.WriteLine("Invalid or non-existent Weightclass ID. Press Enter to try again.");
+                    Console.ReadLine();
+                }
+
+                storageManager.DeleteWeightclasses(id);
+                Console.WriteLine("Weightclass deleted. Press Enter.");
                 Console.ReadLine();
-                return;
+                break;
             }
-            storageManager.DeleteWeightclasses(id);
-            Console.WriteLine("Weightclass deleted! Press Enter.");
-            Console.ReadLine();
         }
+
 
         private static void ViewMatches()
         {
@@ -840,70 +870,112 @@ namespace BoxingApp
         }
         static void UpdateMatch()
         {
-            Console.Clear();
-            Console.WriteLine("=== Update Match ===");
-
-            var matches = storageManager.GetAllMatches();
-            foreach (var match in matches)
+            while (true)
             {
-                Console.WriteLine($"{match.MatchID}: {match.Fighter1ID} vs {match.Fighter2ID} on {match.MatchDate:yyyy-MM-dd}");
-            }
+                Console.Clear();
+                Console.WriteLine("Update Match");
 
-            Console.Write("Enter Match ID to update: ");
-            if (!int.TryParse(Console.ReadLine(), out int matchID))
-            {
-                Console.WriteLine("Invalid Match ID. Press Enter.");
+                var matches = storageManager.GetAllMatches();
+                foreach (var match in matches)
+                {
+                    Console.WriteLine($"{match.MatchID}: {match.Fighter1ID} vs {match.Fighter2ID} on {match.MatchDate:yyyy-MM-dd}");
+                }
+
+                int matchID;
+                while (true)
+                {
+                    Console.Write("Enter Match ID to update: ");
+                    string input = Console.ReadLine();
+                    if (int.TryParse(input, out matchID) && matches.Any(m => m.MatchID == matchID))
+                    {
+                        break;
+                    }
+                    Console.Clear();
+                    Console.WriteLine("Invalid or non-existent Match ID. Press Enter to try again.");
+                    Console.ReadLine();
+                }
+
+                int fighter1ID;
+                while (true)
+                {
+                    Console.Write("Enter new Fighter 1 ID: ");
+                    string input = Console.ReadLine();
+                    if (int.TryParse(input, out fighter1ID) && storageManager.DoesFighterExist(fighter1ID))
+                    {
+                        break;
+                    }
+                    Console.Clear();
+                    Console.WriteLine("Fighter 1 ID is invalid or does not exist. Press Enter to try again.");
+                    Console.ReadLine();
+                }
+
+                int fighter2ID;
+                while (true)
+                {
+                    Console.Write("Enter new Fighter 2 ID: ");
+                    string input = Console.ReadLine();
+                    if (int.TryParse(input, out fighter2ID) &&
+                        storageManager.DoesFighterExist(fighter2ID) &&
+                        fighter2ID != fighter1ID)
+                    {
+                        break;
+                    }
+                    Console.Clear();
+                    Console.WriteLine("Fighter 2 ID is invalid, does not exist, or matches Fighter 1. Press Enter to try again.");
+                    Console.ReadLine();
+                }
+
+                DateTime newMatchDate;
+                while (true)
+                {
+                    Console.Write("Enter new Match Date (yyyy-MM-dd): ");
+                    string input = Console.ReadLine();
+                    if (DateTime.TryParse(input, out newMatchDate))
+                    {
+                        break;
+                    }
+                    Console.Clear();
+                    Console.WriteLine("Invalid date format. Press Enter to try again.");
+                    Console.ReadLine();
+                }
+
+                storageManager.UpdateMatch(matchID, fighter1ID, fighter2ID, newMatchDate);
+                Console.WriteLine("Match updated. Press Enter.");
                 Console.ReadLine();
-                return;
+                break;
             }
-
-            Console.Write("Enter new Fighter 1 ID: ");
-            if (!int.TryParse(Console.ReadLine(), out int fighter1ID) || !storageManager.DoesFighterExist(fighter1ID))
-            {
-                Console.WriteLine("Fighter 1 ID is invalid or does not exist. Press Enter.");
-                Console.ReadLine();
-                return;
-            }
-
-            Console.Write("Enter new Fighter 2 ID: ");
-            if (!int.TryParse(Console.ReadLine(), out int fighter2ID) || !storageManager.DoesFighterExist(fighter2ID))
-            {
-                Console.WriteLine("Fighter 2 ID is invalid or does not exist. Press Enter.");
-                Console.ReadLine();
-                return;
-            }
-
-            Console.Write("Enter new Match Date (yyyy-MM-dd): ");
-            if (!DateTime.TryParse(Console.ReadLine(), out DateTime newMatchDate))
-            {
-                Console.WriteLine("Invalid date format. Press Enter.");
-                Console.ReadLine();
-                return;
-            }
-
-            storageManager.UpdateMatch(matchID, fighter1ID, fighter2ID, newMatchDate);
-            Console.WriteLine("Match updated! Press Enter.");
-            Console.ReadLine();
         }
         static void DeleteMatch()
         {
-            Console.Clear();
-            Console.WriteLine("=== Delete Match ===");
-            var matches = storageManager.GetAllMatches();
-            foreach (var match in matches)
+            while (true)
             {
-                Console.WriteLine($"{match.MatchID}: {match.Fighter1ID} vs {match.Fighter2ID} on {match.MatchDate:yyyy-MM-dd}");
-            }
-            Console.Write("Enter Match ID to delete: ");
-            if (!int.TryParse(Console.ReadLine(), out int matchID))
-            {
-                Console.WriteLine("Invalid Match ID. Press Enter.");
+                Console.Clear();
+                Console.WriteLine("Delete Match");
+
+                var matches = storageManager.GetAllMatches();
+                foreach (var match in matches)
+                {
+                    Console.WriteLine($"{match.MatchID}: {match.Fighter1ID} vs {match.Fighter2ID} on {match.MatchDate:yyyy-MM-dd}");
+                }
+
+                int matchID;
+                while (true)
+                {
+                    Console.Write("Enter Match ID to delete: ");
+                    string input = Console.ReadLine();
+                    if (int.TryParse(input, out matchID) && matches.Any(m => m.MatchID == matchID))
+                        break;
+
+                    Console.Clear();
+                    Console.WriteLine("Invalid or non-existent Match ID. Press Enter to try again.");
+                    Console.ReadLine();
+                }
+
+                storageManager.DeleteMatch(matchID);
+                Console.WriteLine("Match deleted. Press Enter.");
                 Console.ReadLine();
-                return;
+                break;
             }
-            storageManager.DeleteMatch(matchID);
-            Console.WriteLine("Match deleted! Press Enter.");
-            Console.ReadLine();
         }
 
 
@@ -972,46 +1044,88 @@ namespace BoxingApp
         }
         static void UpdateGym()
         {
-            Console.Clear();
-            Console.WriteLine("=== Update Gym ===");
-            var gyms = storageManager.GetAllGyms();
-            foreach (var gym in gyms)
+            while (true)
             {
-                Console.WriteLine($"{gym.GymID}: {gym.GymName}");
-            }
-            Console.Write("Enter Gym ID to update: ");
-            if (!int.TryParse(Console.ReadLine(), out int id))
-            {
-                Console.WriteLine("Invalid input. Press Enter.");
+                Console.Clear();
+                Console.WriteLine("Update Gym");
+
+                var gyms = storageManager.GetAllGyms();
+                foreach (var gym in gyms)
+                {
+                    Console.WriteLine($"{gym.GymID}: {gym.GymName}");
+                }
+
+                int id;
+                while (true)
+                {
+                    Console.Write("Enter Gym ID to update: ");
+                    string input = Console.ReadLine();
+                    if (int.TryParse(input, out id) && gyms.Any(g => g.GymID == id))
+                    {
+                        break;
+                    }
+                    Console.Clear();
+                    Console.WriteLine("Invalid or non-existent Gym ID. Press Enter to try again.");
+                    Console.ReadLine();
+                }
+
+                string newName;
+                do
+                {
+                    Console.Write("Enter new Gym name: ");
+                    newName = Console.ReadLine();
+                    if (string.IsNullOrWhiteSpace(newName))
+                    {
+                        Console.WriteLine("Gym name cannot be blank. Press Enter to try again.");
+                        Console.ReadLine();
+                    }
+                    else if (!newName.All(c => char.IsLetter(c) || char.IsWhiteSpace(c)))
+                    {
+                        Console.Clear();
+                        Console.WriteLine("Gym name must contain only letters and spaces. Press Enter to try again.");
+                        Console.ReadLine();
+                        newName = string.Empty;
+                    }
+                } while (string.IsNullOrWhiteSpace(newName));
+
+                storageManager.UpdateGym(id, newName);
+                Console.WriteLine("Gym updated. Press Enter.");
                 Console.ReadLine();
-                return;
+                break;
             }
-            Console.Write("Enter new Gym name: ");
-            string newName = Console.ReadLine();
-            storageManager.UpdateGym(id, newName);
-            Console.WriteLine("Gym updated! Press Enter.");
-            Console.ReadLine();
         }
-        public static void DeleteGym()
+        static void DeleteGym()
         {
-            Console.Clear();
-            Console.WriteLine("=== Delete Gym ===");
-            var gyms = storageManager.GetAllGyms();
-            foreach (var gym in gyms)
+            while (true)
             {
-                Console.WriteLine($"{gym.GymID}: {gym.GymName}");
-            }
-            Console.Write("Enter Gym ID to delete: ");
-            if (!int.TryParse(Console.ReadLine(), out int id))
-            {
-                Console.WriteLine("Invalid input. Press Enter.");
+                Console.Clear();
+                Console.WriteLine("Delete Gym");
+
+                var gyms = storageManager.GetAllGyms();
+                foreach (var gym in gyms)
+                {
+                    Console.WriteLine($"{gym.GymID}: {gym.GymName}");
+                }
+
+                int id;
+                while (true)
+                {
+                    Console.Write("Enter Gym ID to delete: ");
+                    string input = Console.ReadLine();
+                    if (int.TryParse(input, out id) && gyms.Any(g => g.GymID == id))
+                        break;
+
+                    Console.Clear();
+                    Console.WriteLine("Invalid or non-existent Gym ID. Press Enter to try again.");
+                    Console.ReadLine();
+                }
+
+                storageManager.DeleteGym(id);
+                Console.WriteLine("Gym deleted. Press Enter.");
                 Console.ReadLine();
-                return;
+                break;
             }
-            storageManager.DeleteGym(id);
-            Console.WriteLine("Gym deleted! Press Enter.");
-            Console.ReadLine();
-        }   
+        }
 
 
         private static void ViewOutcomeTypes()
@@ -1061,31 +1175,50 @@ namespace BoxingApp
         }
         static void UpdateOutcomeType()
         {
-            if (!currentUser.IsAdmin)
+            while (true)
             {
-                Console.WriteLine("You do not have permission to update outcome types.");
+                Console.Clear();
+                Console.WriteLine("Update Outcome Type");
+
+                var outcomeTypes = storageManager.GetAllOutcomeTypes();
+                foreach (var outcomeType in outcomeTypes)
+                {
+                    Console.WriteLine($"{outcomeType.OutcomeID}: {outcomeType.OutcomeDescription}");
+                }
+
+                int id;
+                while (true)
+                {
+                    Console.Clear();
+                    Console.Write("Enter Outcome Type ID to update: ");
+                    string input = Console.ReadLine();
+                    if (int.TryParse(input, out id) && outcomeTypes.Any(o => o.OutcomeID == id))
+                    {
+                        break;
+                    }
+                    Console.Clear();
+                    Console.WriteLine("Invalid or non-existent Outcome Type ID. Press Enter to try again.");
+                    Console.ReadLine();
+                }
+
+                string newDescription;
+                do
+                {
+                    Console.Write("Enter new Outcome Type description: ");
+                    newDescription = Console.ReadLine();
+                    if (string.IsNullOrWhiteSpace(newDescription))
+                    {
+                        Console.Clear();
+                        Console.WriteLine("Description cannot be blank. Press Enter to try again.");
+                        Console.ReadLine();
+                    }
+                } while (string.IsNullOrWhiteSpace(newDescription));
+
+                storageManager.UpdateOutcomeType(id, newDescription);
+                Console.WriteLine("Outcome Type updated. Press Enter.");
                 Console.ReadLine();
-                return;
+                break;
             }
-            Console.Clear();
-            Console.WriteLine("=== Update Outcome Type ===");
-            var outcomeTypes = storageManager.GetAllOutcomeTypes();
-            foreach (var outcomeType in outcomeTypes)
-            {
-                Console.WriteLine($"{outcomeType.OutcomeID}: {outcomeType.OutcomeDescription}");
-            }
-            Console.Write("Enter Outcome Type ID to update: ");
-            if (!int.TryParse(Console.ReadLine(), out int id))
-            {
-                Console.WriteLine("Invalid input. Press Enter.");
-                Console.ReadLine();
-                return;
-            }
-            Console.Write("Enter new Outcome Type description: ");
-            string newDescription = Console.ReadLine();
-            storageManager.UpdateOutcomeType(id, newDescription);
-            Console.WriteLine("Outcome Type updated! Press Enter.");
-            Console.ReadLine();
         }
         static void DeleteOutcomeType()
         {
@@ -1095,24 +1228,38 @@ namespace BoxingApp
                 Console.ReadLine();
                 return;
             }
-            Console.Clear();
-            Console.WriteLine("=== Delete Outcome Type ===");
-            var outcomeTypes = storageManager.GetAllOutcomeTypes();
-            foreach (var outcomeType in outcomeTypes)
+
+            while (true)
             {
-                Console.WriteLine($"{outcomeType.OutcomeID}: {outcomeType.OutcomeDescription}");
-            }
-            Console.Write("Enter Outcome Type ID to delete: ");
-            if (!int.TryParse(Console.ReadLine(), out int id))
-            {
-                Console.WriteLine("Invalid input. Press Enter.");
+                Console.Clear();
+                Console.WriteLine("Delete Outcome Type");
+
+                var outcomeTypes = storageManager.GetAllOutcomeTypes();
+                foreach (var outcomeType in outcomeTypes)
+                {
+                    Console.WriteLine($"{outcomeType.OutcomeID}: {outcomeType.OutcomeDescription}");
+                }
+
+                int id;
+                while (true)
+                {
+                    Console.Write("Enter Outcome Type ID to delete: ");
+                    string input = Console.ReadLine();
+                    if (int.TryParse(input, out id) && outcomeTypes.Any(o => o.OutcomeID == id))
+                        break;
+
+                    Console.Clear();
+                    Console.WriteLine("Invalid or non-existent Outcome Type ID. Press Enter to try again.");
+                    Console.ReadLine();
+                }
+
+                storageManager.DeleteOutcomeType(id);
+                Console.WriteLine("Outcome Type deleted. Press Enter.");
                 Console.ReadLine();
-                return;
+                break;
             }
-            storageManager.DeleteOutcomeType(id);
-            Console.WriteLine("Outcome Type deleted! Press Enter.");
-            Console.ReadLine();
         }
+
 
 
         private static void ViewFighters()
@@ -1244,94 +1391,168 @@ namespace BoxingApp
         }
         static void UpdateFighter()
         {
-            Console.Clear();
-            Console.WriteLine("=== Update Fighter ===");
-            var fighters = storageManager.GetAllFighters();
-            foreach (var fighter in fighters)
+            while (true)
             {
-                Console.WriteLine($"{fighter.FighterID}: {fighter.FirstName} {fighter.LastName}");
-            }
-            Console.Write("Enter Fighter ID to update: ");
-            if (!int.TryParse(Console.ReadLine(), out int id))
-            {
-                Console.WriteLine("Invalid input. Press Enter.");
-                Console.ReadLine();
-                return;
-            }
-            Console.Write("Enter new Firstname: ");
-            string newFirstName = Console.ReadLine();
-            Console.Write("Enter new Lastname: ");
-            string newLastName = Console.ReadLine();
-            Console.Write("Enter new Age: ");
-            if (!int.TryParse(Console.ReadLine(), out int newAge))
-            {
-                Console.WriteLine("Invalid input. Press Enter.");
-                Console.ReadLine();
-                return;
-            }
-            Console.Write("Enter new Region ID: ");
-            if (!int.TryParse(Console.ReadLine(), out int newRegionID) || !storageManager.DoesRegionExist(newRegionID))
-            {
-                Console.WriteLine("Region ID not found in the system. Press Enter to return.");
-                Console.ReadLine();
-                return;
-            }
-            Console.Write("Enter new Gym ID: ");
-            if (!int.TryParse(Console.ReadLine(), out int newGymID) || !storageManager.DoesGymExist(newGymID))
-            {
-                Console.WriteLine("Gym ID not found in the system. Press Enter to return.");
-                Console.ReadLine();
-                return;
-            }
-            Console.Write("Enter new Weightclass ID: ");
-            if (!int.TryParse(Console.ReadLine(), out int newWeightclassID) || !storageManager.DoesWeightclassExist(newWeightclassID))
-            {
-                Console.WriteLine("Weightclass ID not found in the system. Press Enter to return.");
-                Console.ReadLine();
-                return;
-            }
-            Console.Write("Enter new Wins (default 0): ");
-            if (!int.TryParse(Console.ReadLine(), out int newWins) || newWins < 0)
-            {
-                Console.WriteLine("Invalid input. Setting Wins to 0.");
-                newWins = 0;
-            }
-            Console.Write("Enter new Losses (default 0): ");
-            if (!int.TryParse(Console.ReadLine(), out int newLosses) || newLosses < 0)
-            {
-                Console.WriteLine("Invalid input. Setting Losses to 0.");
-                newLosses = 0;
-            }
-            Console.Write("Enter new Draws (default 0): ");
-            if (!int.TryParse(Console.ReadLine(), out int newDraws) || newDraws < 0)
-            {
-                Console.WriteLine("Invalid input. Setting Draws to 0.");
-                newDraws = 0;
-            }
+                Console.Clear();
+                Console.WriteLine("Update Fighter");
 
-            storageManager.UpdateFighter(id, newFirstName, newLastName, newAge, newRegionID, newGymID, newWeightclassID, newWins, newLosses, newDraws);
-            Console.WriteLine("Fighter info updated! Press Enter.");
-            Console.ReadLine();
+                var fighters = storageManager.GetAllFighters();
+                foreach (var fighter in fighters)
+                {
+                    Console.WriteLine($"{fighter.FighterID}: {fighter.FirstName} {fighter.LastName}");
+                }
+
+                int id;
+                while (true)
+                {
+                    Console.Write("Enter Fighter ID to update: ");
+                    string input = Console.ReadLine();
+                    if (int.TryParse(input, out id) && fighters.Any(f => f.FighterID == id))
+                        break;
+
+                    Console.Clear();
+                    Console.WriteLine("Invalid or non-existent Fighter ID. Press Enter to try again.");
+                    Console.ReadLine();
+                }
+
+                string newFirstName;
+                do
+                {
+                    Console.Write("Enter new Firstname: ");
+                    newFirstName = Console.ReadLine();
+                    if (string.IsNullOrWhiteSpace(newFirstName) || !newFirstName.All(c => char.IsLetter(c) || char.IsWhiteSpace(c)))
+                    {
+                        Console.Clear();
+                        Console.WriteLine("Firstname must contain only letters and spaces. Press Enter to try again.");
+                        Console.ReadLine();
+                        newFirstName = string.Empty;
+                    }
+                } while (string.IsNullOrWhiteSpace(newFirstName));
+
+                string newLastName;
+                do
+                {
+                    Console.Write("Enter new Lastname: ");
+                    newLastName = Console.ReadLine();
+                    if (string.IsNullOrWhiteSpace(newLastName) || !newLastName.All(c => char.IsLetter(c) || char.IsWhiteSpace(c)))
+                    {
+                        Console.Clear();
+                        Console.WriteLine("Lastname must contain only letters and spaces. Press Enter to try again.");
+                        Console.ReadLine();
+                        newLastName = string.Empty;
+                    }
+                } while (string.IsNullOrWhiteSpace(newLastName));
+
+                int newAge;
+                while (true)
+                {
+                    Console.Write("Enter new Age (10–50): ");
+                    string input = Console.ReadLine();
+                    if (int.TryParse(input, out newAge) && newAge >= 10 && newAge <= 50)
+                        break;
+
+                    Console.Clear();
+                    Console.WriteLine("Age must be between 10 and 50. Press Enter to try again.");
+                    Console.ReadLine();
+                }
+
+                int newRegionID;
+                while (true)
+                {
+                    Console.Write("Enter new Region ID: ");
+                    string input = Console.ReadLine();
+                    if (int.TryParse(input, out newRegionID) && storageManager.DoesRegionExist(newRegionID))
+                        break;
+
+                    Console.Clear();
+                    Console.WriteLine("Region ID not found. Press Enter to try again.");
+                    Console.ReadLine();
+                }
+
+                int newGymID;
+                while (true)
+                {
+                    Console.Write("Enter new Gym ID: ");
+                    string input = Console.ReadLine();
+                    if (int.TryParse(input, out newGymID) && storageManager.DoesGymExist(newGymID))
+                        break;
+
+                    Console.Clear();
+                    Console.WriteLine("Gym ID not found. Press Enter to try again.");
+                    Console.ReadLine();
+                }
+
+                int newWeightclassID;
+                while (true)
+                {
+                    Console.Write("Enter new Weightclass ID: ");
+                    string input = Console.ReadLine();
+                    if (int.TryParse(input, out newWeightclassID) && storageManager.DoesWeightclassExist(newWeightclassID))
+                        break;
+
+                    Console.Clear();
+                    Console.WriteLine("Weightclass ID not found. Press Enter to try again.");
+                    Console.ReadLine();
+                }
+
+                Console.Write("Enter new Wins (default 0): ");
+                if (!int.TryParse(Console.ReadLine(), out int newWins) || newWins < 0)
+                {
+                    Console.WriteLine("Invalid input. Setting Wins to 0.");
+                    newWins = 0;
+                }
+
+                Console.Write("Enter new Losses (default 0): ");
+                if (!int.TryParse(Console.ReadLine(), out int newLosses) || newLosses < 0)
+                {
+                    Console.WriteLine("Invalid input. Setting Losses to 0.");
+                    newLosses = 0;
+                }
+
+                Console.Write("Enter new Draws (default 0): ");
+                if (!int.TryParse(Console.ReadLine(), out int newDraws) || newDraws < 0)
+                {
+                    Console.WriteLine("Invalid input. Setting Draws to 0.");
+                    newDraws = 0;
+                }
+
+                storageManager.UpdateFighter(id, newFirstName, newLastName, newAge, newRegionID, newGymID, newWeightclassID, newWins, newLosses, newDraws);
+                Console.WriteLine("Fighter info updated. Press Enter.");
+                Console.ReadLine();
+                break;
+            }
         }
         static void DeleteFighter()
         {
-            Console.Clear();
-            Console.WriteLine("=== Delete Fighter ===");
-            var fighters = storageManager.GetAllFighters();
-            foreach (var fighter in fighters)
+            while (true)
             {
-                Console.WriteLine($"{fighter.FighterID}: {fighter.FirstName} {fighter.LastName}");
-            }
-            Console.Write("Enter Fighter ID to delete: ");
-            if (!int.TryParse(Console.ReadLine(), out int id))
-            {
-                Console.WriteLine("Invalid input. Press Enter.");
+                Console.Clear();
+                Console.WriteLine("Delete Fighter");
+
+                var fighters = storageManager.GetAllFighters();
+                foreach (var fighter in fighters)
+                {
+                    Console.WriteLine($"{fighter.FighterID}: {fighter.FirstName} {fighter.LastName}");
+                }
+
+                int id;
+                while (true)
+                {
+                    Console.Write("Enter Fighter ID to delete: ");
+                    string input = Console.ReadLine();
+                    if (int.TryParse(input, out id) && fighters.Any(f => f.FighterID == id))
+                        break;
+
+                    Console.Clear();
+                    Console.WriteLine("Invalid or non-existent Fighter ID. Press Enter to try again.");
+                    Console.ReadLine();
+                }
+
+                storageManager.deleteFighter(id);
+                Console.WriteLine("Fighter deleted. Press Enter.");
                 Console.ReadLine();
-                return;
+                break;
             }
-            storageManager.deleteFighter(id);
-            Console.WriteLine("Fighter deleted! Press Enter.");
-            Console.ReadLine();
         }
 
 
@@ -1418,79 +1639,118 @@ namespace BoxingApp
             Console.WriteLine("Fighter and Gym linked successfully! Press Enter.");
             Console.ReadLine();
         }
-        
         static void UpdateFighterAndGym()
         {
-            Console.Clear();
-            Console.WriteLine("=== Update Fighter and Gym ===");
-            var fighterAndGyms = storageManager.GetAllFighterAndGyms();
-            foreach (var fighterAndGym in fighterAndGyms)
+            while (true)
             {
-                Console.WriteLine($"{fighterAndGym.FighterAndGymID}: Fighter {fighterAndGym.FighterID}, Gym {fighterAndGym.GymID}");
-            }
-            Console.Write("Enter Fighter and Gym ID to update: ");
-            if (!int.TryParse(Console.ReadLine(), out int id))
-            {
-                Console.WriteLine("Invalid input. Press Enter.");
+                Console.Clear();
+                Console.WriteLine("Update Fighter and Gym");
+
+                var fighterAndGyms = storageManager.GetAllFighterAndGyms();
+                foreach (var fg in fighterAndGyms)
+                {
+                    Console.WriteLine($"{fg.FighterAndGymID}: Fighter {fg.FighterID}, Gym {fg.GymID}");
+                }
+
+                int id;
+                while (true)
+                {
+                    Console.Write("Enter Fighter and Gym ID to update: ");
+                    string input = Console.ReadLine();
+                    if (int.TryParse(input, out id) && fighterAndGyms.Any(fg => fg.FighterAndGymID == id))
+                        break;
+
+                    Console.Clear();
+                    Console.WriteLine("Invalid or non-existent Fighter and Gym ID. Press Enter to try again.");
+                    Console.ReadLine();
+                }
+
+                int newFighterID;
+                while (true)
+                {
+                    Console.Write("Enter new Fighter ID: ");
+                    string input = Console.ReadLine();
+                    if (int.TryParse(input, out newFighterID) && storageManager.DoesFighterExist(newFighterID))
+                        break;
+
+                    Console.Clear();
+                    Console.WriteLine("Fighter ID not found. Press Enter to try again.");
+                    Console.ReadLine();
+                }
+
+                int newGymID;
+                while (true)
+                {
+                    Console.Write("Enter new Gym ID: ");
+                    string input = Console.ReadLine();
+                    if (int.TryParse(input, out newGymID) && storageManager.DoesGymExist(newGymID))
+                        break;
+
+                    Console.Clear();
+                    Console.WriteLine("Gym ID not found. Press Enter to try again.");
+                    Console.ReadLine();
+                }
+
+                Console.Write("Enter Total Wins (default 0): ");
+                if (!int.TryParse(Console.ReadLine(), out int totalWins) || totalWins < 0)
+                {
+                    Console.WriteLine("Invalid input. Setting Total Wins to 0.");
+                    totalWins = 0;
+                }
+
+                Console.Write("Enter Total Losses (default 0): ");
+                if (!int.TryParse(Console.ReadLine(), out int totalLosses) || totalLosses < 0)
+                {
+                    Console.WriteLine("Invalid input. Setting Total Losses to 0.");
+                    totalLosses = 0;
+                }
+
+                Console.Write("Enter Total Draws (default 0): ");
+                if (!int.TryParse(Console.ReadLine(), out int totalDraws) || totalDraws < 0)
+                {
+                    Console.WriteLine("Invalid input. Setting Total Draws to 0.");
+                    totalDraws = 0;
+                }
+
+                storageManager.UpdateFighterAndGym(id, newFighterID, newGymID, totalWins, totalLosses, totalDraws);
+                Console.WriteLine("Fighter and Gym updated. Press Enter.");
                 Console.ReadLine();
-                return;
+                break;
             }
-            Console.Write("Enter new Fighter ID: ");
-            if (!int.TryParse(Console.ReadLine(), out int newFighterID) || !storageManager.DoesFighterExist(newFighterID))
-            {
-                Console.WriteLine("Fighter ID not found in the system. Press Enter to return.");
-                Console.ReadLine();
-                return;
-            }
-            Console.Write("Enter new Gym ID: ");
-            if (!int.TryParse(Console.ReadLine(), out int newGymID) || !storageManager.DoesGymExist(newGymID))
-            {
-                Console.WriteLine("Gym ID not found in the system. Press Enter to return.");
-                Console.ReadLine();
-                return;
-            }
-            Console.Write("Enter Total Wins (default 0): ");
-            if (!int.TryParse(Console.ReadLine(), out int totalWins) || totalWins < 0)
-            {
-                Console.WriteLine("Invalid input. Setting Total Wins to 0.");
-                totalWins = 0;
-            }
-            Console.Write("Enter Total Losses (default 0): ");
-            if (!int.TryParse(Console.ReadLine(), out int totalLosses) || totalLosses < 0)
-            {
-                Console.WriteLine("Invalid input. Setting Total Losses to 0.");
-                totalLosses = 0;
-            }   
-            Console.Write("Enter Total Draws (default 0): ");
-            if (!int.TryParse(Console.ReadLine(), out int totalDraws) || totalDraws < 0)
-            {
-                Console.WriteLine("Invalid input. Setting Total Draws to 0.");
-                totalDraws = 0;
-            }
-            storageManager.UpdateFighterAndGym(id, newFighterID, newGymID, totalWins, totalLosses, totalDraws);
-            Console.WriteLine("Fighter and Gym updated! Press Enter.");
-            Console.ReadLine();
         }
         static void DeleteFighterAndGym()
         {
-            Console.Clear();
-            Console.WriteLine("=== Delete Fighter and Gym ===");
-            var fighterAndGyms = storageManager.GetAllFighterAndGyms();
-            foreach (var fighterAndGym in fighterAndGyms)
+            while (true)
             {
-                Console.WriteLine($"{fighterAndGym.FighterAndGymID}: Fighter {fighterAndGym.FighterID}, Gym {fighterAndGym.GymID}");
-            }
-            Console.Write("Enter Fighter and Gym ID to delete: ");
-            if (!int.TryParse(Console.ReadLine(), out int id))
-            {
-                Console.WriteLine("Invalid input. Press Enter.");
+                Console.Clear();
+                Console.WriteLine("Delete Fighter and Gym");
+
+                var fighterAndGyms = storageManager.GetAllFighterAndGyms();
+                foreach (var fg in fighterAndGyms)
+                {
+                    Console.WriteLine($"{fg.FighterAndGymID}: Fighter {fg.FighterID}, Gym {fg.GymID}");
+                }
+
+                int id;
+                while (true)
+                {
+                    Console.Write("Enter Fighter and Gym ID to delete: ");
+                    string input = Console.ReadLine();
+                    if (int.TryParse(input, out id) && fighterAndGyms.Any(fg => fg.FighterAndGymID == id))
+                        break;
+
+                    Console.Clear();
+                    Console.WriteLine("Invalid or non-existent Fighter and Gym ID. Press Enter to try again.");
+                    Console.ReadLine();
+                }
+
+                storageManager.DeleteFighterAndGym(id);
+                Console.WriteLine("Fighter and Gym deleted. Press Enter.");
                 Console.ReadLine();
-                return;
+                break;
             }
-            storageManager.DeleteFighterAndGym(id);
-            Console.WriteLine("Fighter and Gym deleted! Press Enter.");
-            Console.ReadLine();
         }
+
 
 
         private static void ViewMatchOutcome()
@@ -1566,69 +1826,110 @@ namespace BoxingApp
             Console.WriteLine("Match outcome added! Press Enter.");
             Console.ReadLine();
         }
-
         static void UpdateMatchOutcome()
         {
-            Console.Clear();
-            Console.WriteLine("=== Update Match Outcome ===");
-            var matchOutcomes = storageManager.GetAllMatchOutcomes();
-            foreach (var matchOutcome in matchOutcomes)
+            while (true)
             {
-                Console.WriteLine($"{matchOutcome.MatchOutcomeID}: Match {matchOutcome.MatchID}, Winner {matchOutcome.WinnerID}, Outcome {matchOutcome.OutcomeID}");
-            }
-            Console.Write("Enter Match Outcome ID to update: ");
-            if (!int.TryParse(Console.ReadLine(), out int id))
-            {
-                Console.WriteLine("Invalid input. Press Enter.");
+                Console.Clear();
+                Console.WriteLine("Update Match Outcome");
+
+                var matchOutcomes = storageManager.GetAllMatchOutcomes();
+                foreach (var outcome in matchOutcomes)
+                {
+                    Console.WriteLine($"{outcome.MatchOutcomeID}: Match {outcome.MatchID}, Winner {outcome.WinnerID}, Outcome {outcome.OutcomeID}");
+                }
+
+                int id;
+                while (true)
+                {
+                    Console.Write("Enter Match Outcome ID to update: ");
+                    string input = Console.ReadLine();
+                    if (int.TryParse(input, out id) && matchOutcomes.Any(o => o.MatchOutcomeID == id))
+                        break;
+
+                    Console.Clear();
+                    Console.WriteLine("Invalid or non-existent Match Outcome ID. Press Enter to try again.");
+                    Console.ReadLine();
+                }
+
+                int newMatchID;
+                while (true)
+                {
+                    Console.Write("Enter new Match ID: ");
+                    string input = Console.ReadLine();
+                    if (int.TryParse(input, out newMatchID) && storageManager.DoesMatchExist(newMatchID))
+                        break;
+
+                    Console.Clear();
+                    Console.WriteLine("Match ID not found in the system. Press Enter to try again.");
+                    Console.ReadLine();
+                }
+
+                int newWinnerID;
+                while (true)
+                {
+                    Console.Write("Enter new Winner ID (FighterID): ");
+                    string input = Console.ReadLine();
+                    if (int.TryParse(input, out newWinnerID) && storageManager.DoesFighterExist(newWinnerID))
+                        break;
+
+                    Console.Clear();
+                    Console.WriteLine("Winner ID not found in the system. Press Enter to try again.");
+                    Console.ReadLine();
+                }
+
+                int newOutcomeID;
+                while (true)
+                {
+                    Console.Write("Enter new Outcome ID: ");
+                    string input = Console.ReadLine();
+                    if (int.TryParse(input, out newOutcomeID) && storageManager.DoesOutcomeTypeExist(newOutcomeID))
+                        break;
+
+                    Console.Clear();
+                    Console.WriteLine("Outcome ID not found in the system. Press Enter to try again.");
+                    Console.ReadLine();
+                }
+
+                storageManager.updateMatchOutcome(id, newMatchID, newWinnerID, newOutcomeID);
+                Console.WriteLine("Match outcome updated. Press Enter.");
                 Console.ReadLine();
-                return;
+                break;
             }
-            Console.Write("Enter new Match ID: ");
-            if (!int.TryParse(Console.ReadLine(), out int newMatchID) || !storageManager.DoesMatchExist(newMatchID))
-            {
-                Console.WriteLine("Match ID not found in the system. Press Enter to return.");
-                Console.ReadLine();
-                return;
-            }
-            Console.Write("Enter new Winner ID (FighterID): ");
-            if (!int.TryParse(Console.ReadLine(), out int newWinnerID) || !storageManager.DoesFighterExist(newWinnerID))
-            {
-                Console.WriteLine("Winner ID not found in the system. Press Enter to return.");
-                Console.ReadLine();
-                return;
-            }
-            Console.Write("Enter new Outcome ID: ");
-            if (!int.TryParse(Console.ReadLine(), out int newOutcomeID) || !storageManager.DoesOutcomeTypeExist(newOutcomeID))
-            {
-                Console.WriteLine("Outcome ID not found in the system. Press Enter to return.");
-                Console.ReadLine();
-                return;
-            }
-            
-            storageManager.updateMatchOutcome(id, newMatchID, newWinnerID, newOutcomeID);
-            Console.WriteLine("Match outcome updated! Press Enter.");
-            Console.ReadLine();
         }
         static void DeleteMatchOutcome()
         {
-            Console.Clear();
-            Console.WriteLine("=== Delete Match Outcome ===");
-            var matchOutcomes = storageManager.GetAllMatchOutcomes();
-            foreach (var matchOutcome in matchOutcomes)
+            while (true)
             {
-                Console.WriteLine($"{matchOutcome.MatchOutcomeID}: Match {matchOutcome.MatchID}, Winner {matchOutcome.WinnerID}, Outcome {matchOutcome.OutcomeID}");
-            }
-            Console.Write("Enter Match Outcome ID to delete: ");
-            if (!int.TryParse(Console.ReadLine(), out int id))
-            {
-                Console.WriteLine("Invalid input. Press Enter.");
+                Console.Clear();
+                Console.WriteLine("Delete Match Outcome");
+
+                var matchOutcomes = storageManager.GetAllMatchOutcomes();
+                foreach (var outcome in matchOutcomes)
+                {
+                    Console.WriteLine($"{outcome.MatchOutcomeID}: Match {outcome.MatchID}, Winner {outcome.WinnerID}, Outcome {outcome.OutcomeID}");
+                }
+
+                int id;
+                while (true)
+                {
+                    Console.Write("Enter Match Outcome ID to delete: ");
+                    string input = Console.ReadLine();
+                    if (int.TryParse(input, out id) && matchOutcomes.Any(o => o.MatchOutcomeID == id))
+                        break;
+
+                    Console.Clear();
+                    Console.WriteLine("Invalid or non-existent Match Outcome ID. Press Enter to try again.");
+                    Console.ReadLine();
+                }
+
+                storageManager.deleteMatchOutcome(id);
+                Console.WriteLine("Match outcome deleted. Press Enter.");
                 Console.ReadLine();
-                return;
+                break;
             }
-            storageManager.deleteMatchOutcome(id);
-            Console.WriteLine("Match outcome deleted! Press Enter.");
-            Console.ReadLine();
         }
+
 
 
         private static void ViewRegions()
@@ -1669,56 +1970,90 @@ namespace BoxingApp
         }
         static void UpdateRegion()
         {
-            if (!currentUser.IsAdmin)
+            while (true)
             {
-                Console.WriteLine("You do not have permission to update regions.");
-                Console.ReadLine();
-                return;
-            }
-            Console.Clear();
-            Console.WriteLine("=== Update Region ===");
-            var regions = storageManager.GetAllRegions();
-            foreach (var region in regions)
-            {
-                Console.WriteLine($"{region.RegionID}: {region.RegionName}");
-            }
+                Console.Clear();
+                Console.WriteLine("Update Region");
 
-            Console.Write("Enter region ID to update: ");
-            if (!int.TryParse(Console.ReadLine(), out int id))
-            {
-                Console.WriteLine("Invalid input. Press Enter.");
+                var regions = storageManager.GetAllRegions();
+                foreach (var region in regions)
+                {
+                    Console.WriteLine($"{region.RegionID}: {region.RegionName}");
+                }
+
+                int id;
+                while (true)
+                {
+                    Console.Write("Enter region ID to update: ");
+                    string input = Console.ReadLine();
+                    if (int.TryParse(input, out id) && regions.Any(r => r.RegionID == id))
+                        break;
+
+                    Console.Clear();
+                    Console.WriteLine("Invalid or non-existent region ID. Press Enter to try again.");
+                    Console.ReadLine();
+                }
+
+                string newName;
+                do
+                {
+                    Console.Write("Enter new region name: ");
+                    newName = Console.ReadLine();
+                    if (string.IsNullOrWhiteSpace(newName))
+                    {
+                        Console.Clear();
+                        Console.WriteLine("Region name cannot be blank. Press Enter to try again.");
+                        Console.ReadLine();
+                    }
+                    else if (!newName.All(c => char.IsLetter(c) || char.IsWhiteSpace(c)))
+                    {
+                        Console.Clear();
+                        Console.WriteLine("Region name must contain only letters and spaces. Press Enter to try again.");
+                        Console.ReadLine();
+                        newName = string.Empty;
+                    }
+                } while (string.IsNullOrWhiteSpace(newName));
+
+                storageManager.UpdateRegion(id, newName);
+                Console.WriteLine("Region updated. Press Enter.");
                 Console.ReadLine();
-                return;
+                break;
             }
-            Console.Write("Enter new region name: ");
-            string newName = Console.ReadLine();
-            storageManager.UpdateRegion(id, newName);
-            Console.WriteLine("Region updated! Press Enter.");
-            Console.ReadLine();
         }
         static void DeleteRegion()
         {
-            
-            Console.Clear();
-            Console.WriteLine("=== Delete Region ===");
-            var regions = storageManager.GetAllRegions();
-            foreach (var region in regions)
+            while (true)
             {
-                Console.WriteLine($"{region.RegionID}: {region.RegionName}");
-            }
-            Console.Write("Enter region ID to delete: ");
-            if (!int.TryParse(Console.ReadLine(), out int id))
-            {
-                Console.WriteLine("Invalid input. Press Enter.");
+                Console.Clear();
+                Console.WriteLine("Delete Region");
+
+                var regions = storageManager.GetAllRegions();
+                foreach (var region in regions)
+                {
+                    Console.WriteLine($"{region.RegionID}: {region.RegionName}");
+                }
+
+                int id;
+                while (true)
+                {
+                    Console.Write("Enter region ID to delete: ");
+                    string input = Console.ReadLine();
+                    if (int.TryParse(input, out id) && regions.Any(r => r.RegionID == id))
+                        break;
+
+                    Console.Clear();
+                    Console.WriteLine("Invalid or non-existent region ID. Press Enter to try again.");
+                    Console.ReadLine();
+                }
+
+                storageManager.DeleteRegion(id);
+                Console.WriteLine("Region deleted. Press Enter.");
                 Console.ReadLine();
-                return;
+                break;
             }
-            storageManager.DeleteRegion(id);
-            Console.WriteLine("Region deleted! Press Enter.");
-            Console.ReadLine();
         }
 
-       
+
 
     }
 }
