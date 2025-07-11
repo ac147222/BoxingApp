@@ -189,13 +189,7 @@ namespace BoxingDatabase
         
 
 
-        public static void DisplayRegions(List<Region> regions)
-        {
-            foreach (Region region in regions)
-            {
-                Console.WriteLine($"{region.RegionID},{region.RegionName}");
-            }
-        }
+       
        
 
        

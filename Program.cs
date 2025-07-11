@@ -646,16 +646,24 @@ namespace BoxingApp
         }
         static void AddWeightclasses()
         {
-            if (!currentUser.IsAdmin)
-            {
-                Console.WriteLine("You do not have permission to add regions.");
-                Console.ReadLine();
-                return;
-            }
             Console.Clear();
             Console.WriteLine("=== Add Weightclass ===");
-            Console.Write("Enter Weightclass name: ");
-            string name = Console.ReadLine();
+            string name = "";
+            bool isValid = false;
+            while (!isValid)
+            {
+                Console.Write("Enter Weightclass name (letters only): ");
+                name = Console.ReadLine();
+                if (name.Length > 0 && name.All(char.IsLetter))
+                {
+                    isValid = true;
+                }
+                else
+                {
+                    Console.Clear();
+                    Console.WriteLine("Invalid input. Only letters allowed. Don't leave it blank.");
+                }
+            }
             storageManager.AddWeightclasses(name);
             Console.WriteLine("Weightclass added! Press Enter.");
             Console.ReadLine();
