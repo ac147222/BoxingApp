@@ -50,49 +50,100 @@ namespace BoxingApp
                 }
             }
 
-            
+
             static void Login()
             {
-                Console.Clear();
-                Console.WriteLine("=== Login ===");
-                Console.Write("Username: ");
-                string username = Console.ReadLine();
-                Console.Write("Password: ");
-                string password = Console.ReadLine();
+                while (true)
+                {
+                    Console.Clear();
+                    Console.WriteLine("Login:");
 
-                var user = storageManager.AuthenticateUser(username, password);
-                if (user != null)
-                {
-                    currentUser = user;
-                    Console.WriteLine("Login successful! Press Enter to continue.");
+                    string username;
+                    do
+                    {
+                        Console.Write("Username: ");
+                        username = Console.ReadLine();
+                        if (string.IsNullOrWhiteSpace(username))
+                        {
+                            Console.Clear();
+                            Console.WriteLine("Username cannot be blank. Please enter a valid username.");
+                        }
+                    } while (string.IsNullOrWhiteSpace(username));
+
+                    string password;
+                    do
+                    {
+                        Console.Write("Password: ");
+                        password = Console.ReadLine();
+                        if (string.IsNullOrWhiteSpace(password))
+                        {
+                            Console.Clear();
+                            Console.WriteLine("Password cannot be blank. Please enter a valid password.");
+                        }
+                    } while (string.IsNullOrWhiteSpace(password));
+
+                    var user = storageManager.AuthenticateUser(username, password);
+                    if (user != null)
+                    {
+                        currentUser = user;
+                        Console.WriteLine("Login successful. Press Enter to continue.");
+                        Console.ReadLine();
+                        break;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Invalid credentials. Press Enter to try again.");
+                        Console.ReadLine();
+                    }
                 }
-                else
-                {
-                    Console.WriteLine("Invalid credentials. Press Enter to return to menu.");
-                }
-                Console.ReadLine();
             }
 
             static void Register()
             {
-                Console.Clear();
-                Console.WriteLine("=== Register ===");
-                Console.Write("Choose a username: ");
-                string username = Console.ReadLine();
-                Console.Write("Choose a password: ");
-                string password = Console.ReadLine();
+                while (true)
+                {
+                    Console.Clear();
+                    Console.WriteLine("Register");
 
-                bool success = storageManager.RegisterUser(username, password);
-                if (success)
-                {
-                    Console.WriteLine("Registration successful! You can now log in. Press Enter.");
+                    string username;
+                    do
+                    {
+                        Console.Write("Choose a username: ");
+                        username = Console.ReadLine();
+                        if (string.IsNullOrWhiteSpace(username))
+                        {
+                            Console.Clear();
+                            Console.WriteLine("Username cannot be blank. Please enter a valid username.");
+                        }
+                    } while (string.IsNullOrWhiteSpace(username));
+
+                    string password;
+                    do
+                    {
+                        Console.Write("Choose a password: ");
+                        password = Console.ReadLine();
+                        if (string.IsNullOrWhiteSpace(password))
+                        {
+                            Console.Clear();
+                            Console.WriteLine("Password cannot be blank. Please enter a valid password.");
+                        }
+                    } while (string.IsNullOrWhiteSpace(password));
+
+                    bool success = storageManager.RegisterUser(username, password);
+                    if (success)
+                    {
+                        Console.WriteLine("Registration successful. You can now log in. Press Enter.");
+                        Console.ReadLine();
+                        break;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Username already exists. Press Enter to try again.");
+                        Console.ReadLine();
+                    }
                 }
-                else
-                {
-                    Console.WriteLine("Username already exists. Press Enter and try again.");
-                }
-                Console.ReadLine();
             }
+
 
             static void RegionsMenu()
             {
@@ -742,30 +793,47 @@ namespace BoxingApp
         {
             Console.Clear();
             Console.WriteLine("=== Add Match ===");
-            Console.Write("Enter Fighter 1 ID: ");
-            Console.Write("Enter new Fighter 1 ID: ");
-            if (!int.TryParse(Console.ReadLine(), out int fighter1ID) || !storageManager.DoesFighterExist(fighter1ID))
-            {
-                Console.WriteLine("Fighter 1 ID is invalid or does not exist. Press Enter.");
-                Console.ReadLine();
-                return;
-            }
 
-            Console.Write("Enter new Fighter 2 ID: ");
-            if (!int.TryParse(Console.ReadLine(), out int fighter2ID) || !storageManager.DoesFighterExist(fighter2ID))
+            int fighter1ID = 0;
+            while (true)
             {
-                Console.WriteLine("Fighter 2 ID is invalid or does not exist. Press Enter.");
-                Console.ReadLine();
-                return;
+                var fighterList = storageManager.GetAllFighters();
+                foreach (var fighter in fighterList)
+                {
+                    Console.WriteLine($"{fighter.FighterID}\t{fighter.FirstName}\t{fighter.LastName}\t{fighter.Age}\t{fighter.RegionID}\t{fighter.GymID}\t{fighter.WeightclassID}\t{fighter.Wins}\t{fighter.Losses}\t{fighter.Draws}");
+                }
+                Console.Write("Enter Fighter 1 ID: ");
+                if (int.TryParse(Console.ReadLine(), out fighter1ID) && storageManager.DoesFighterExist(fighter1ID))
+                    break;
+
+                Console.WriteLine("Fighter 1 ID is invalid or does not exist.");
             }
-            Console.Write("Enter Match Date (yyyy-MM-dd): ");
-            if (!DateTime.TryParse(Console.ReadLine(), out DateTime matchDate))
+            int fighter2ID = 0;
+            while (true)
             {
-                Console.WriteLine("Invalid date format. Press Enter.");
-                Console.ReadLine();
-                return;
+                var fighterList = storageManager.GetAllFighters();
+                foreach (var fighter in fighterList)
+                {
+                    Console.WriteLine($"{fighter.FighterID}\t{fighter.FirstName}\t{fighter.LastName}\t{fighter.Age}\t{fighter.RegionID}\t{fighter.GymID}\t{fighter.WeightclassID}\t{fighter.Wins}\t{fighter.Losses}\t{fighter.Draws}");
+                }
+                Console.Write("Enter Fighter 2 ID (must be different from Fighter 1): ");
+                if (int.TryParse(Console.ReadLine(), out fighter2ID) &&
+                    storageManager.DoesFighterExist(fighter2ID) &&
+                    fighter2ID != fighter1ID)
+                {
+                    break;
+                }
+                Console.WriteLine("Fighter 2 ID is invalid, does not exist, or is the same as Fighter 1.");
             }
-            
+            DateTime matchDate;
+            while (true)
+            {
+                Console.Write("Enter Match Date (yyyy-MM-dd): ");
+                if (DateTime.TryParse(Console.ReadLine(), out matchDate))
+                    break;
+
+                Console.WriteLine("Invalid date format.");
+            }
             storageManager.AddMatch(fighter1ID, fighter2ID, matchDate);
             Console.WriteLine("Match added! Press Enter.");
             Console.ReadLine();
@@ -863,8 +931,28 @@ namespace BoxingApp
         {
             Console.Clear();
             Console.WriteLine("=== Add Gym ===");
-            Console.Write("Enter Gym name: ");
-            string name = Console.ReadLine();
+
+            string name = "";
+            bool isValid = false;
+            while (!isValid)
+            {
+                Console.Write("Enter Gym name (letters only): ");
+                name = Console.ReadLine();
+                if (name.Length > 0 && name.All(c => char.IsLetter(c) || c == ' '))
+                {
+                    isValid = true;
+                }
+                else
+                {
+                    Console.Clear();
+                    Console.WriteLine("Invalid input. Please enter a Gym name using letters only. Do not leave it blank.");
+                }
+            }
+            var regions = storageManager.GetAllRegions();
+            foreach (var region in regions)
+            {
+                Console.WriteLine($"{region.RegionID}: {region.RegionName}");
+            }
             Console.Write("Enter Region ID: ");
             if (!int.TryParse(Console.ReadLine(), out int regionID))
             {
@@ -872,7 +960,6 @@ namespace BoxingApp
                 Console.ReadLine();
                 return;
             }
-
             if (!storageManager.DoesRegionExist(regionID))
             {
                 Console.WriteLine("Region ID not found in the system. Press Enter to return.");
@@ -885,14 +972,6 @@ namespace BoxingApp
         }
         static void UpdateGym()
         {
-            if (!currentUser.IsAdmin)
-            {
-                Console.WriteLine("You do not have permission to update Gyms.");
-                Console.ReadLine();
-
-
-                return;
-            }
             Console.Clear();
             Console.WriteLine("=== Update Gym ===");
             var gyms = storageManager.GetAllGyms();
@@ -957,16 +1036,25 @@ namespace BoxingApp
         }
         static void AddOutcomeType()
         {
-            if (!currentUser.IsAdmin)
-            {
-                Console.WriteLine("You do not have permission to add outcome types.");
-                Console.ReadLine();
-                return;
-            }
             Console.Clear();
             Console.WriteLine("=== Add Outcome Type ===");
-            Console.Write("Enter Outcome Type description: ");
-            string description = Console.ReadLine();
+
+            string description = "";
+            bool isValid = false;
+            while (!isValid)
+            {
+                Console.Write("Enter Outcome Type description (letters and spaces only): ");
+                description = Console.ReadLine();
+
+                if (description.Length > 0 && description.All(c => char.IsLetter(c) || c == ' '))
+                {
+                    isValid = true;
+                }
+                else
+                {
+                    Console.WriteLine("Invalid input. Description must contain letters and spaces only, and cannot be blank.");
+                }
+            }
             storageManager.AddOutcomeType(description);
             Console.WriteLine("Outcome Type added! Press Enter.");
             Console.ReadLine();
@@ -1051,39 +1139,84 @@ namespace BoxingApp
         {
             Console.Clear();
             Console.WriteLine("=== Add Fighter ===");
-            Console.Write("Enter Firstname: ");
-            string firstName = Console.ReadLine();
-            Console.Write("Enter Lastname: ");
-            string lastName = Console.ReadLine();
-            Console.Write("Enter Age: ");
-            if (!int.TryParse(Console.ReadLine(), out int age))
-            {
-                Console.WriteLine("Invalid input. Press Enter.");
-                Console.ReadLine();
-                return;
-            }
-            Console.Write("Enter Region ID: ");
-            if (!int.TryParse(Console.ReadLine(), out int regionID) || !storageManager.DoesRegionExist(regionID))
-            {
-                Console.WriteLine("Region ID not found in the system. Press Enter to return.");
-                Console.ReadLine();
-                return;
-            }
-            Console.Write("Enter Gym ID: ");
-            if (!int.TryParse(Console.ReadLine(), out int gymID) || !storageManager.DoesGymExist(gymID))
-            {
-                Console.WriteLine("Gym ID not found in the system. Press Enter to return.");
-                Console.ReadLine();
-                return;
-            }
-            Console.Write("Enter Weightclass ID: ");
-            if (!int.TryParse(Console.ReadLine(), out int weightclassID) || !storageManager.DoesWeightclassExist(weightclassID))
-            {
-                Console.WriteLine("Weightclass ID not found in the system. Press Enter to return.");
-                Console.ReadLine();
-                return;
-            }
+
             
+            string firstName = "";
+            while (true)
+            {
+                Console.Write("Enter Firstname: ");
+                firstName = Console.ReadLine();
+
+                if (firstName.Length > 0 && firstName.All(c => char.IsLetter(c) || c == ' '))
+                    break;
+
+                Console.WriteLine("Invalid input. Only letters and spaces allowed.");
+            }
+            string lastName = "";
+            while (true)
+            {
+                Console.Write("Enter Lastname: ");
+                lastName = Console.ReadLine();
+
+                if (lastName.Length > 0 && lastName.All(c => char.IsLetter(c) || c == ' '))
+                    break;
+
+                Console.WriteLine("Invalid input. Only letters and spaces allowed.");
+            }
+            int age = 0;
+            while (true)
+            {
+                Console.Write("Enter Age (10–50): ");
+                if (int.TryParse(Console.ReadLine(), out age) && age >= 10 && age <= 50)
+                    break;
+
+                Console.WriteLine("Invalid input. Age must be between 10 and 50.");
+            }
+            int regionID = 0;
+            while (true)
+            {
+                
+                var regions = storageManager.GetAllRegions();
+                foreach (var region in regions)
+                {
+                    Console.WriteLine($"{region.RegionID}: {region.RegionName}");
+                }
+                Console.Write("Enter Region ID: ");
+                if (int.TryParse(Console.ReadLine(), out regionID) && storageManager.DoesRegionExist(regionID))
+                    break;
+
+                Console.WriteLine("Region ID not found. Please enter a valid ID.");
+            }
+            int gymID = 0;
+            while (true)
+            {
+                var gymList = storageManager.GetAllGyms();
+                Console.WriteLine("ID\tGyms");
+                foreach (var gyms in gymList)
+                {
+                    Console.WriteLine($"{gyms.GymID}\t{gyms.GymName}");
+                }
+                Console.Write("Enter Gym ID: ");
+                if (int.TryParse(Console.ReadLine(), out gymID) && storageManager.DoesGymExist(gymID))
+                    break;
+
+                Console.WriteLine("Gym ID not found. Please enter a valid ID.");
+            }
+            int weightclassID = 0;
+            while (true)
+            {
+                var weightclassesList = storageManager.GetAllWeightclasses();
+                Console.WriteLine("ID\tWeightclass");
+                foreach (var weightclass in weightclassesList)
+                {
+                    Console.WriteLine($"{weightclass.WeightclassID}\t{weightclass.WeightclassName}");
+                }
+                Console.Write("Enter Weightclass ID: ");
+                if (int.TryParse(Console.ReadLine(), out weightclassID) && storageManager.DoesWeightclassExist(weightclassID))
+                    break;
+
+                Console.WriteLine("Weightclass ID not found. Please enter a valid ID.");
+            }
             Console.Write("Enter Wins (default 0): ");
             int wins = 0;
             if (!int.TryParse(Console.ReadLine(), out wins) || wins < 0)
@@ -1226,44 +1359,66 @@ namespace BoxingApp
         {
             Console.Clear();
             Console.WriteLine("=== Add Fighter and Gym ===");
-            Console.Write("Enter Fighter ID: ");
-            if (!int.TryParse(Console.ReadLine(), out int fighterID) || !storageManager.DoesFighterExist(fighterID))
-            {
-                Console.WriteLine("Fighter ID not found in the system. Press Enter to return.");
-                Console.ReadLine();
-                return;
-            }
-            Console.Write("Enter Gym ID: ");
-            if (!int.TryParse(Console.ReadLine(), out int gymID) || !storageManager.DoesGymExist(gymID))
-            {
-                Console.WriteLine("Gym ID not found in the system. Press Enter to return.");
-                Console.ReadLine();
-                return;
-            }
-            Console.Write("Enter Total Wins (default 0): ");
-            if (!int.TryParse(Console.ReadLine(), out int totalWins) || totalWins < 0)
-            {
-                Console.WriteLine("Invalid input. Setting Total Wins to 0.");
-                totalWins = 0;
-            }
-            Console.Write("Enter Total Losses (default 0): ");
-            if (!int.TryParse(Console.ReadLine(), out int totalLosses) || totalLosses < 0)
-            {
-                Console.WriteLine("Invalid input. Setting Total Losses to 0.");
-                totalLosses = 0;
-            }
-            Console.Write("Enter Total Draws (default 0): ");
-            if (!int.TryParse(Console.ReadLine(), out int totalDraws) || totalDraws < 0)
-            {
-                Console.WriteLine("Invalid input. Setting Total Draws to 0.");
-                totalDraws = 0;
-            }
 
+            int fighterID = 0;
+            while (true)
+            {
+                var fighterList = storageManager.GetAllFighters();
+                foreach (var fighter in fighterList)
+                {
+                    Console.WriteLine($"{fighter.FighterID}\t{fighter.FirstName}\t{fighter.LastName}\t{fighter.Age}\t{fighter.RegionID}\t{fighter.GymID}\t{fighter.WeightclassID}\t{fighter.Wins}\t{fighter.Losses}\t{fighter.Draws}");
+                }
+                Console.Write("Enter Fighter ID: ");
+                if (int.TryParse(Console.ReadLine(), out fighterID) && storageManager.DoesFighterExist(fighterID))
+                    break;
 
+                Console.WriteLine("Fighter ID not found. Please enter a valid ID.");
+            }
+            int gymID = 0;
+            while (true)
+            {
+                var gymList = storageManager.GetAllGyms();
+                foreach (var gyms in gymList)
+                {
+                    Console.WriteLine($"{gyms.GymID}\t{gyms.GymName}");
+                }
+                Console.Write("Enter Gym ID: ");
+                if (int.TryParse(Console.ReadLine(), out gymID) && storageManager.DoesGymExist(gymID))
+                    break;
+
+                Console.WriteLine("Gym ID not found. Please enter a valid ID.");
+            }
+            int totalWins = 0;
+            while (true)
+            {
+                Console.Write("Enter Total Wins (default 0): ");
+                if (int.TryParse(Console.ReadLine(), out totalWins) && totalWins >= 0)
+                    break;
+
+                Console.WriteLine("Invalid input. Wins must be 0 or more.");
+            }
+            int totalLosses = 0;
+            while (true)
+            {
+                Console.Write("Enter Total Losses (default 0): ");
+                if (int.TryParse(Console.ReadLine(), out totalLosses) && totalLosses >= 0)
+                    break;
+
+                Console.WriteLine("Invalid input. Losses must be 0 or more.");
+            }
+            int totalDraws = 0;
+            while (true)
+            {
+                Console.Write("Enter Total Draws (default 0): ");
+                if (int.TryParse(Console.ReadLine(), out totalDraws) && totalDraws >= 0)
+                    break;
+                Console.WriteLine("Invalid input. Draws must be 0 or more.");
+            }
             storageManager.AddFighterAndGym(fighterID, gymID, totalWins, totalLosses, totalDraws);
-            Console.WriteLine("Fighter and Gym added! Press Enter.");
+            Console.WriteLine("Fighter and Gym linked successfully! Press Enter.");
             Console.ReadLine();
         }
+        
         static void UpdateFighterAndGym()
         {
             Console.Clear();
@@ -1362,32 +1517,56 @@ namespace BoxingApp
         {
             Console.Clear();
             Console.WriteLine("=== Add Match Outcome ===");
-            Console.Write("Enter Match ID: ");
-            if (!int.TryParse(Console.ReadLine(), out int matchID) || !storageManager.DoesMatchExist(matchID))
+
+            int matchID = 0;
+            while (true)
             {
-                Console.WriteLine("Match ID not found in the system. Press Enter to return.");
-                Console.ReadLine();
-                return;
+                var MatchList = storageManager.GetAllMatches();
+                Console.WriteLine("ID\tFighter 1\tFighter 2\tDate");
+                foreach (var match in MatchList)
+                {
+                    Console.WriteLine($"{match.MatchID}\t{match.Fighter1ID}\t\t{match.Fighter2ID}\t\t{match.MatchDate:yyyy-MM-dd}");
+                }
+                Console.Write("Enter Match ID: ");
+                if (int.TryParse(Console.ReadLine(), out matchID) && storageManager.DoesMatchExist(matchID))
+                    break;
+
+                Console.WriteLine("Match ID not found in the system. Please try again.");
             }
-            Console.Write("Enter Winner ID (FighterID): ");
-            if (!int.TryParse(Console.ReadLine(), out int winnerID) || !storageManager.DoesFighterExist(winnerID))
+            int winnerID = 0;
+            while (true)
             {
-                Console.WriteLine("Winner ID not found in the system. Press Enter to return.");
-                Console.ReadLine();
-                return;
+                var fighterList = storageManager.GetAllFighters();
+                Console.WriteLine("ID\tFighterID\tGymID\tTotalWins\tTotalLosses\tTotalDraws");
+                foreach (var fighter in fighterList)
+                {
+                    Console.WriteLine($"{fighter.FighterID}\t{fighter.FirstName}\t{fighter.LastName}\t{fighter.Age}\t{fighter.RegionID}\t{fighter.GymID}\t{fighter.WeightclassID}\t{fighter.Wins}\t{fighter.Losses}\t{fighter.Draws}");
+                }
+                Console.Write("Enter Winner ID (FighterID): ");
+                if (int.TryParse(Console.ReadLine(), out winnerID) && storageManager.DoesFighterExist(winnerID))
+                    break;
+
+                Console.WriteLine("Winner ID not found in the system. Please try again.");
             }
-            Console.Write("Enter Outcome ID: ");
-            if (!int.TryParse(Console.ReadLine(), out int outcomeID) || !storageManager.DoesOutcomeTypeExist(outcomeID))
+            int outcomeID = 0;
+            while (true)
             {
-                Console.WriteLine("Outcome ID not found in the system. Press Enter to return.");
-                Console.ReadLine();
-                return;
+                var outcomeTypesList = storageManager.GetAllOutcomeTypes();
+                Console.WriteLine("ID\tOutcome Type");
+                foreach (var outcomeTypes in outcomeTypesList)
+                {
+                    Console.WriteLine($"{outcomeTypes.OutcomeID}\t{outcomeTypes.OutcomeDescription}");
+                }
+                Console.Write("Enter Outcome ID: ");
+                if (int.TryParse(Console.ReadLine(), out outcomeID) && storageManager.DoesOutcomeTypeExist(outcomeID))
+                    break;
+                Console.WriteLine("Outcome ID not found in the system. Please try again.");
             }
-            
             storageManager.AddMatchOutcome(matchID, winnerID, outcomeID);
             Console.WriteLine("Match outcome added! Press Enter.");
             Console.ReadLine();
         }
+
         static void UpdateMatchOutcome()
         {
             Console.Clear();
@@ -1468,8 +1647,22 @@ namespace BoxingApp
         {
             Console.Clear();
             Console.WriteLine("=== Add Region ===");
-            Console.Write("Enter region name: ");
-            string name = Console.ReadLine();
+            string name = "";
+            bool isValid = false;
+            while (!isValid)
+            {
+                Console.Write("Enter region name (letters only): ");
+                name = Console.ReadLine();
+                if (name.Length > 0 && name.All(char.IsLetter))
+                {
+                    isValid = true;
+                }
+                else
+                {
+                    Console.Clear();
+                    Console.WriteLine("Invalid input. Region name must contain letters only and cannot be blank.");
+                }
+            }
             storageManager.AddRegion(name);
             Console.WriteLine("Region added! Press Enter.");
             Console.ReadLine();
