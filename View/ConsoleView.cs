@@ -4,11 +4,12 @@ using System.Text;
 using BoxingApp;
 using BoxingDatabase;
 
+//  the ConsoleView class which handles the display of menus and messages in the console application for the Boxing Database project.
 namespace BoxingDatabase
 {
     public class ConsoleView
     {
-        
+        // Displays the welcome menu with options for login, registration, and exit
         public static void DisplayWelcomeMenu()
         {
             Console.WriteLine("=== Boxing App ===");
@@ -19,12 +20,19 @@ namespace BoxingDatabase
             
         }
 
+        // Displays a message inidicating the user input is invalid and prompts to press Enter to continue
+        public static void ValidateWeightclass()
+        {
+            Console.Clear();
+            Console.WriteLine("Invalid Weightclass name. Name must only contain letters and spaces");
+        }
+        // Displays a message indicating the user input is invalid and prompts to press Enter to continue
         public static void ShowInvalidChoice()
         {
             Console.WriteLine("Invalid choice. Press Enter to continue.");
             Console.ReadLine();
         }
-
+        // Displays the admin menu containing all admin functionalities
         public static void DisplayAdminMenu()
         {
             Console.Clear();
@@ -42,7 +50,7 @@ namespace BoxingDatabase
             Console.Write("Select an option: ");
         }
 
-        
+        // Displays the user menu containing all user functionalities
         public static void DisplayUserMenu()
         {
             Console.Clear();
@@ -59,6 +67,7 @@ namespace BoxingDatabase
             Console.WriteLine("10. Log Out");
             Console.Write("Select an option: ");
         }
+        // Displays the reports menu containing all reports in the program
         public static void DisplayReportsMenu()
         {
             Console.Clear();
@@ -70,15 +79,16 @@ namespace BoxingDatabase
             Console.WriteLine("5. Gyms By Region Report");
             Console.WriteLine("6. Match Outcome and Details Report");
             Console.WriteLine("7. Fighter Records Report");
-            Console.WriteLine("8. Number of Fighter per Gym Report (Descending)");
+            Console.WriteLine("8. Number of Fighters per Gym Report (Descending)");
             Console.WriteLine("9. Gym Fight Stats Report (Sorted by Gyms with over 10 Fights Descending");
             Console.WriteLine("10. Match Count Per Year Report (Ascending)");
             Console.WriteLine("11. Average Age by Weightclass Report (Sorted in Ascending order");
             Console.WriteLine("12. Number of Matches per Fighter in 2025 (Descending");
             Console.WriteLine("13. Fighters and their Match Outcomes Report");
-            Console.WriteLine("14. Back to User Menu");
+            Console.WriteLine("14. Back to Main Menu");
             Console.Write("Select an option: ");
         }
+        // Displays the region management menu containing all region functionalities
         public static void DisplayRegionMenu()
         {
 
@@ -92,7 +102,7 @@ namespace BoxingDatabase
             Console.WriteLine("5. Back to Admin Menu");
             Console.Write("Select an option: ");
         }
-
+        // Displays the weightclass management menu containing all weightclass functionalities
         public static void DisplayWeightclassMenu()
         {
             Console.Clear();
@@ -105,7 +115,7 @@ namespace BoxingDatabase
             Console.WriteLine("5. Back to Admin Menu");
             Console.Write("Select an option: ");
         }
-
+        // Displays the gym management menu containing all gym functionalities
         public static void DisplayGymMenu()
         {
             Console.Clear();
@@ -118,7 +128,7 @@ namespace BoxingDatabase
             Console.WriteLine("5. Back to Admin Menu");
             Console.Write("Select an option: ");
         }
-
+        // Displays the match management menu containing all match functionalities
         public static void DisplayMatchMenu()
         {
             Console.Clear();
@@ -130,9 +140,9 @@ namespace BoxingDatabase
             Console.WriteLine("4. Delete Match");
             Console.WriteLine("5. Back to Admin Menu");
             Console.Write("Select an option: ");
-        }   
-
-       public static void DisplayOutcomeTypeMenu()
+        }
+        // Displays the match outcome type management menu containing all match outcome type functionalities
+        public static void DisplayOutcomeTypeMenu()
         {
             Console.Clear();
             Console.WriteLine($"Welcome to the Match Outcome Types Menu");
@@ -144,7 +154,7 @@ namespace BoxingDatabase
             Console.WriteLine("5. Back to Admin Menu");
             Console.Write("Select an option: ");
         }
-
+        // Displays the fighter management menu containing all fighter functionalities
         public static void DisplayFighterMenu()
         {
             Console.Clear();
@@ -157,7 +167,7 @@ namespace BoxingDatabase
             Console.WriteLine("5. Back to Admin Menu");
             Console.Write("Select an option: ");
         }
-
+        // Displays the fighter and gym records management menu containing all fighter and gym record functionalities
         public static void DisplayMatchOutcomeMenu()
         {
             Console.Clear();
@@ -170,7 +180,7 @@ namespace BoxingDatabase
             Console.WriteLine("5. Back to Admin Menu");
             Console.Write("Select an option: ");
         }
-
+        // Displays the fighter and gym records management menu containing all fighter and gym record functionalities
         public static void DisplayFighterGymMenu()
         {
             Console.Clear();
