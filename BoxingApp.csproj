@@ -8,6 +8,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="BoxingDatabase.ldf" />
+    <None Remove="BoxingDatabase.mdf" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="BoxingDatabase.ldf" />
+    <Content Include="BoxingDatabase.mdf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Data.SqlClient" Version="6.0.2" />
   </ItemGroup>
 

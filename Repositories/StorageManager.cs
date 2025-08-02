@@ -925,23 +925,54 @@ public class StorageManager
     }
 
 
-    public bool CanSafelyDelete(string dependentTable, string foreignKeyColumn, string recordIdColumn, int recordId)
+    public bool IsUniqueWeightclassName(string name)
     {
-        using (SqlConnection connection = new SqlConnection("Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=\"C:\\Users\\farja\\OneDrive - Avondale College\\FarjadBoxingDatabase\\BoxingApp\\DB\\BoxingDatabase.mdf\";Integrated Security=True;Connect Timeout=30;Encrypt=True"))
+        using (SqlConnection connection = new SqlConnection("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=\"C:\\USERS\\FARJA\\ONEDRIVE - AVONDALE COLLEGE\\FARJADBOXINGDATABASE\\BOXINGAPP\\DB\\BOXINGDATABASE.MDF\";Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False"))
         {
             connection.Open();
-            string query = $"SELECT COUNT(*) FROM {dependentTable} WHERE {foreignKeyColumn} = @recordId";
+            // Use the correct column name: Weightclass
+            string query = "SELECT COUNT(*) FROM tblWeightclasses WHERE LOWER(LTRIM(RTRIM(Weightclass))) = LOWER(LTRIM(RTRIM(@name)))";
             using (SqlCommand command = new SqlCommand(query, connection))
             {
-                command.Parameters.AddWithValue("@recordId", recordId);
+                command.Parameters.AddWithValue("@name", name);
                 int count = (int)command.ExecuteScalar();
-                return count == 0; // Safe to delete if no dependent records exist
+                return count == 0; // true = unique; false = already exists
             }
         }
     }
 
 
+  
+    //validate user input and paramaterise it    
+    public static class InputValidator
+    {
+        public static string ReadInput(string prompt, int minLength = 2, int maxLength = 30)
+        {
+            while (true)
+            {
+                Console.Write(prompt);
+                string input = Console.ReadLine();
 
+                if (string.IsNullOrWhiteSpace(input))
+                {
+                    
+                    Console.WriteLine("Input cannot be blank.");
+                    continue;
+                }
+
+                if (input.Length < minLength || input.Length > maxLength)
+                {
+                    
+                    Console.WriteLine($"Input must be between {minLength} and {maxLength} characters.");
+                    continue;
+                }
+
+               
+                return input;
+            }
+        }
+    }
+    
 
     // Methods to check if a record exists in various tables
     public bool DoesRegionExist(int regionID)

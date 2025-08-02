@@ -1,8 +1,9 @@
-using BoxingApp;
+﻿using BoxingApp;
 using BoxingDatabase;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
+using static StorageManager;
 
 
 // file contains all program logic
@@ -17,7 +18,11 @@ namespace BoxingApp
         {
             //connection string to connect to SQL database
 
-            string connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=\"C:\\USERS\\FARJA\\ONEDRIVE - AVONDALE COLLEGE\\FARJADBOXINGDATABASE\\BOXINGAPP\\DB\\BOXINGDATABASE.MDF\";Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False";
+           // string connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=\"C:\\USERS\\FARJA\\ONEDRIVE - AVONDALE COLLEGE\\FARJADBOXINGDATABASE\\BOXINGAPP\\DB\\BOXINGDATABASE.MDF\";Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False";​
+           
+            string mdfPath = Path.Combine(AppContext.BaseDirectory, "BoxingDatabase.mdf");
+            string connectionString = $@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename={mdfPath};Integrated Security=True;Connect Timeout=30;";
+
             SqlConnection conn = new SqlConnection(connectionString);
             conn.Open();
             storageManager = new StorageManager(conn);
@@ -57,7 +62,8 @@ namespace BoxingApp
                 }
             }
 
-            //login logic
+            
+
             static void Login()
             {
                 // Loop until the user successfully logs in or chooses to return to the main menu
@@ -66,34 +72,9 @@ namespace BoxingApp
                     Console.Clear();
                     Console.WriteLine("Login:");
 
-                    string username;
-                    do
-                    {
-                        Console.Write("Username: ");
-                        username = Console.ReadLine();
-                        //checks if the field has been left blank or user simply presses enter
-                        if (string.IsNullOrWhiteSpace(username))
-                        {
-                            Console.Clear();
-                            Console.WriteLine("Username cannot be blank. Please enter a valid username.");
-                            Console.ReadLine();
-                        }
-                        //checks if user input is left blank
-                    } while (string.IsNullOrWhiteSpace(username));
-
-                    string password;
-                    do
-                    {
-                        Console.Write("Password: ");
-                        password = Console.ReadLine();
-                        if (string.IsNullOrWhiteSpace(password))
-                        {
-                            Console.Clear();
-                            Console.WriteLine("Password cannot be blank. Please enter a valid password.");
-                            Console.ReadLine();
-                        }
-                        //checks if user input is left blank
-                    } while (string.IsNullOrWhiteSpace(password));
+                    // Use InputValidator for username and password
+                    string username = StorageManager.InputValidator.ReadInput("Username: ");
+                    string password = StorageManager.InputValidator.ReadInput("Password: ");
 
                     // Authenticate user using the AuthenticateUser method from StorageManager
                     var user = storageManager.AuthenticateUser(username, password);
@@ -114,12 +95,13 @@ namespace BoxingApp
 
                         if (choice == "M")
                         {
-                            break; 
+                            break;
                         }
                     }
                 }
             }
-            // Register logic
+          
+            //Register Logic
             static void Register()
             {
                 // Loop until the user successfully registers or chooses to return to the main menu
@@ -128,35 +110,10 @@ namespace BoxingApp
                     Console.Clear();
                     Console.WriteLine("Register");
 
-                    string username;
-                    do
-                    {
-                        Console.Write("Choose a username: ");
-                        username = Console.ReadLine();
-                        // checks if the field has been left blank or user simply presses enter
-                        if (string.IsNullOrWhiteSpace(username))
-                        {
-                            Console.Clear();
-                            Console.WriteLine("Username cannot be blank. Please enter a valid username.");
-                            Console.ReadLine();
-                        }
-                        // checks if user input is left blank
-                    } while (string.IsNullOrWhiteSpace(username));
+                    // Use InputValidator for username and password
+                    string username = StorageManager.InputValidator.ReadInput("Choose a username: ");
+                    string password = StorageManager.InputValidator.ReadInput("Choose a password: ");
 
-                    string password;
-                    do
-                    {
-                        Console.Write("Choose a password: ");
-                        password = Console.ReadLine();
-                        // checks if the field has been left blank or user simply presses enter
-                        if (string.IsNullOrWhiteSpace(password))
-                        {
-                            
-                            Console.Clear();
-                            Console.WriteLine("Password cannot be blank. Please enter a valid password.");
-                            Console.ReadLine();
-                        }
-                    } while (string.IsNullOrWhiteSpace(password));
                     // Attempt to register the user using the RegisterUser method from StorageManager
                     bool success = storageManager.RegisterUser(username, password);
                     if (success)
@@ -174,7 +131,7 @@ namespace BoxingApp
 
                         if (choice == "M")
                         {
-                            break; 
+                            break;
                         }
                     }
                 }
@@ -773,39 +730,46 @@ namespace BoxingApp
         }
         static void AddWeightclasses()
         {
-            Console.Clear();
-            Console.WriteLine("=== Add Weightclass ===");
-            string name = "";
-            bool isValid = false;
-            while (!isValid)
+            // Loop until a valid and unique weightclass name is entered
+            while (true)
             {
-                Console.Write("Enter Weightclass name (letters only): ");
-                name = Console.ReadLine();
-                // Checks if the name is not empty and contains only letters
-                if (name.Length > 0 && name.All(char.IsLetter))
-                {
-                    // Checks if the name is already in use by another weightclass
-                    isValid = true;
-                }
-                else
-                {
+                Console.Clear();
+                Console.WriteLine("=== Add Weightclass ===");
 
-                    Console.Clear();
-                    Console.WriteLine("Invalid input. Only letters allowed. Don't leave it blank.");
+                // Always get the latest list of weightclasses for display
+                var weightclassesList = storageManager.GetAllWeightclasses();
+                foreach (var weightclass in weightclassesList)
+                {
+                    Console.WriteLine($"{weightclass.WeightclassID}\t{weightclass.WeightclassName}");
                 }
+
+                // Use InputValidator for 2-30 chars, only letters and spaces allowed
+                string name = InputValidator.ReadInput("Enter Weightclass name (letters and spaces, 2-30 chars): ", 2, 30);
+
+                // Check if the weightclass name is unique using the StorageManager method
+                if (!storageManager.IsUniqueWeightclassName(name))
+                {
+                    Console.WriteLine("This weightclass already exists. Please enter a unique name.");
+                    Console.WriteLine("Press Enter to try again.");
+                    Console.ReadLine();
+                    continue;
+                }
+
+                // If input is valid and unique, add the new weightclass and exit the loop
+                storageManager.AddWeightclasses(name);
+                Console.WriteLine("Weightclass added! Press Enter.");
+                Console.ReadLine();
+                break;
             }
-            // Adds the weightclass using the storageManager method AddWeightclasses with the provided name
-            storageManager.AddWeightclasses(name);
-            Console.WriteLine("Weightclass added! Press Enter.");
-            Console.ReadLine();
         }
         static void UpdateWeightclass()
         {
-            while (true)// Loops until a valid weightclass ID is entered
+            var weightclassesList = storageManager.GetAllWeightclasses();
+            while (true) // Loops until a valid weightclass ID is entered
             {
                 Console.Clear();
                 Console.WriteLine("Update Weightclasses");
-                // Retrieves all weightclasses from the storageManager method GetAllWeightclasses and displays them
+                // Display all weightclasses for reference
                 var weightclasses = storageManager.GetAllWeightclasses();
                 foreach (var wc in weightclasses)
                 {
@@ -818,42 +782,52 @@ namespace BoxingApp
                 if (!int.TryParse(input, out int id) || !weightclasses.Any(w => w.WeightclassID == id))
                 {
                     Console.Clear();
+                    foreach (var weightclass in weightclassesList)
+                    {
+                        Console.WriteLine($"{weightclass.WeightclassID}\t{weightclass.WeightclassName}");
+                    }
                     Console.WriteLine("Invalid or non-existent Weightclass ID. Press Enter to try again.");
                     Console.ReadLine();
                     continue;
                 }
-                string newName;
-                do
+
+                while (true)
                 {
-                    // Retrieves all weightclasses from the storageManager method GetAllWeightclasses and displays them
-                    var weightclass = storageManager.GetAllWeightclasses();
+                    Console.Clear();
+                    Console.WriteLine("Update Weightclasses");
                     foreach (var wc in weightclasses)
                     {
                         Console.WriteLine($"{wc.WeightclassID}: {wc.WeightclassName}");
                     }
 
-                    Console.Write("Enter new weightclass name: ");
-                    newName = Console.ReadLine();
-                    if (string.IsNullOrWhiteSpace(newName))
+                    Console.Write("Enter new weightclass name (letters and spaces only): ");
+                    string newName = Console.ReadLine();
+
+                    // Validate that the new name is not empty and contains only letters and spaces
+                    if (string.IsNullOrWhiteSpace(newName) || !newName.All(c => char.IsLetter(c) || char.IsWhiteSpace(c)))
                     {
-                        Console.Clear();
-                        Console.WriteLine("Weightclass name cannot be blank.");
+                        Console.WriteLine("Invalid input. Weightclass name must contain only letters and spaces.");
+                        Console.WriteLine("Press Enter to try again.");
+                        Console.ReadLine();
+                        continue;
                     }
-                    // Checks if the new name contains only letters and spaces
-                    
-                    else if (!newName.All(c => char.IsLetter(c) || char.IsWhiteSpace(c)))
+
+                    // Check if the new name already exists for a different weightclass (case-insensitive, trimmed)
+                    if (weightclasses.Any(w => w.WeightclassID != id &&
+                        string.Equals(w.WeightclassName?.Trim(), newName.Trim(), StringComparison.OrdinalIgnoreCase)))
                     {
-                        Console.Clear();
-                        Console.WriteLine("Weightclass name must contain only letters and spaces.");
-                        newName = string.Empty;
+                        Console.WriteLine("This weightclass name already exists. Please enter a unique name.");
+                        Console.WriteLine("Press Enter to try again.");
+                        Console.ReadLine();
+                        continue;
                     }
-                    // Checks if the new name is already in use by another weightclass
-                    
-                } while (string.IsNullOrWhiteSpace(newName));
-                // Updates the weightclass using the storageManager method UpdateWeightclasses with the provided ID and new name
-                storageManager.UpdateWeightclasses(id, newName);
-                Console.WriteLine("Weightclass updated. Press Enter.");
-                Console.ReadLine();
+
+                    // Update the weightclass using the storageManager method UpdateWeightclasses
+                    storageManager.UpdateWeightclasses(id, newName);
+                    Console.WriteLine("Weightclass updated. Press Enter.");
+                    Console.ReadLine();
+                    break;
+                }
                 break;
             }
         }
@@ -1133,112 +1107,134 @@ namespace BoxingApp
         }
         static void AddGym()
         {
-            Console.Clear();
-            Console.WriteLine("=== Add Gym ===");
-
-            string name = "";
-            bool isValid = false;
-            while (isValid)// This loop ensures that the user enters a valid gym name
-            {
-                Console.Write("Enter Gym name (letters only): ");
-                name = Console.ReadLine();
-                // Checks if the name is not empty and contains only letters and spaces
-                if (name.Length > 0 && name.All(c => char.IsLetter(c) || c == ' '))
-                {
-                    isValid = true;
-                }
-                else
-                {
-                    Console.Clear();
-                    Console.WriteLine("Invalid input. Please enter a Gym name using letters only. Do not leave it blank.");
-                }
-            }
-            // Retrieves all regions from the storageManager method GetAllRegions and displays them
-            var regions = storageManager.GetAllRegions();
-            foreach (var region in regions)
-            {
-                Console.WriteLine($"{region.RegionID}: {region.RegionName}");
-            }
-            Console.Write("Enter Region ID: ");
-            if (!int.TryParse(Console.ReadLine(), out int regionID))
-            {
-                Console.WriteLine("Invalid input. Press Enter.");
-                Console.ReadLine();
-                return;
-            }
-            // Checks if the regionID exists in the system using the storageManager method DoesRegionExist
-            if (!storageManager.DoesRegionExist(regionID))
-            {
-                Console.WriteLine("Region ID not found in the system. Press Enter to return.");
-                Console.ReadLine();
-                return;
-            }
-            // Adds the gym using the storageManager method AddGym with the provided name and regionID
-            storageManager.AddGym(name, regionID);
-            Console.WriteLine("Gym added! Press Enter.");
-            Console.ReadLine();
-        }
-        static void UpdateGym()
-        {
-            while (true)// This loop allows the user to update a gym by entering its ID
+            while (true)
             {
                 Console.Clear();
-                Console.WriteLine("Update Gym");
-                // Retrieves all gyms from the storageManager method GetAllGyms and displays them
+                Console.WriteLine("=== Add Gym ===");
+
+                // Display all existing gyms for reference
                 var gyms = storageManager.GetAllGyms();
+                Console.WriteLine("Existing Gyms:");
                 foreach (var gym in gyms)
                 {
                     Console.WriteLine($"{gym.GymID}: {gym.GymName}");
                 }
 
-                int id;
-                while (true)
+                Console.Write("Enter Gym name (letters and spaces only): ");
+                string name = Console.ReadLine();
+
+                // Validate that the name is not empty and contains only letters and spaces
+                if (string.IsNullOrWhiteSpace(name) || !name.All(c => char.IsLetter(c) || char.IsWhiteSpace(c)))
                 {
-                    Console.Write("Enter Gym ID to update: ");
-                    string input = Console.ReadLine();
-                    // Checks if the input can be parsed to an integer and if the gym with that ID exists
-                    if (int.TryParse(input, out id) && gyms.Any(g => g.GymID == id))
-                    {
-                        break;
-                    }
-                    Console.Clear();
-                    Console.WriteLine("Invalid or non-existent Gym ID. Press Enter to try again.");
+                    Console.WriteLine("Invalid input. Please enter a Gym name using letters and spaces only. Do not leave it blank.");
+                    Console.WriteLine("Press Enter to try again.");
                     Console.ReadLine();
+                    continue;
                 }
-                // Displays the gyms again to ensure the user sees the current list before updating
-                var gyms1 = storageManager.GetAllGyms();
-                foreach (var gym in gyms)
+
+                // Check if the gym name already exists (case-insensitive, trimmed)
+                if (gyms.Any(g => string.Equals(g.GymName?.Trim(), name.Trim(), StringComparison.OrdinalIgnoreCase)))
                 {
-                    Console.WriteLine($"{gym.GymID}: {gym.GymName}");
+                    Console.WriteLine("This gym already exists. Please enter a unique name.");
+                    Console.WriteLine("Press Enter to try again.");
+                    Console.ReadLine();
+                    continue;
                 }
-                string newName;
-                do
+
+                // Display all regions for selection
+                var regions = storageManager.GetAllRegions();
+                foreach (var region in regions)
                 {
-                    Console.Write("Enter new Gym name: ");
-                    newName = Console.ReadLine();
-                    // Checks if the new name contains whitespace or is null, and accordingly prompts the user to enter a correct gym name
-                    if (string.IsNullOrWhiteSpace(newName))
-                    {
-                        // Clears the console and prompts the user to enter a valid gym name
-                        Console.WriteLine("Gym name cannot be blank. Press Enter to try again.");
-                        Console.ReadLine();
-                    }
-                    // Checks if the new name contains only letters and spaces, if not prompts the user to enter a correct gym name
-                    else if (!newName.All(c => char.IsLetter(c) || char.IsWhiteSpace(c)))
-                    {
-                        Console.Clear();
-                        Console.WriteLine("Gym name must contain only letters and spaces. Press Enter to try again.");
-                        Console.ReadLine();
-                        newName = string.Empty;
-                    }
-                } while (string.IsNullOrWhiteSpace(newName));
-                // Updates the gym using the storageManager method UpdateGym with the provided ID and new name
-                storageManager.UpdateGym(id, newName);
-                Console.WriteLine("Gym updated. Press Enter.");
+                    Console.WriteLine($"{region.RegionID}: {region.RegionName}");
+                }
+                Console.Write("Enter Region ID: ");
+                if (!int.TryParse(Console.ReadLine(), out int regionID))
+                {
+                    Console.WriteLine("Invalid input. Press Enter.");
+                    Console.ReadLine();
+                    continue;
+                }
+                if (!storageManager.DoesRegionExist(regionID))
+                {
+                    Console.WriteLine("Region ID not found in the system. Press Enter to return.");
+                    Console.ReadLine();
+                    continue;
+                }
+
+                // Add the gym using the storageManager method AddGym with the provided name and regionID
+                storageManager.AddGym(name, regionID);
+                Console.WriteLine("Gym added! Press Enter.");
                 Console.ReadLine();
                 break;
             }
         }
+       static void UpdateGym()
+{
+    while (true) // This loop allows the user to update a gym by entering its ID
+    {
+        Console.Clear();
+        Console.WriteLine("Update Gym");
+        // Retrieve and display all gyms
+        var gyms = storageManager.GetAllGyms();
+        foreach (var gym in gyms)
+        {
+            Console.WriteLine($"{gym.GymID}: {gym.GymName}");
+        }
+
+        int id;
+        while (true)
+        {
+            Console.Write("Enter Gym ID to update: ");
+            string input = Console.ReadLine();
+            // Checks if the input can be parsed to an integer and if the gym with that ID exists
+            if (int.TryParse(input, out id) && gyms.Any(g => g.GymID == id))
+            {
+                break;
+            }
+            Console.Clear();
+            Console.WriteLine("Invalid or non-existent Gym ID. Press Enter to try again.");
+            Console.ReadLine();
+        }
+
+        while (true)
+        {
+            Console.Clear();
+            Console.WriteLine("Update Gym");
+            foreach (var gym in gyms)
+            {
+                Console.WriteLine($"{gym.GymID}: {gym.GymName}");
+            }
+
+            Console.Write("Enter new Gym name (letters and spaces only): ");
+            string newName = Console.ReadLine();
+
+            // Validate that the new name is not empty and contains only letters and spaces
+            if (string.IsNullOrWhiteSpace(newName) || !newName.All(c => char.IsLetter(c) || char.IsWhiteSpace(c)))
+            {
+                Console.WriteLine("Gym name must contain only letters and spaces. Press Enter to try again.");
+                Console.ReadLine();
+                continue;
+            }
+
+            // Check if the new name already exists for a different gym (case-insensitive, trimmed)
+            if (gyms.Any(g => g.GymID != id &&
+                string.Equals(g.GymName?.Trim(), newName.Trim(), StringComparison.OrdinalIgnoreCase)))
+            {
+                Console.WriteLine("This gym name already exists. Please enter a unique name.");
+                Console.WriteLine("Press Enter to try again.");
+                Console.ReadLine();
+                continue;
+            }
+
+            // Update the gym using the storageManager method UpdateGym with the provided ID and new name
+            storageManager.UpdateGym(id, newName);
+            Console.WriteLine("Gym updated. Press Enter.");
+            Console.ReadLine();
+            break;
+        }
+        break;
+    }
+}
         static void DeleteGym()
         {
             while (true)// This loop allows the user to delete a gym by entering its ID
@@ -1304,38 +1300,54 @@ namespace BoxingApp
         }
         static void AddOutcomeType()
         {
-            Console.Clear();
-            Console.WriteLine("=== Add Outcome Type ===");
-
-            string description = "";
-            
-            bool isValid = false;
-            while (!isValid)
+            while (true)
             {
-                Console.Write("Enter Outcome Type description (letters and spaces only): ");
-                description = Console.ReadLine();
-                // Checks if the description is valid, if not prompts the user to enter a correct description
-                if (description.Length > 0 && description.All(c => char.IsLetter(c) || c == ' '))
+                Console.Clear();
+                Console.WriteLine("=== Add Outcome Type ===");
+
+                // Always display the current list of outcome types for reference
+                var outcomeTypesList = storageManager.GetAllOutcomeTypes();
+                Console.WriteLine("Existing Outcome Types:");
+                foreach (var outcomeType in outcomeTypesList)
                 {
-                    isValid = true;
+                    Console.WriteLine($"{outcomeType.OutcomeID}\t{outcomeType.OutcomeDescription}");
                 }
-                else
+
+                Console.Write("Enter Outcome Type description (letters and spaces only): ");
+                string description = Console.ReadLine();
+
+                // Validate that the description is not empty and contains only letters and spaces
+                if (string.IsNullOrWhiteSpace(description) || !description.All(c => char.IsLetter(c) || char.IsWhiteSpace(c)))
                 {
                     Console.WriteLine("Invalid input. Description must contain letters and spaces only, and cannot be blank.");
+                    Console.WriteLine("Press Enter to try again.");
+                    Console.ReadLine();
+                    continue;
                 }
+
+                // Check if the outcome type already exists (case-insensitive, trimmed)
+                if (outcomeTypesList.Any(o => string.Equals(o.OutcomeDescription?.Trim(), description.Trim(), StringComparison.OrdinalIgnoreCase)))
+                {
+                    Console.WriteLine("This outcome type already exists. Please enter a unique description.");
+                    Console.WriteLine("Press Enter to try again.");
+                    Console.ReadLine();
+                    continue;
+                }
+
+                // Add the outcome type using the storageManager method AddOutcomeType with the provided description
+                storageManager.AddOutcomeType(description);
+                Console.WriteLine("Outcome Type added! Press Enter.");
+                Console.ReadLine();
+                break;
             }
-            // Adds the outcome type using the storageManager method AddOutcomeType with the provided description
-            storageManager.AddOutcomeType(description);
-            Console.WriteLine("Outcome Type added! Press Enter.");
-            Console.ReadLine();
         }
         static void UpdateOutcomeType()
         {
-            while (true)// This loop allows the user to update an outcome type by entering its ID
+            while (true) // This loop allows the user to update an outcome type by entering its ID
             {
                 Console.Clear();
                 Console.WriteLine("Update Outcome Type");
-                // Retrieves all outcome types from the storageManager method GetAllOutcomeTypes and displays them
+                // Retrieve and display all outcome types
                 var outcomeTypes = storageManager.GetAllOutcomeTypes();
                 foreach (var outcomeType in outcomeTypes)
                 {
@@ -1345,7 +1357,6 @@ namespace BoxingApp
                 int id;
                 while (true)
                 {
-                    Console.Clear();
                     Console.Write("Enter Outcome Type ID to update: ");
                     string input = Console.ReadLine();
                     // Checks if the input can be parsed to an integer and if the outcome type with that ID exists
@@ -1357,24 +1368,43 @@ namespace BoxingApp
                     Console.WriteLine("Invalid or non-existent Outcome Type ID. Press Enter to try again.");
                     Console.ReadLine();
                 }
-                // Prompts the user to enter a new description for the outcome type, ensuring it is not blank and contains only letters and spaces
-                string newDescription;
-                do
+
+                while (true)
                 {
-                    Console.Write("Enter new Outcome Type description: ");
-                    newDescription = Console.ReadLine();
-                    // Checks if the new description is valid, if not prompts the user to enter a correct description
-                    if (string.IsNullOrWhiteSpace(newDescription))
+                    Console.Clear();
+                    Console.WriteLine("Update Outcome Type");
+                    foreach (var outcomeType in outcomeTypes)
                     {
-                        Console.Clear();
-                        Console.WriteLine("Description cannot be blank. Press Enter to try again.");
-                        Console.ReadLine();
+                        Console.WriteLine($"{outcomeType.OutcomeID}: {outcomeType.OutcomeDescription}");
                     }
-                } while (string.IsNullOrWhiteSpace(newDescription)); // Checks if user input contains any whitespace or is empty
-                // Updates the outcome type using the storageManager method UpdateOutcomeType with the provided ID and new description
-                storageManager.UpdateOutcomeType(id, newDescription);
-                Console.WriteLine("Outcome Type updated. Press Enter.");
-                Console.ReadLine();
+
+                    Console.Write("Enter new Outcome Type description (letters and spaces only): ");
+                    string newDescription = Console.ReadLine();
+
+                    // Validate that the new description is not empty and contains only letters and spaces
+                    if (string.IsNullOrWhiteSpace(newDescription) || !newDescription.All(c => char.IsLetter(c) || char.IsWhiteSpace(c)))
+                    {
+                        Console.WriteLine("Description must contain only letters and spaces. Press Enter to try again.");
+                        Console.ReadLine();
+                        continue;
+                    }
+
+                    // Check if the new description already exists for a different outcome type (case-insensitive, trimmed)
+                    if (outcomeTypes.Any(o => o.OutcomeID != id &&
+                        string.Equals(o.OutcomeDescription?.Trim(), newDescription.Trim(), StringComparison.OrdinalIgnoreCase)))
+                    {
+                        Console.WriteLine("This outcome type already exists. Please enter a unique description.");
+                        Console.WriteLine("Press Enter to try again.");
+                        Console.ReadLine();
+                        continue;
+                    }
+
+                    // Update the outcome type using the storageManager method UpdateOutcomeType with the provided ID and new description
+                    storageManager.UpdateOutcomeType(id, newDescription);
+                    Console.WriteLine("Outcome Type updated. Press Enter.");
+                    Console.ReadLine();
+                    break;
+                }
                 break;
             }
         }
@@ -1447,76 +1477,67 @@ namespace BoxingApp
             Console.Clear();
             Console.WriteLine("=== Add Fighter ===");
 
-            
             string firstName = "";
             while (true)
             {
-                Console.Write("Enter Firstname: ");
-                firstName = Console.ReadLine();
-                // Checks if the firstName is valid, if not prompts the user to enter a correct Firstname
+                // Enforce max 30 chars for first name
+                firstName = InputValidator.ReadInput("Enter Firstname: ");
                 if (firstName.Length > 0 && firstName.All(c => char.IsLetter(c) || c == ' '))
                     break;
-
                 Console.WriteLine("Invalid input. Only letters and spaces allowed.");
             }
+
             string lastName = "";
             while (true)
             {
-                Console.Write("Enter Lastname: ");
-                lastName = Console.ReadLine();
-                // Checks if the lastName is valid, if not prompts the user to enter a correct Lastname
+                // Enforce max 30 chars for last name
+                lastName = InputValidator.ReadInput("Enter Lastname: ");
                 if (lastName.Length > 0 && lastName.All(c => char.IsLetter(c) || c == ' '))
                     break;
-
                 Console.WriteLine("Invalid input. Only letters and spaces allowed.");
             }
+
             int age = 0;
             while (true)
             {
-                // Prompts the user to enter a valid Age between 10 and 50
-                Console.Write("Enter Age (10�50): ");
-                // Checks if the age is valid, if not prompts the user to enter a correct Age
+                Console.Write("Enter Age (10–50): ");
                 if (int.TryParse(Console.ReadLine(), out age) && age >= 10 && age <= 50)
                     break;
-
                 Console.WriteLine("Invalid input. Age must be between 10 and 50.");
             }
+
             int regionID = 0;
             while (true)
             {
-                // Retrieves all regions from the storageManager method GetAllRegions and displays them
                 var regions = storageManager.GetAllRegions();
                 foreach (var region in regions)
                 {
                     Console.WriteLine($"{region.RegionID}: {region.RegionName}");
                 }
                 Console.Write("Enter Region ID: ");
-                // Prompts the user to enter a valid Region ID and checks if it exists in the system
                 if (int.TryParse(Console.ReadLine(), out regionID) && storageManager.DoesRegionExist(regionID))
                     break;
-
                 Console.WriteLine("Region ID not found. Please enter a valid ID.");
             }
+
             int gymID = 0;
             while (true)
             {
-                // Retrieves all gyms from the storageManager method GetAllGyms and displays them
                 var gymList = storageManager.GetAllGyms();
                 Console.WriteLine("ID\tGyms");
                 foreach (var gyms in gymList)
                 {
                     Console.WriteLine($"{gyms.GymID}\t{gyms.GymName}");
                 }
-                Console.Write("Enter Gym ID: ");// Prompts the user to enter a valid Gym ID and checks if it exists in the system
+                Console.Write("Enter Gym ID: ");
                 if (int.TryParse(Console.ReadLine(), out gymID) && storageManager.DoesGymExist(gymID))
                     break;
-
                 Console.WriteLine("Gym ID not found. Please enter a valid ID.");
             }
+
             int weightclassID = 0;
             while (true)
             {
-                // Retrieves all weightclasses from the storageManager method GetAllWeightclasses and displays them
                 var weightclassesList = storageManager.GetAllWeightclasses();
                 Console.WriteLine("ID\tWeightclass");
                 foreach (var weightclass in weightclassesList)
@@ -1524,13 +1545,11 @@ namespace BoxingApp
                     Console.WriteLine($"{weightclass.WeightclassID}\t{weightclass.WeightclassName}");
                 }
                 Console.Write("Enter Weightclass ID: ");
-                // Prompts the user to enter a valid Weightclass ID and checks if it exists in the system
                 if (int.TryParse(Console.ReadLine(), out weightclassID) && storageManager.DoesWeightclassExist(weightclassID))
                     break;
-                // If the Weightclass ID does not exist, prompts the user to enter a valid ID
                 Console.WriteLine("Weightclass ID not found. Please enter a valid ID.");
             }
-            // Prompts the user to enter Wins, Losses, and Draws, with default values of 0 if input is invalid
+
             Console.Write("Enter Wins (default 0): ");
             int wins = 0;
             if (!int.TryParse(Console.ReadLine(), out wins) || wins < 0)
@@ -1552,7 +1571,7 @@ namespace BoxingApp
                 Console.WriteLine("Invalid input. Setting Draws to 0.");
                 draws = 0;
             }
-            // Adds a new fighter using the storageManager method AddFighter with the provided details
+
             storageManager.AddFighter(firstName, lastName, age, regionID, gymID, weightclassID, wins, losses, draws);
             Console.WriteLine("Fighter added! Press Enter.");
             Console.ReadLine();
@@ -1619,7 +1638,7 @@ namespace BoxingApp
                 int newAge;
                 while (true)
                 {
-                    Console.Write("Enter new Age (10�50): ");
+                    Console.Write("Enter new Age (10–50): ");
                     string input = Console.ReadLine();
                     // Checks if the newAge is valid, if not prompts the user to enter a correct Age
                     if (int.TryParse(input, out newAge) && newAge >= 10 && newAge <= 50)
@@ -1774,7 +1793,7 @@ namespace BoxingApp
                     // Prompts the user to enter a Fighter ID and validates it
                 if (int.TryParse(Console.ReadLine(), out fighterID) && storageManager.DoesFighterExist(fighterID))
                     break;
-
+                Console.Clear();
                 Console.WriteLine("Fighter ID not found. Please enter a valid ID.");
             }
             int gymID = 0;
@@ -1789,7 +1808,7 @@ namespace BoxingApp
                 Console.Write("Enter Gym ID: ");
                 if (int.TryParse(Console.ReadLine(), out gymID) && storageManager.DoesGymExist(gymID))
                     break;
-
+                Console.Clear();
                 Console.WriteLine("Gym ID not found. Please enter a valid ID.");
             }
             // Prompts the user to enter total wins, losses, and draws, with default values set to 0 if the input is invalid or left empty
@@ -1826,60 +1845,94 @@ namespace BoxingApp
         }
         static void UpdateFighterAndGym()
         {
-            while (true)// Displays the update menu for Fighter and Gym records
+            // Retrieve all gyms and fighters for display and validation
+            var gyms = storageManager.GetAllGyms();
+            var fighters = storageManager.GetAllFighters();
+
+            while (true) // Loop until a valid FighterAndGym record is selected and updated
             {
                 Console.Clear();
                 Console.WriteLine("Update Fighter and Gym");
-                // Retrieves all Fighter and Gym records from the storageManager method GetAllFighterAndGyms
+                // Display all FighterAndGym records for reference
                 var fighterAndGyms = storageManager.GetAllFighterAndGyms();
-                // Displays the Fighter and Gym records
                 foreach (var fg in fighterAndGyms)
                 {
                     Console.WriteLine($"{fg.FighterAndGymID}: Fighter {fg.FighterID}, Gym {fg.GymID}");
                 }
 
                 int id;
-                while (true)// Prompts the user to enter a Fighter and Gym ID to update
+                while (true) // Prompt for FighterAndGymID and validate
                 {
                     Console.Write("Enter Fighter and Gym ID to update: ");
                     string input = Console.ReadLine();
-                    // Validates the input to ensure it is a number and exists in the Fighter and Gym records list
                     if (int.TryParse(input, out id) && fighterAndGyms.Any(fg => fg.FighterAndGymID == id))
                         break;
 
                     Console.Clear();
+                    // Display all FighterAndGym records again after error
+                    foreach (var fg in fighterAndGyms)
+                    {
+                        Console.WriteLine($"{fg.FighterAndGymID}: Fighter {fg.FighterID}, Gym {fg.GymID}");
+                    }
                     Console.WriteLine("Invalid or non-existent Fighter and Gym ID. Press Enter to try again.");
                     Console.ReadLine();
                 }
-                
+
                 int newFighterID;
-                while (true)// Prompts the user to enter a new Fighter ID and validates it
+                while (true) // Prompt for new FighterID and validate
                 {
+                    Console.Clear();
+                    // Display all fighters for reference
+                    Console.WriteLine("Available Fighters:");
+                    foreach (var fighter in fighters)
+                    {
+                        Console.WriteLine($"{fighter.FighterID}: {fighter.FirstName} {fighter.LastName}");
+                    }
+
                     Console.Write("Enter new Fighter ID: ");
                     string input = Console.ReadLine();
-                    // Validates the input to ensure it is a number and exists in the fighters list
                     if (int.TryParse(input, out newFighterID) && storageManager.DoesFighterExist(newFighterID))
                         break;
 
                     Console.Clear();
+                    // Display all fighters again after error
+                    Console.WriteLine("Available Fighters:");
+                    foreach (var fighter in fighters)
+                    {
+                        Console.WriteLine($"{fighter.FighterID}: {fighter.FirstName} {fighter.LastName}");
+                    }
                     Console.WriteLine("Fighter ID not found. Press Enter to try again.");
                     Console.ReadLine();
                 }
 
                 int newGymID;
-                while (true) // Prompts the user to enter a new Gym ID and validates it
+                while (true) // Prompt for new GymID and validate
                 {
+                    Console.Clear();
+                    // Display all gyms for reference
+                    Console.WriteLine("Available Gyms:");
+                    foreach (var gym in gyms)
+                    {
+                        Console.WriteLine($"{gym.GymID}: {gym.GymName}");
+                    }
+
                     Console.Write("Enter new Gym ID: ");
                     string input = Console.ReadLine();
-                    // Validates the input to ensure it is a number and exists in the gyms list
                     if (int.TryParse(input, out newGymID) && storageManager.DoesGymExist(newGymID))
                         break;
 
                     Console.Clear();
+                    // Display all gyms again after error
+                    Console.WriteLine("Available Gyms:");
+                    foreach (var gym in gyms)
+                    {
+                        Console.WriteLine($"{gym.GymID}: {gym.GymName}");
+                    }
                     Console.WriteLine("Gym ID not found. Press Enter to try again.");
                     Console.ReadLine();
                 }
-                // Prompts the user to enter total wins, losses, and draws, with default values set to 0 if the input is invalid or left empty
+
+                // Prompt for total wins, losses, and draws, with default values set to 0 if invalid
                 Console.Write("Enter Total Wins (default 0): ");
                 if (!int.TryParse(Console.ReadLine(), out int totalWins) || totalWins < 0)
                 {
@@ -1900,7 +1953,8 @@ namespace BoxingApp
                     Console.WriteLine("Invalid input. Setting Total Draws to 0.");
                     totalDraws = 0;
                 }
-                // Updates the Fighter and Gym record using the UpdateFighterAndGym method from the storageManager
+
+                // Update the FighterAndGym record using the UpdateFighterAndGym method from storageManager
                 storageManager.UpdateFighterAndGym(id, newFighterID, newGymID, totalWins, totalLosses, totalDraws);
                 Console.WriteLine("Fighter and Gym updated. Press Enter.");
                 Console.ReadLine();
@@ -1984,7 +2038,7 @@ namespace BoxingApp
                 // Validates the input to ensure it is a number and exists in the matches list, using the DoesMatchExist method from StorageManager.cs
                 if (int.TryParse(Console.ReadLine(), out matchID) && storageManager.DoesMatchExist(matchID))
                     break;
-
+                Console.Clear();
                 Console.WriteLine("Match ID not found in the system. Please try again.");
             }
             
@@ -2002,7 +2056,7 @@ namespace BoxingApp
                 // Validates the input to ensure it is a number and exists in the fighters list, using the DoesFighterExist method from StorageManager.cs
                 if (int.TryParse(Console.ReadLine(), out winnerID) && storageManager.DoesFighterExist(winnerID))
                     break;
-
+                Console.Clear();
                 Console.WriteLine("Winner ID not found in the system. Please try again.");
             }
             int outcomeID = 0;
@@ -2019,6 +2073,7 @@ namespace BoxingApp
                 // Validates the input to ensure it is a number and exists in the outcome types list, using the DoesOutcomeTypeExist method from StorageManager.cs
                 if (int.TryParse(Console.ReadLine(), out outcomeID) && storageManager.DoesOutcomeTypeExist(outcomeID))
                     break;
+                Console.Clear();
                 Console.WriteLine("Outcome ID not found in the system. Please try again.");
             }
             // Adds the match outcome using the method AddMatchOutcome from the storageManager
@@ -2153,127 +2208,105 @@ namespace BoxingApp
             Console.WriteLine("Press Enter to return.");
             Console.ReadLine();
         }
+
+        // Method to add a new region to the database with input validation, uniqueness check, and user feedback
         static void AddRegion()
         {
-            // Clears the console and displays the Add Region menu
-            Console.Clear();
-            Console.WriteLine("=== Add Region ===");
-            string name = "";
-            bool isValid = false;
-            while (!isValid)
-            {
-                Console.Write("Enter region name (letters only): ");
-                name = Console.ReadLine();
-                // Checks if the name is not empty and contains only letters
-                if (name.Length > 0 && name.All(char.IsLetter))
-                {
-                    isValid = true;
-                }
-                
-                // If the name is invalid, it clears the console and prompts the user again
-                else
-                {
-                    Console.Clear();
-                    Console.WriteLine("Invalid input. Region name must contain letters only and cannot be blank.");
-                }
-            }
-            storageManager.AddRegion(name);
-            Console.WriteLine("Region added! Press Enter.");
-            Console.ReadLine();
-        }
-        static void UpdateRegion()
-        {
-            // Clears the console and displays the Update Region menu
-            while (true) // Loop until a valid region is updated
+            while (true)
             {
                 Console.Clear();
-                Console.WriteLine("Update Region");
-                // Retrieves all regions from the storageManager
+                Console.WriteLine("=== Add Region ===");
+                // Display all existing regions for reference
                 var regions = storageManager.GetAllRegions();
                 foreach (var region in regions)
                 {
                     Console.WriteLine($"{region.RegionID}: {region.RegionName}");
                 }
-
-                int id;
-                while (true)
+                // Enforce 30 character limit using InputHelper
+                string name = InputValidator.ReadInput("Enter region name (letters and spaces only, max 30 chars): ");
+                // Validate that the name is not empty and contains only letters and spaces
+               
+                // Check if the region name already exists (case-insensitive, trimmed)
+                if (regions.Any(r => string.Equals(r.RegionName?.Trim(), name.Trim(), StringComparison.OrdinalIgnoreCase)))
                 {
-                    Console.Write("Enter region ID to update: ");
-                    string input = Console.ReadLine();
-                    // Validates the input to ensure it is a number and exists in the regions list
-                    if (int.TryParse(input, out id) && regions.Any(r => r.RegionID == id))
-                        break;
-
-                    Console.Clear();
-                    Console.WriteLine("Invalid or non-existent region ID. Press Enter to try again.");
+                    Console.WriteLine("This region already exists. Please enter a unique name.");
+                    Console.WriteLine("Press Enter to try again.");
                     Console.ReadLine();
+                    continue;
                 }
-
-                string newName;
-                do
-                {
-                    Console.Write("Enter new region name: ");
-                    newName = Console.ReadLine();
-                    // Validates the new name to ensure it is not empty and contains only letters and spaces
-                    if (string.IsNullOrWhiteSpace(newName))
-                    {
-                        Console.Clear();
-                        Console.WriteLine("Region name cannot be blank. Press Enter to try again.");
-                        Console.ReadLine();
-                    }
-                    // Checks if the new name contains only letters and spaces
-                    else if (!newName.All(c => char.IsLetter(c) || char.IsWhiteSpace(c)))
-                    {
-                        Console.Clear();
-                        Console.WriteLine("Region name must contain only letters and spaces. Press Enter to try again.");
-                        Console.ReadLine();
-                        newName = string.Empty;
-                    }
-                    // If the new name is valid, it breaks the loop
-                  
-                } while (string.IsNullOrWhiteSpace(newName));
-                // Updates the region with the new name using the storageManager
-                storageManager.UpdateRegion(id, newName);
-                Console.WriteLine("Region updated. Press Enter.");
+                // Add the new region using the StorageManager method
+                storageManager.AddRegion(name);
+                Console.WriteLine("Region added! Press Enter.");
                 Console.ReadLine();
                 break;
             }
         }
-        static void DeleteRegion()
+
+        static void UpdateRegion()
         {
-            while (true)// Loop until a valid region is deleted
+            while (true)
             {
                 Console.Clear();
-                Console.WriteLine("Delete Region");
-                // Retrieves all regions from the storageManager
+                Console.WriteLine("Update Region");
                 var regions = storageManager.GetAllRegions();
                 foreach (var region in regions)
                 {
                     Console.WriteLine($"{region.RegionID}: {region.RegionName}");
                 }
-
-                int id;
+                Console.Write("Enter region ID to update: ");
+                string input = Console.ReadLine();
+                if (!int.TryParse(input, out int id) || !regions.Any(r => r.RegionID == id))
+                {
+                    Console.WriteLine("Invalid or non-existent region ID.");
+                    Console.WriteLine("Press Enter to try again.");
+                    Console.ReadLine();
+                    continue;
+                }
                 while (true)
                 {
-                    Console.Write("Enter region ID to delete: ");
-                    string input = Console.ReadLine();
-                    // Validates the input to ensure it is a number and exists in the regions list
-                    if (int.TryParse(input, out id) && regions.Any(r => r.RegionID == id))
-                        break;
-                    // If the input is invalid, it clears the console and prompts the user again
                     Console.Clear();
-                    Console.WriteLine("Invalid or non-existent region ID. Press Enter to try again.");
+                    Console.WriteLine("Update Region");
+                    foreach (var region in regions)
+                    {
+                        Console.WriteLine($"{region.RegionID}: {region.RegionName}");
+                    }
+                    Console.Write("Enter new region name (letters and spaces only): ");
+                    string newName = InputValidator.ReadInput("Enter region name (letters and spaces only, max 30 chars): ");
+                  
+                    storageManager.UpdateRegion(id, newName);
+                    Console.WriteLine("Region updated. Press Enter.");
                     Console.ReadLine();
+                    break;
                 }
-                // Deletes the region using the method DeleteRegion from the storageManager
+                break;
+            }
+        }
+
+        static void DeleteRegion()
+        {
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine("Delete Region");
+                var regions = storageManager.GetAllRegions();
+                foreach (var region in regions)
+                {
+                    Console.WriteLine($"{region.RegionID}: {region.RegionName}");
+                }
+                Console.Write("Enter region ID to delete: ");
+                string input = Console.ReadLine();
+                if (!int.TryParse(input, out int id) || !regions.Any(r => r.RegionID == id))
+                {
+                    Console.WriteLine("Invalid or non-existent region ID.");
+                    Console.WriteLine("Press Enter to try again.");
+                    Console.ReadLine();
+                    continue;
+                }
                 storageManager.DeleteRegion(id);
                 Console.WriteLine("Region deleted. Press Enter.");
                 Console.ReadLine();
                 break;
             }
         }
-
-
-
     }
 }
