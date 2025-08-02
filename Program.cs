@@ -743,8 +743,8 @@ namespace BoxingApp
                     Console.WriteLine($"{weightclass.WeightclassID}\t{weightclass.WeightclassName}");
                 }
 
-                // Use InputValidator for 2-30 chars, only letters and spaces allowed
-                string name = InputValidator.ReadInput("Enter Weightclass name (letters and spaces, 2-30 chars): ", 2, 30);
+                // Use InputValidator for weightclass name input
+                string name = InputValidator.ReadInput("Enter Weightclass name: ", 2, 30);
 
                 // Check if the weightclass name is unique using the StorageManager method
                 if (!storageManager.IsUniqueWeightclassName(name))
@@ -800,17 +800,8 @@ namespace BoxingApp
                         Console.WriteLine($"{wc.WeightclassID}: {wc.WeightclassName}");
                     }
 
-                    Console.Write("Enter new weightclass name (letters and spaces only): ");
-                    string newName = Console.ReadLine();
-
-                    // Validate that the new name is not empty and contains only letters and spaces
-                    if (string.IsNullOrWhiteSpace(newName) || !newName.All(c => char.IsLetter(c) || char.IsWhiteSpace(c)))
-                    {
-                        Console.WriteLine("Invalid input. Weightclass name must contain only letters and spaces.");
-                        Console.WriteLine("Press Enter to try again.");
-                        Console.ReadLine();
-                        continue;
-                    }
+                    // Use InputValidator for weightclass name input
+                    string newName = InputValidator.ReadInput("Enter new weightclass name: ");
 
                     // Check if the new name already exists for a different weightclass (case-insensitive, trimmed)
                     if (weightclasses.Any(w => w.WeightclassID != id &&
@@ -1120,17 +1111,8 @@ namespace BoxingApp
                     Console.WriteLine($"{gym.GymID}: {gym.GymName}");
                 }
 
-                Console.Write("Enter Gym name (letters and spaces only): ");
-                string name = Console.ReadLine();
-
-                // Validate that the name is not empty and contains only letters and spaces
-                if (string.IsNullOrWhiteSpace(name) || !name.All(c => char.IsLetter(c) || char.IsWhiteSpace(c)))
-                {
-                    Console.WriteLine("Invalid input. Please enter a Gym name using letters and spaces only. Do not leave it blank.");
-                    Console.WriteLine("Press Enter to try again.");
-                    Console.ReadLine();
-                    continue;
-                }
+                // Use InputValidator for gym name input
+                string name = InputValidator.ReadInput("Enter Gym name: ");
 
                 // Check if the gym name already exists (case-insensitive, trimmed)
                 if (gyms.Any(g => string.Equals(g.GymName?.Trim(), name.Trim(), StringComparison.OrdinalIgnoreCase)))
@@ -1205,16 +1187,8 @@ namespace BoxingApp
                 Console.WriteLine($"{gym.GymID}: {gym.GymName}");
             }
 
-            Console.Write("Enter new Gym name (letters and spaces only): ");
-            string newName = Console.ReadLine();
-
-            // Validate that the new name is not empty and contains only letters and spaces
-            if (string.IsNullOrWhiteSpace(newName) || !newName.All(c => char.IsLetter(c) || char.IsWhiteSpace(c)))
-            {
-                Console.WriteLine("Gym name must contain only letters and spaces. Press Enter to try again.");
-                Console.ReadLine();
-                continue;
-            }
+            // Use InputValidator for gym name input
+            string newName = InputValidator.ReadInput("Enter new Gym name: ");
 
             // Check if the new name already exists for a different gym (case-insensitive, trimmed)
             if (gyms.Any(g => g.GymID != id &&
@@ -1313,17 +1287,8 @@ namespace BoxingApp
                     Console.WriteLine($"{outcomeType.OutcomeID}\t{outcomeType.OutcomeDescription}");
                 }
 
-                Console.Write("Enter Outcome Type description (letters and spaces only): ");
-                string description = Console.ReadLine();
-
-                // Validate that the description is not empty and contains only letters and spaces
-                if (string.IsNullOrWhiteSpace(description) || !description.All(c => char.IsLetter(c) || char.IsWhiteSpace(c)))
-                {
-                    Console.WriteLine("Invalid input. Description must contain letters and spaces only, and cannot be blank.");
-                    Console.WriteLine("Press Enter to try again.");
-                    Console.ReadLine();
-                    continue;
-                }
+                // Use InputValidator for outcome type description input
+                string description = InputValidator.ReadInput("Enter Outcome Type description: ");
 
                 // Check if the outcome type already exists (case-insensitive, trimmed)
                 if (outcomeTypesList.Any(o => string.Equals(o.OutcomeDescription?.Trim(), description.Trim(), StringComparison.OrdinalIgnoreCase)))
@@ -1378,16 +1343,8 @@ namespace BoxingApp
                         Console.WriteLine($"{outcomeType.OutcomeID}: {outcomeType.OutcomeDescription}");
                     }
 
-                    Console.Write("Enter new Outcome Type description (letters and spaces only): ");
-                    string newDescription = Console.ReadLine();
-
-                    // Validate that the new description is not empty and contains only letters and spaces
-                    if (string.IsNullOrWhiteSpace(newDescription) || !newDescription.All(c => char.IsLetter(c) || char.IsWhiteSpace(c)))
-                    {
-                        Console.WriteLine("Description must contain only letters and spaces. Press Enter to try again.");
-                        Console.ReadLine();
-                        continue;
-                    }
+                    // Use InputValidator for outcome type description input
+                    string newDescription = InputValidator.ReadInput("Enter new Outcome Type description: ");
 
                     // Check if the new description already exists for a different outcome type (case-insensitive, trimmed)
                     if (outcomeTypes.Any(o => o.OutcomeID != id &&
@@ -1477,25 +1434,11 @@ namespace BoxingApp
             Console.Clear();
             Console.WriteLine("=== Add Fighter ===");
 
-            string firstName = "";
-            while (true)
-            {
-                // Enforce max 30 chars for first name
-                firstName = InputValidator.ReadInput("Enter Firstname: ");
-                if (firstName.Length > 0 && firstName.All(c => char.IsLetter(c) || c == ' '))
-                    break;
-                Console.WriteLine("Invalid input. Only letters and spaces allowed.");
-            }
+            // Use InputValidator for first name input
+            string firstName = InputValidator.ReadInput("Enter Firstname: ");
 
-            string lastName = "";
-            while (true)
-            {
-                // Enforce max 30 chars for last name
-                lastName = InputValidator.ReadInput("Enter Lastname: ");
-                if (lastName.Length > 0 && lastName.All(c => char.IsLetter(c) || c == ' '))
-                    break;
-                Console.WriteLine("Invalid input. Only letters and spaces allowed.");
-            }
+            // Use InputValidator for last name input
+            string lastName = InputValidator.ReadInput("Enter Lastname: ");
 
             int age = 0;
             while (true)
@@ -1603,37 +1546,11 @@ namespace BoxingApp
                     Console.ReadLine();
                 }
 
-                string newFirstName;
-                do
-                {
-                    Console.Write("Enter new Firstname: ");
-                    newFirstName = Console.ReadLine();
-                    // Checks if the newFirstName is valid, if not prompts the user to enter a correct Firstname
-                    if (string.IsNullOrWhiteSpace(newFirstName) || !newFirstName.All(c => char.IsLetter(c) || char.IsWhiteSpace(c)))
-                    {
-                        Console.Clear();
-                        Console.WriteLine("Firstname must contain only letters and spaces. Press Enter to try again.");
-                        Console.ReadLine();
-                        newFirstName = string.Empty;
-                    }
-                    // Checks if the newFirstName is not empty or whitespace
-                } while (string.IsNullOrWhiteSpace(newFirstName));
+                // Use InputValidator for first name input
+                string newFirstName = InputValidator.ReadInput("Enter new Firstname: ");
 
-                string newLastName;
-                do
-                {
-                    Console.Write("Enter new Lastname: ");
-                    newLastName = Console.ReadLine();
-                    // Checks if the newLastName is valid, if not prompts the user to enter a correct Lastname
-                    if (string.IsNullOrWhiteSpace(newLastName) || !newLastName.All(c => char.IsLetter(c) || char.IsWhiteSpace(c)))
-                    {
-                        Console.Clear();
-                        Console.WriteLine("Lastname must contain only letters and spaces. Press Enter to try again.");
-                        Console.ReadLine();
-                        newLastName = string.Empty;
-                    }
-                    // Checks if the newLastName is not empty or whitespace
-                } while (string.IsNullOrWhiteSpace(newLastName));
+                // Use InputValidator for last name input
+                string newLastName = InputValidator.ReadInput("Enter new Lastname: ");
                 // Prompts the user to enter a new Age and validates it
                 int newAge;
                 while (true)
@@ -2222,10 +2139,8 @@ namespace BoxingApp
                 {
                     Console.WriteLine($"{region.RegionID}: {region.RegionName}");
                 }
-                // Enforce 30 character limit using InputHelper
-                string name = InputValidator.ReadInput("Enter region name (letters and spaces only, max 30 chars): ");
-                // Validate that the name is not empty and contains only letters and spaces
-               
+                // Use InputValidator for region name input
+                string name = InputValidator.ReadInput("Enter region name: ");
                 // Check if the region name already exists (case-insensitive, trimmed)
                 if (regions.Any(r => string.Equals(r.RegionName?.Trim(), name.Trim(), StringComparison.OrdinalIgnoreCase)))
                 {
@@ -2270,8 +2185,8 @@ namespace BoxingApp
                     {
                         Console.WriteLine($"{region.RegionID}: {region.RegionName}");
                     }
-                    Console.Write("Enter new region name (letters and spaces only): ");
-                    string newName = InputValidator.ReadInput("Enter region name (letters and spaces only, max 30 chars): ");
+                    // Use InputValidator for region name input
+                    string newName = InputValidator.ReadInput("Enter new region name: ");
                   
                     storageManager.UpdateRegion(id, newName);
                     Console.WriteLine("Region updated. Press Enter.");
